@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Design Dashboard - Browse & Purchase</title>
+  <link rel="stylesheet" href="css/user.css">
+</head>
+<body>
+<div class="dashboard-container">
+  <!-- Header -->
+  <div class="header">
+    <div style="overflow: hidden;">
+      <div>
+        <h1>🏗️ Design Marketplace</h1>
+        <p>Browse and purchase premium architectural designs</p>
+      </div>
+      <div class="user-info">
+        <h3 id="welcomeUser">Welcome, John Doe</h3>
+        <!--<p>Premium Member | Balance: $2,500</p>-->
+      </div>
+    </div>
+  </div>
+
+  <!--&lt;!&ndash; Stats Section &ndash;&gt;
+  <div class="stats-section">
+    <div class="stat-card">
+      <div class="stat-number">156</div>
+      <div class="stat-label">Available Designs</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">23</div>
+      <div class="stat-label">Purchased Designs</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">4.8</div>
+      <div class="stat-label">Average Rating</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">12</div>
+      <div class="stat-label">Favorites</div>
+    </div>
+  </div>-->
+
+  <!-- Filters Section -->
+  <div class="filters-section">
+    <div class="filter-row">
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Search designs by name, location, or features...">
+        <span class="search-icon">🔍</span>
+      </div>
+    </div>
+    <div class="filter-row">
+      <div class="filter-group">
+        <label>Type:</label>
+        <select id="typeFilter">
+          <option value="">All Types</option>
+          <option value="HOUSE">House</option>
+          <option value="VILLA">Villa</option>
+          <option value="APARTMENT">Apartment</option>
+          <option value="FORM_HOUSE">Farm House</option>
+          <option value="ROW_HOUSE">Row House</option>
+          <option value="DUPLEX">Duplex</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Price Range:</label>
+        <select id="priceFilter">
+          <option value="">All Prices</option>
+          <option value="0-500">$0 - $500</option>
+          <option value="500-1000">$500 - $1000</option>
+          <option value="1000-2000">$1000 - $2000</option>
+          <option value="2000+">$2000+</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Bedrooms:</label>
+        <select id="bedroomFilter">
+          <option value="">Any</option>
+          <option value="1">1 BHK</option>
+          <option value="2">2 BHK</option>
+          <option value="3">3 BHK</option>
+          <option value="4">4+ BHK</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Sort By:</label>
+        <select id="sortFilter">
+          <option value="newest">Newest First</option>
+          <option value="price-low">Price: Low to High</option>
+          <option value="price-high">Price: High to Low</option>
+          <option value="rating">Highest Rated</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Designs Grid -->
+  <div class="designs-grid" id="designsGrid">
+    <!-- Design cards will be populated by JavaScript -->
+  </div>
+</div>
+
+<!-- Purchase Modal -->
+<div id="purchaseModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Purchase Design</h2>
+      <span class="close">&times;</span>
+    </div>
+    <form id="purchaseForm">
+      <div class="form-group">
+        <label>Design Name:</label>
+        <input type="text" id="modalDesignName" readonly>
+      </div>
+      <div class="form-group">
+        <label>Price:</label>
+        <input type="text" id="modalPrice" readonly>
+      </div>
+      <div class="form-group">
+        <label>Your Name:</label>
+        <input type="text" id="customerName" required>
+      </div>
+      <div class="form-group">
+        <label>Email:</label>
+        <input type="email" id="customerEmail" required>
+      </div>
+      <div class="form-group">
+        <label>Phone:</label>
+        <input type="tel" id="customerPhone" required>
+      </div>
+      <div class="form-group">
+        <label>Project Location:</label>
+        <input type="text" id="projectLocation" required>
+      </div>
+      <div class="form-group">
+        <label>Payment Method:</label>
+        <select id="paymentMethod" required>
+          <option value="">Select Payment Method</option>
+          <option value="credit-card">Cash on Delivery</option>
+          <!--<option value="debit-card">Debit Card</option>
+          <option value="paypal">PayPal</option>
+          <option value="bank-transfer">Bank Transfer</option>-->
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Special Requirements:</label>
+        <textarea id="specialRequirements" rows="3" placeholder="Any customization or special requirements..."></textarea>
+      </div>
+      <button type="submit" class="submit-btn">Complete Purchase</button>
+    </form>
+  </div>
+</div>
+
+<script src="scripts/user.js"></script>
+</body>
+</html>

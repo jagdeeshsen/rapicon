@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rapicon Infrastructure Registration</title>
+    <link rel="stylesheet" href="css/register.css">
+</head>
+<body>
+<div class="register-container">
+    <div class="logo">
+        <h1>Join Rapicon Infrastructure</h1>
+        <p>Create your account to get started</p>
+    </div>
+
+    <form id="registerForm">
+        <div class="form-row">
+            <div class="form-group">
+                <label for="firstName">First Name *</label>
+                <input type="text" id="firstName" name="firstName" required>
+            </div>
+            <div class="form-group">
+                <label for="lastName">Last Name *</label>
+                <input type="text" id="lastName" name="lastName" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email Address *</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="password">Password *</label>
+                <input type="password" id="password" name="password" required onkeyup="checkPasswordStrength()">
+                <div id="passwordStrength" class="password-strength"></div>
+            </div>
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password *</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required onkeyup="checkPasswordMatch()">
+                <div id="passwordMatch" class="password-strength"></div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" name="phone">
+        </div>
+
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username">
+        </div>
+
+        <div class="form-group">
+            <label for="role">Account Type *</label>
+            <select id="role" name="role" required onchange="toggleVendorFields()">
+                <option value="">Select Account Type</option>
+                <option value="user">User - Browse & Purchase Designs</option>
+                <option value="vendor">Vendor - Upload & Sell Designs</option>
+            </select>
+        </div>
+
+        <!-- Vendor-specific fields -->
+        <div id="vendorFields" class="vendor-fields">
+            <div class="form-group">
+                <label for="companyName">Company/Business Name</label>
+                <input type="text" id="companyName" name="companyName">
+            </div>
+
+            <div class="form-group">
+                <label for="experience">Years of Experience</label>
+                <select id="experience" name="experience">
+                    <option value="">Select Experience</option>
+                    <option value="0-2">0-2 years</option>
+                    <option value="3-5">3-5 years</option>
+                    <option value="6-10">6-10 years</option>
+                    <option value="10+">10+ years</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="specialization">Specialization</label>
+                <select id="specialization" name="specialization">
+                    <option value="">Select Specialization</option>
+                    <option value="residential">Residential Design</option>
+                    <option value="commercial">Commercial Design</option>
+                    <option value="industrial">Industrial Design</option>
+                    <option value="landscape">Landscape Design</option>
+                    <option value="mixed">Mixed/All Types</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="portfolio">Portfolio Website (Optional)</label>
+                <input type="text" id="portfolio" name="portfolio" placeholder="https://your-portfolio.com">
+            </div>
+
+            <div class="form-group">
+                <label for="bio">Professional Bio</label>
+                <textarea id="bio" name="bio" placeholder="Tell us about your experience and expertise..."></textarea>
+            </div>
+        </div>
+
+        <div class="checkbox-group">
+            <input type="checkbox" id="terms" name="terms" required>
+            <label for="terms">I agree to the <a href="#" onclick="showTerms()">Terms of Service</a> and <a href="#" onclick="showPrivacy()">Privacy Policy</a> *</label>
+        </div>
+
+       <!-- <div class="checkbox-group">
+            <input type="checkbox" id="newsletter" name="newsletter">
+            <label for="newsletter">Subscribe to our newsletter for updates and new features</label>
+        </div>-->
+
+        <button type="submit" class="register-btn" id="registerBtn">Create Account</button>
+
+        <div class="error-message" id="errorMessage"></div>
+        <div class="success-message" id="successMessage"></div>
+    </form>
+
+    <div class="login-link">
+        <p>Already have an account? <a href="login.html">Sign in here</a></p>
+    </div>
+</div>
+
+<script src="scripts/register.js"></script>
+
+</body>
+</html>

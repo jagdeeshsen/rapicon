@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Platform Management</title>
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+<div class="admin-container">
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <h1>🛡️ Admin Dashboard</h1>
+      <p>Complete platform management and control center</p>
+    </div>
+    <div class="admin-info">
+      <div class="admin-avatar">A</div>
+      <div class="admin-details">
+        <h3>Admin User</h3>
+        <p>Super Administrator</p>
+        <p>Last login: Today, 10:30 AM</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Tabs -->
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="switchTab('dashboard')">
+      📊 Dashboard
+    </button>
+    <button class="nav-tab" onclick="switchTab('designs')">
+      🏠 Design Approvals
+    </button>
+    <button class="nav-tab" onclick="switchTab('vendors')">
+      🏢 Vendor Management
+    </button>
+    <button class="nav-tab" onclick="switchTab('users')">
+      👥 User Management
+    </button>
+    <button class="nav-tab" onclick="switchTab('analytics')">
+      📈 Analytics
+    </button>
+    <button class="nav-tab" onclick="switchTab('settings')">
+      ⚙️ Settings
+    </button>
+  </div>
+
+  <!-- Dashboard Overview Tab -->
+  <div id="dashboard" class="tab-content active">
+    <div class="stats-overview">
+      <div class="stat-card">
+        <div class="stat-number">1,247</div>
+        <div class="stat-label">Total Users</div>
+        <div class="stat-change positive">+12% this month</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">89</div>
+        <div class="stat-label">Active Vendors</div>
+        <div class="stat-change positive">+5% this month</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">324</div>
+        <div class="stat-label">Total Designs</div>
+        <div class="stat-change positive">+18% this month</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">23</div>
+        <div class="stat-label">Pending Approvals</div>
+        <div class="stat-change negative">-8% this week</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">$89,420</div>
+        <div class="stat-label">Monthly Revenue</div>
+        <div class="stat-change positive">+25% this month</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">156</div>
+        <div class="stat-label">Sales This Month</div>
+        <div class="stat-change positive">+15% this month</div>
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-card">
+        <h3 class="chart-title">Platform Growth Analytics</h3>
+        <div class="chart-placeholder">
+          📊 Interactive Growth Chart<br>
+          <small>(Integration with Chart.js/D3.js)</small>
+        </div>
+      </div>
+      <div class="chart-card">
+        <h3 class="chart-title">Popular Design Categories</h3>
+        <div class="chart-placeholder">
+          🥧 Category Distribution<br>
+          <small>(Pie Chart Integration)</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-section">
+      <div class="section-header">
+        <h2 class="section-title">🚀 Recent Platform Activity</h2>
+      </div>
+      <div id="recentActivity">
+        <!-- Recent activity will be populated here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Design Approvals Tab -->
+  <div id="designs" class="tab-content">
+    <div class="content-section">
+      <div class="section-header">
+        <h2 class="section-title">🏠 Design Approval Queue</h2>
+        <div class="section-controls">
+          <div class="search-box">
+            <input type="text" id="designSearch" placeholder="Search designs...">
+            <span class="search-icon">🔍</span>
+          </div>
+          <select class="filter-select" id="designStatusFilter">
+            <option value="">All Status</option>
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+          </select>
+          <select class="filter-select" id="designTypeFilter">
+            <option value="">All Types</option>
+            <option value="HOUSE">House</option>
+            <option value="VILLA">Villa</option>
+            <option value="APARTMENT">Apartment</option>
+            <option value="FORM_HOUSE">Farm House</option>
+          </select>
+        </div>
+      </div>
+      <div style="overflow-x: auto;">
+        <table class="data-table">
+          <thead>
+          <tr>
+            <th>Design</th>
+            <th>Vendor</th>
+            <th>Type</th>
+            <th>Price</th>
+            <th>Upload Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+          </thead>
+          <tbody id="designsTableBody">
+          <!-- Table rows will be populated by JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vendor Management Tab -->
+  <div id="vendors" class="tab-content">
+    <div class="content-section">
+      <div class="section-header">
+        <h2 class="section-title">🏢 Vendor Management</h2>
+        <div class="section-controls">
+          <div class="search-box">
+            <input type="text" id="vendorSearch" placeholder="Search vendors...">
+            <span class="search-icon">🔍</span>
+          </div>
+          <select class="filter-select" id="vendorStatusFilter">
+            <option value="">All Status</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+            <option value="suspended">Suspended</option>
+          </select>
+        </div>
+      </div>
+      <div style="overflow-x: auto;">
+        <table class="data-table">
+          <thead>
+          <tr>
+            <th>Vendor</th>
+            <th>Email</th>
+            <th>Designs</th>
+            <th>Sales</th>
+            <th>Rating</th>
+            <th>Join Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+          </thead>
+          <tbody id="vendorsTableBody">
+          <!-- Table rows will be populated by JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- User Management Tab -->
+  <div id="users" class="tab-content">
+    <div class="content-section">
+      <div class="section-header">
+        <h2 class="section-title">👥 User Management</h2>
+        <div class="section-controls">
+          <div class="search-box">
+            <input type="text" id="userSearch" placeholder="Search users...">
+            <span class="search-icon">🔍</span>
+          </div>
+          <select class="filter-select" id="userStatusFilter">
+            <option value="">All Status</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+            <option value="suspended">Suspended</option>
+          </select>
+        </div>
+      </div>
+      <div style="overflow-x: auto;">
+        <table class="data-table">
+          <thead>
+          <tr>
+            <th>User</th>
+            <th>Email</th>
+            <th>Purchases</th>
+            <th>Total Spent</th>
+            <th>Join Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+          </thead>
+          <tbody id="usersTableBody">
+          <!-- Table rows will be populated by JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Analytics Tab -->
+  <div id="analytics" class="tab-content">
+    <div class="stats-overview">
+      <div class="stat-card">
+        <div class="stat-number">$156,840</div>
+        <div class="stat-label">Total Revenue</div>
+        <div class="stat-change positive">+22% from last month</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">2,847</div>
+        <div class="stat-label">Total Transactions</div>
+        <div class="stat-change positive">+18% from last month</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">$55.12</div>
+        <div class="stat-label">Average Order Value</div>
+        <div class="stat-change negative">-3% from last month</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">73%</div>
+        <div class="stat-label">Conversion Rate</div>
+        <div class="stat-change positive">+8% from last month</div>
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-card">
+        <h3 class="chart-title">Revenue Trends</h3>
+        <div class="chart-placeholder">
+          📈 Monthly Revenue Chart<br>
+          <small>(Line Chart Integration)</small>
+        </div>
+      </div>
+      <div class="chart-card">
+        <h3 class="chart-title">Top Performing Designs</h3>
+        <div class="chart-placeholder">
+          🏆 Performance Rankings<br>
+          <small>(Bar Chart Integration)</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-section">
+      <div class="section-header">
+        <h2 class="section-title">📊 Detailed Analytics</h2>
+      </div>
+      <div class="charts-grid">
+        <div class="chart-card">
+          <h3 class="chart-title">User Engagement Metrics</h3>
+          <div class="chart-placeholder">
+            👥 User Activity Heatmap<br>
+            <small>(Heatmap Integration)</small>
+          </div>
+        </div>
+        <div class="chart-card">
+          <h3 class="chart-title">Vendor Performance</h3>
+          <div class="chart-placeholder">
+            🏢 Vendor Comparison<br>
+            <small>(Radar Chart Integration)</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Tab -->
+  <div id="settings" class="tab-content">
+    <div class="content-section">
+      <div class="section-header">
+        <h2 class="section-title">⚙️ Platform Settings</h2>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px;">
+        <div class="stat-card" style="text-align: left; padding: 25px;">
+          <h3 style="color: #2d3748; margin-bottom: 15px;">🔧 System Configuration</h3>
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <button class="action-btn edit-btn">Platform Maintenance Mode</button>
+            <button class="action-btn view-btn">Email Configuration</button>
+            <button class="action-btn approve-btn">Backup Database</button>
+            <button class="action-btn delete-btn">Clear Cache</button>
+          </div>
+        </div>
+        <div class="stat-card" style="text-align: left; padding: 25px;">
+          <h3 style="color: #2d3748; margin-bottom: 15px;">💰 Payment Settings</h3>
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <button class="action-btn edit-btn">Commission Rates</button>
+            <button class="action-btn view-btn">Payment Gateways</button>
+            <button class="action-btn approve-btn">Payout Schedule</button>
+            <button class="action-btn reject-btn">Refund Policies</button>
+          </div>
+        </div>
+        <div class="stat-card" style="text-align: left; padding: 25px;">
+          <h3 style="color: #2d3748; margin-bottom: 15px;">📧 Notification Settings</h3>
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <button class="action-btn edit-btn">Email Templates</button>
+            <button class="action-btn view-btn">SMS Configuration</button>
+            <button class="action-btn approve-btn">Push Notifications</button>
+            <button class="action-btn delete-btn">Marketing Emails</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Design Approval Modal -->
+<div id="designModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 class="modal-title">Design Review</h2>
+      <button class="close-btn" onclick="closeModal()">&times;</button>
+    </div>
+    <div class="design-preview">
+      <div class="design-image-large" id="modalDesignImage">
+        🏠
+      </div>
+      <div class="design-details" id="modalDesignDetails">
+        <!-- Design details will be populated here -->
+      </div>
+    </div>
+    <div class="approval-section">
+      <h3 style="margin-bottom: 15px; color: #2d3748;">Review Comments</h3>
+      <textarea class="comment-textarea" id="reviewComment" placeholder="Add your review comments here..."></textarea>
+      <div class="approval-buttons">
+        <button class="approval-btn approve-large" onclick="approveDesign()">
+          ✅ Approve Design
+        </button>
+        <button class="approval-btn reject-large" onclick="rejectDesign()">
+          ❌ Reject Design
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Notification -->
+<div id="notification" class="notification"></div>
+
+<script src="scripts/admin.js"></script>
+</body>
+</html>
