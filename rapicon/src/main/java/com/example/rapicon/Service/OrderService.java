@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -23,6 +24,10 @@ public class OrderService {
 
     public Optional getOrderById(Long id){
         return orderRepo.findById(id);
+    }
+
+    public List<Order> getAllOrders(){
+        return orderRepo.findAll();
     }
 
     /*public Order getOrderByUser(Optional<User> user){

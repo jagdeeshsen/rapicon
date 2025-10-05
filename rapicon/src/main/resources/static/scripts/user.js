@@ -154,7 +154,7 @@
       const selectedBedrooms = bedroomFilter.value;
       const selectedSort = sortFilter.value;
 
-      filteredDesigns = designs.filter(design => {
+      approvedDesigns = designs.filter(design => {
           const matchesSearch = design.name.toLowerCase().includes(searchTerm) ||
                               design.description.toLowerCase().includes(searchTerm);
           const matchesType = !selectedType || design.type === selectedType;
@@ -174,7 +174,7 @@
       });
 
       // Apply sorting
-      filteredDesigns.sort((a, b) => {
+      approvedDesigns.sort((a, b) => {
           switch (selectedSort) {
               case 'price-low':
                   return a.price - b.price;

@@ -1,5 +1,6 @@
 package com.example.rapicon.Service;
 
+import com.example.rapicon.Models.Role;
 import com.example.rapicon.Models.User;
 import com.example.rapicon.Repository.userRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -31,6 +33,11 @@ public class UserService {
     public User findByUserName(String username) {
         Optional<User> user= userRepository.findByUsername(username);
         return user.get();
+    }
+
+    public List<User> getAllUser(String role){
+        Role enumRole= Role.valueOf(role.toUpperCase());
+        return userRepository.findByRole(enumRole);
     }
 
    public boolean existsByEmail(Long id) {

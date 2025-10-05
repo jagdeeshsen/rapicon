@@ -115,12 +115,19 @@
 
   let currentDesign = null;
   let designsList=[];
+  let vendorList=[];
+  let userList=[];
+  let orderList=[];
 
   // Initialize dashboard
   document.addEventListener('DOMContentLoaded', function() {
+
+      const fullName= localStorage.getItem("fullName") || "Guest";
+      document.getElementById("welcomeAdmin").textContent= `Welcome, ${fullName}`;
       renderDesignsTable();
       renderVendorsTable();
       renderUsersTable();
+      renderOrdersTable();
       renderRecentActivity();
       setupEventListeners();
   });
@@ -136,6 +143,10 @@
 
       document.getElementById('userSearch').addEventListener('input', filterUsers);
       document.getElementById('userStatusFilter').addEventListener('change', filterUsers);
+
+      document.getElementById('orderSearch').addEventListener('input', filterOrders);
+      document.getElementById('orderStatusFilter').addEventListener('change', filterOrders);
+
 
       // Modal close functionality
       window.addEventListener('click', function(event) {
@@ -207,27 +218,40 @@
       });
   }
 
-  function renderVendorsTable() {
+  async function renderVendorsTable() {
       const tbody = document.getElementById('vendorsTableBody');
       tbody.innerHTML = '';
 
-      vendors.forEach(vendor => {
+      const token= localStorage.getItem('token');
+      const response= await fetch("/api/admin/users?role=VENDOR",
+      {
+            method: 'GET',
+            headers:{
+                'Authorization': `Bearer ${token}`
+            }
+      });
+
+      if(!response.ok){
+        throw new Error("Failed to fetch vendors");
+      }
+      vendorList= await response.json();
+      vendorList.forEach(vendor => {
           const row = document.createElement('tr');
           row.innerHTML = `
               <td>
                   <div style="display: flex; align-items: center; gap: 12px;">
-                      <div style="width: 40px; height: 40px; background: linear-gradient(45deg, #1e3c72, #2a5298); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">${vendor.name.charAt(0)}</div>
+                      <div style="width: 40px; height: 40px; background: linear-gradient(45deg, #1e3c72, #2a5298); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">${vendor.firstname.charAt(0)}</div>
                       <div>
-                          <div style="font-weight: 600; color: #2d3748;">${vendor.name}</div>
+                          <div style="font-weight: 600; color: #2d3748;">${vendor.firstname} ${vendor.lastname}</div>
                       </div>
                   </div>
               </td>
               <td>${vendor.email}</td>
-              <td><strong>${vendor.designs}</strong> designs</td>
-              <td><strong>${vendor.sales}</strong> sales</td>
-              <td>⭐ ${vendor.rating}/5.0</td>
-              <td>${new Date(vendor.joinDate).toLocaleDateString()}</td>
-              <td><span class="status-badge status-${vendor.status}">${vendor.status}</span></td>
+              <td><strong>12</strong> designs</td>
+              <td><strong>25</strong> sales</td>
+              <td>⭐ 4.5/5.0</td>
+              <td>${new Date().toLocaleDateString()}</td>
+              <td><span class="status-badge status-${vendor.phone}">${vendor.phone}</span></td>
               <td>
                   <div class="action-buttons">
                       <button class="action-btn view-btn" onclick="viewVendor(${vendor.id})">👁️ View</button>
@@ -243,26 +267,40 @@
       });
   }
 
-  function renderUsersTable() {
+  async function renderUsersTable() {
       const tbody = document.getElementById('usersTableBody');
       tbody.innerHTML = '';
 
-      users.forEach(user => {
+      const token= localStorage.getItem('token');
+      const response= await fetch("/api/admin/users?role=USER",
+      {
+            method: 'GET',
+            headers:{
+                'Authorization': `Bearer ${token}`
+            }
+      });
+
+      if(!response.ok){
+         throw new Error("Failed to fetch users");
+      }
+      userList= await response.json();
+
+      userList.forEach(user => {
           const row = document.createElement('tr');
           row.innerHTML = `
               <td>
                   <div style="display: flex; align-items: center; gap: 12px;">
-                      <div style="width: 40px; height: 40px; background: linear-gradient(45deg, #10b981, #059669); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">${user.name.charAt(0)}</div>
+                      <div style="width: 40px; height: 40px; background: linear-gradient(45deg, #10b981, #059669); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">${user.firstname.charAt(0)}</div>
                       <div>
-                          <div style="font-weight: 600; color: #2d3748;">${user.name}</div>
+                          <div style="font-weight: 600; color: #2d3748;">${user.firstname} ${user.lastname}</div>
                       </div>
                   </div>
               </td>
               <td>${user.email}</td>
-              <td><strong>${user.purchases}</strong> purchases</td>
-              <td><strong>${user.totalSpent}</strong></td>
-              <td>${new Date(user.joinDate).toLocaleDateString()}</td>
-              <td><span class="status-badge status-${user.status}">${user.status}</span></td>
+              <td><strong>15</strong></td>
+              <td><strong>2300</strong></td>
+              <td>${new Date().toLocaleDateString()}</td>
+              <td><span class="status-badge status-${user.phone}">${user.phone}</span></td>
               <td>
                   <div class="action-buttons">
                       <button class="action-btn view-btn" onclick="viewUser(${user.id})">👁️ View</button>
@@ -277,6 +315,42 @@
           tbody.appendChild(row);
       });
   }
+
+  async function renderOrdersTable() {
+      const tbody = document.getElementById('ordersTableBody');
+      tbody.innerHTML = '';
+
+      const token = localStorage.getItem('token');
+
+      try {
+          const response = await fetch("/api/admin/orders", {
+              method: 'GET',
+              headers: { 'Authorization': `Bearer ${token}` }
+          });
+
+          if (!response.ok) throw new Error("Failed to fetch orders");
+
+          orderList = await response.json();
+
+          orderList.forEach(order => {
+              const row = document.createElement('tr');
+              row.innerHTML = `
+                  <td>${order.customerName || 'N/A'}</td>
+                  <td>${order.customerEmail || 'N/A'}</td>
+                  <td>${order.customerPhone || 'N/A'}</td>
+                  <td>${order.designName || 'N/A'}</td>
+                  <td>${order.price || 0}</td>
+                  <td>${order.paymentMethod || 'N/A'}</td>
+                  <td>${order.projectLocation || 'N/A'}</td>
+              `;
+              tbody.appendChild(row);
+          });
+
+      } catch (error) {
+          console.error("Error fetching orders:", error);
+      }
+  }
+
 
   function renderRecentActivity() {
       const container = document.getElementById('recentActivity');
@@ -522,6 +596,11 @@
       // Implementation for filtering users table
       renderUsersTable();
   }
+
+  function filterOrders() {
+        // Implementation for filtering users table
+        renderOrdersTable();
+    }
 
   // Placeholder functions for additional actions
   function viewVendor(vendorId) {

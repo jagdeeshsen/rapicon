@@ -443,51 +443,6 @@ async function loadMyDesigns() {
         showNotification("Could not load your designs: " + err.message, "error");
     }
 }
-/*async function loadMyDesigns() {
-     try {
-         const token = localStorage.getItem('token'); // Adjust based on your storage
-
-         if (!token) {
-            throw new Error('No token found');
-         }
-
-         const response = await fetch('/api/designs/fetch', {
-            method: 'GET',
-            headers: {
-               'Authorization': `Bearer ${token}`
-            }
-         });
-         if (!response.ok) throw new Error(`Failed to fetch designs: ${response.status}`);
-
-         const designs = await response.json();
-         console.log("Fetched designs:", designs);
-
-         // Map backend data into frontend-friendly objects
-         vendorDesigns = designs.map(d => ({
-             id: d.id,
-             title: d.title,
-             description: d.description,
-             price: parseFloat(d.price),
-             bedrooms: d.bedrooms,
-             bathrooms: d.bathrooms,
-             floors: d.floors || 1,
-             area: d.area + " sq ft",
-             designType: d.designType.toUpperCase(),
-             status: d.status,
-             vendor: d.vendor,
-             imageUrl: d.imageUrl?.trim() || '',
-             icon: getDesignIcon(d.designType.toUpperCase())
-         }));
-
-         filteredDesigns = [...vendorDesigns];
-         renderMyDesigns();
-
-     } catch (err) {
-         console.error("Error loading designs:", err);
-         showNotification("Could not load your designs", "error");
-     }
- }*/
-
 
 function debugImageUrl(designId) {
     const design = vendorDesigns.find(d => d.id === designId);
