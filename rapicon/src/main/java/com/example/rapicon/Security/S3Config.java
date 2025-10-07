@@ -19,7 +19,6 @@ public class S3Config {
     public S3Client s3Client() {
         return S3Client.builder()
                 .region(Region.of(awsRegion))
-                //.credentialsProvider(EnvironmentVariableCredentialsProvider.create())
                 .build();
     }
 }

@@ -30,7 +30,4 @@ public class OrderService {
         return orderRepo.findAll();
     }
 
-    /*public Order getOrderByUser(Optional<User> user){
-        return orderRepo.findByUser(user);
-    }*/
 }

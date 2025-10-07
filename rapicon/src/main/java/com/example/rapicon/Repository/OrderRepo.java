@@ -11,6 +11,4 @@ import java.util.Optional;
 
 public interface OrderRepo extends JpaRepository<Order,Long> {
     Optional findById(Long id);
-    //Page<Order> findByUser(Optional<User> user, Pageable pageable);
-    //Order findByUser(User user);
 }

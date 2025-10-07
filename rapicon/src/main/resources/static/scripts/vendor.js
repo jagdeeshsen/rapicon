@@ -1,23 +1,5 @@
 // Sample vendor designs data
-let vendorDesigns = [
-    /*{
-        id: 1,
-        title: "Modern Villa Paradise",
-        designType: "VILLA",
-        price: 1850,
-        bedrooms: 4,
-        bathrooms: 3,
-        area: "3200 sq ft",
-        status: "approved",
-        uploadDate: "2024-01-15",
-        sales: 23,
-        rating: 4.9,
-        description: "Luxurious modern villa with contemporary design",
-        icon: "🏡",
-        //imageUrl: "https://rapicon-vendor-designs.s3.ap-south-1.amazonaws.com/designs/1758606543392-FIRST FLOOR Presentations-Model_page-0001.jpg"
-    },
-    // ... other designs*/
-];
+let vendorDesigns = [];
 
 let filteredDesigns = [...vendorDesigns];
 // Call once when page loads

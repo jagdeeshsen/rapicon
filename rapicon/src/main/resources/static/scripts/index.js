@@ -153,10 +153,10 @@
         const token = localStorage.getItem('token');
         const user = JSON.parse(localStorage.getItem('user') || '{}');
 
+        const navButtons = document.querySelector('.nav-buttons');
+
         if (token && user.role) {
             // User is logged in, update navigation buttons
-            const navButtons = document.querySelector('.nav-buttons');
-
             let dashboardUrl = '';
             let userLabel = '';
 
@@ -181,6 +181,12 @@
             navButtons.innerHTML = `
                 <a href="${dashboardUrl}" class="btn btn-outline">${userLabel}</a>
                 <button class="btn btn-primary" onclick="logout()">Logout</button>
+            `;
+        } else {
+            // User is NOT logged in - show browse and login options
+            navButtons.innerHTML = `
+                <a href="user.html" class="btn btn-outline">Browse Designs</a>
+                <a href="login.html" class="btn btn-primary">Login</a>
             `;
         }
     });

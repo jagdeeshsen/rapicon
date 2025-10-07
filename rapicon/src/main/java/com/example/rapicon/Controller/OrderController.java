@@ -41,48 +41,4 @@ public class OrderController {
             return ResponseEntity.badRequest().build();
         }
     }
-
-   /* @PostMapping("/purchase")
-    @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<Order> createOrders(@RequestParam("id") Long id,
-
-                                              @AuthenticationPrincipal UserDetailsImpl userDetails){
-
-        try {
-            Optional<User> user= userService.findById(userDetails.getId());
-            System.out.println(userDetails.getId());
-            Design design= designService.getDesignById(id);
-
-            System.out.println(userDetails.getId());
-            System.out.println(id);
-
-            if(design.getStatus()!= Status.APPROVED){
-                throw  new RuntimeException("Design is not approved for purchase");
-            }
-            return orderService.createOrder(user.orElse(null),design);
-        }catch (RuntimeException e){
-            throw new RuntimeException("Error creating order"+ e.getMessage());
-        }
-    }*/
-
-    /*@GetMapping("/my_orders")
-    @PreAuthorize("hasROle('USER')")
-    public Order getMyOrders(UserDetailsImpl userDetails){
-        User user= userService.findById(userDetails.getId());
-        return orderService.getOrderByUser(user);
-    }*/
-
-    /*@GetMapping("/my-orders")
-    @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<Page<Order>> getMyOrders(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @AuthenticationPrincipal UserPrincipal userPrincipal) {
-
-        User user = userService.findById(userPrincipal.getId());
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Page<Order> orders = orderService.getOrdersByUser(user, pageable);
-
-        return ResponseEntity.ok(orders);
-    }*/
 }

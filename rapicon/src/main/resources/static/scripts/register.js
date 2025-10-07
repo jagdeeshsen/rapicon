@@ -3,19 +3,6 @@
         const role = document.getElementById('role').value;
         //const vendorFields = document.getElementById('vendorFields');
 
-       /* if (role === 'vendor') {
-            vendorFields.style.display = 'block';
-            // Make vendor fields required
-            document.getElementById('companyName').required = true;
-            document.getElementById('experience').required = true;
-            document.getElementById('specialization').required = true;
-        } else {
-            vendorFields.style.display = 'none';
-            // Make vendor fields not required
-            document.getElementById('companyName').required = false;
-            document.getElementById('experience').required = false;
-            document.getElementById('specialization').required = false;
-        }*/
     }
 
     // Check password strength
@@ -119,16 +106,6 @@
                     role: formData.get('role').toUpperCase()
         };
 
-        // Add vendor-specific data if applicable
-        /*if (userData.role === 'vendor') {
-            userData.vendorInfo = {
-                companyName: formData.get('companyName'),
-                experience: formData.get('experience'),
-                specialization: formData.get('specialization'),
-                portfolio: formData.get('portfolio'),
-                bio: formData.get('bio')
-            };
-        }*/
 
         try {
             const response = await fetch('/api/auth/register', {

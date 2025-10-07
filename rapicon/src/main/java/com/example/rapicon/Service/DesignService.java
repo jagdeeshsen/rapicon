@@ -4,11 +4,8 @@ import com.example.rapicon.Models.Design;
 import com.example.rapicon.Models.Status;
 import com.example.rapicon.Repository.DesignRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
-import org.springframework.data.domain.Pageable;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -35,10 +32,6 @@ public class DesignService{
     public List<Design> getDesigns(Long id){
         return designRepository.findByVendorId(id);
     }
-
-
-
-
 
     public void deleteDesign(Long id) {
         if (designRepository.existsById(id)) {
@@ -69,21 +62,6 @@ public class DesignService{
 
         return updatedDesign;
     }
-
-   /* public Design rejectDesign(Long id, String reason) {
-
-                //.orElseThrow(() -> new RuntimeException("Design not found with ID: " + id));
-
-        design.setStatus(Status.REJECTED);
-       *//* design.setRejectionReason(reason);
-        design.setUpdatedAt(LocalDateTime.now());*//*
-
-        Design rejectedDesign;
-        rejectedDesign = designRepository.save(design);
-        System.out.println("Design rejected with id: {}" + id+ reason);
-
-        return rejectedDesign;
-    }*/
 
     public Design getDesignById(Long id) {
         return  designRepository.getDesignById(id);

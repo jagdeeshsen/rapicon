@@ -113,12 +113,23 @@
   const purchaseForm = document.getElementById('purchaseForm');
 
   // Initialize dashboard
-  document.addEventListener('DOMContentLoaded', function() {
-      // Get full name from localStorage
-      const fullName = localStorage.getItem("fullName") || "Guest";
 
-      // Set the welcome text with full name
-      document.getElementById("welcomeUser").textContent = `Welcome, ${fullName}`;
+  document.addEventListener('DOMContentLoaded', function() {
+      // Check if user is logged in
+      const token = localStorage.getItem('token');
+      const fullName = localStorage.getItem("fullName");
+
+      if (token && fullName) {
+          // User is logged in
+          document.getElementById("welcomeUser").textContent = `Welcome, ${fullName}`;
+      } else {
+          // Guest user
+          document.getElementById("welcomeUser").textContent = `Welcome, Guest`;
+
+          // Optional: Show a notice that they're browsing as guest
+          showNotification('Browsing as guest. Login to purchase designs.', 'success');
+      }
+
       renderDesigns();
       setupEventListeners();
   });
@@ -196,22 +207,30 @@
 
       try {
           const token = localStorage.getItem('token');
-          if (token) {
-              const response = await fetch('/api/user/approved', {
-                  method: 'GET',
-                  headers: {
-                      'Authorization': `Bearer ${token}`
-                  }
-              });
 
-              if (response.ok) {
-                  approvedDesigns = await response.json();
-              } else {
-                  // Fallback to sample data if API fails
+          // Try to fetch from API if logged in
+          if (token) {
+              try {
+                  const response = await fetch('/api/user/approved', {
+                      method: 'GET',
+                      headers: {
+                          'Authorization': `Bearer ${token}`
+                      }
+                  });
+
+                  if (response.ok) {
+                      approvedDesigns = await response.json();
+                  } else {
+                      // Fallback to sample data if API fails
+                      approvedDesigns = designs;
+                  }
+              } catch (error) {
+                  console.log('API fetch failed, using sample data:', error);
                   approvedDesigns = designs;
               }
           } else {
-              // Use sample data if no token
+              // Not logged in - use sample data
+              console.log('User not logged in, showing sample designs');
               approvedDesigns = designs;
           }
       } catch (error) {
@@ -236,6 +255,7 @@
           designsGrid.appendChild(designCard);
       });
   }
+
 
   function createDesignCard(design) {
       const card = document.createElement('div');
@@ -289,6 +309,18 @@
   }
 
   function openPurchaseModal(designId) {
+      // Check if user is logged in
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+          // User not logged in - redirect to login
+          showNotification('Please login to purchase designs', 'error');
+          setTimeout(() => {
+              window.location.href = 'login.html';
+          }, 1500);
+          return;
+      }
+
       console.log('Opening modal for design ID:', designId);
 
       // Look for design in both approvedDesigns and designs arrays
@@ -298,7 +330,7 @@
       }
 
       if (design && modal) {
-          // Populate modal fields - handle both property name variations
+          // Populate modal fields
           const modalDesignName = document.getElementById('modalDesignName');
           const modalPrice = document.getElementById('modalPrice');
 
@@ -384,20 +416,6 @@
           submitBtn.disabled = false;
       }
   }
-
-  // Simulate API call - replace with actual backend call
- /* async function simulateApiCall(purchaseData) {
-      return new Promise((resolve) => {
-          setTimeout(() => {
-              // Simulate successful response
-              resolve({
-                  success: true,
-                  orderId: Math.random().toString(36).substr(2, 9),
-                  message: 'Order created successfully'
-              });
-          }, 2000);
-      });
-  }*/
 
   // Notification function
   function showNotification(message, type = 'success') {
@@ -495,322 +513,3 @@
       };
       return icons[type] || '🏠';
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  /*const designs = [
-      {
-          id: 1,
-          name: "Modern Villa Paradise",
-          type: "villa",
-          price: 1850,
-          bedrooms: 4,
-          bathrooms: 3,
-          area: "3200 sq ft",
-          rating: 4.9,
-          description: "Luxurious modern villa with contemporary design, perfect for large families.",
-          icon: "🏡"
-      },
-      {
-          id: 2,
-          name: "Cozy Farmhouse Retreat",
-          type: "farmhouse",
-          price: 1200,
-          bedrooms: 3,
-          bathrooms: 2,
-          area: "2400 sq ft",
-          rating: 4.7,
-          description: "Rustic farmhouse design with modern amenities and spacious interiors.",
-          icon: "🏚️"
-      },
-      {
-          id: 3,
-          name: "Urban Apartment Complex",
-          type: "apartment",
-          price: 680,
-          bedrooms: 2,
-          bathrooms: 2,
-          area: "1200 sq ft",
-          rating: 4.5,
-          description: "Efficient apartment design optimized for urban living and space utilization.",
-          icon: "🏢"
-      },
-      {
-          id: 4,
-          name: "Classic Family House",
-          type: "house",
-          price: 950,
-          bedrooms: 3,
-          bathrooms: 2,
-          area: "1800 sq ft",
-          rating: 4.6,
-          description: "Traditional family house with classic architecture and functional layout.",
-          icon: "🏠"
-      },
-      {
-          id: 5,
-          name: "Elegant Row House",
-          type: "rowhouse",
-          price: 1400,
-          bedrooms: 3,
-          bathrooms: 3,
-          area: "2000 sq ft",
-          rating: 4.8,
-          description: "Sophisticated row house design with optimal space utilization and modern features.",
-          icon: "🏘️"
-      },
-      {
-          id: 6,
-          name: "Luxury Duplex Estate",
-          type: "duplex",
-          price: 2200,
-          bedrooms: 4,
-          bathrooms: 4,
-          area: "3800 sq ft",
-          rating: 5.0,
-          description: "Premium duplex with luxury finishes and spacious living areas.",
-          icon: "🏰"
-      },
-      {
-          id: 7,
-          name: "Minimalist Modern House",
-          type: "house",
-          price: 1100,
-          bedrooms: 2,
-          bathrooms: 2,
-          area: "1600 sq ft",
-          rating: 4.4,
-          description: "Clean, minimalist design with focus on natural light and open spaces.",
-          icon: "🏠"
-      },
-      {
-          id: 8,
-          name: "Beachside Villa",
-          type: "villa",
-          price: 2800,
-          bedrooms: 5,
-          bathrooms: 4,
-          area: "4200 sq ft",
-          rating: 4.9,
-          description: "Stunning beachside villa with panoramic views and luxury amenities.",
-          icon: "🏖️"
-      }
-  ];
-
-  let filteredDesigns = [...designs];
-  let approvedDesigns=[];
-
-  // DOM elements
-  const searchInput = document.getElementById('searchInput');
-  const typeFilter = document.getElementById('typeFilter');
-  const priceFilter = document.getElementById('priceFilter');
-  const bedroomFilter = document.getElementById('bedroomFilter');
-  const sortFilter = document.getElementById('sortFilter');
-  const designsGrid = document.getElementById('designsGrid');
-  const modal = document.getElementById('purchaseModal');
-  const closeModal = document.querySelector('.close');
-  const purchaseForm = document.getElementById('purchaseForm');
-
-  // Initialize dashboard
-  document.addEventListener('DOMContentLoaded', function() {
-      renderDesigns();
-      setupEventListeners();
-  });
-
-  function setupEventListeners() {
-      searchInput.addEventListener('input', applyFilters);
-      typeFilter.addEventListener('change', applyFilters);
-      priceFilter.addEventListener('change', applyFilters);
-      bedroomFilter.addEventListener('change', applyFilters);
-      sortFilter.addEventListener('change', applyFilters);
-
-      closeModal.addEventListener('click', () => {
-          modal.style.display = 'none';
-      });
-
-      window.addEventListener('click', (event) => {
-          if (event.target === modal) {
-              modal.style.display = 'none';
-          }
-      });
-
-      purchaseForm.addEventListener('submit', handlePurchase);
-  }
-
-  function applyFilters() {
-      const searchTerm = searchInput.value.toLowerCase();
-      const selectedType = typeFilter.value;
-      const selectedPrice = priceFilter.value;
-      const selectedBedrooms = bedroomFilter.value;
-      const selectedSort = sortFilter.value;
-
-      filteredDesigns = designs.filter(design => {
-          const matchesSearch = design.name.toLowerCase().includes(searchTerm) ||
-                              design.description.toLowerCase().includes(searchTerm);
-          const matchesType = !selectedType || design.type === selectedType;
-          const matchesBedrooms = !selectedBedrooms || design.bedrooms.toString() === selectedBedrooms;
-
-          let matchesPrice = true;
-          if (selectedPrice) {
-              const [min, max] = selectedPrice.split('-');
-              if (max === undefined) { // "2000+" case
-                  matchesPrice = design.price >= parseInt(min);
-              } else {
-                  matchesPrice = design.price >= parseInt(min) && design.price <= parseInt(max);
-              }
-          }
-
-          return matchesSearch && matchesType && matchesBedrooms && matchesPrice;
-      });
-
-      // Apply sorting
-      filteredDesigns.sort((a, b) => {
-          switch (selectedSort) {
-              case 'price-low':
-                  return a.price - b.price;
-              case 'price-high':
-                  return b.price - a.price;
-              case 'rating':
-                  return b.rating - a.rating;
-              case 'newest':
-              default:
-                  return b.id - a.id;
-          }
-      });
-
-      renderDesigns();
-  }
-
-  async function renderDesigns() {
-      designsGrid.innerHTML = '';
-
-      const token= localStorage.getItem('token');
-      const response= await fetch('/api/user/approved',
-      {
-            method: 'GET',
-            headers:{
-                'Authorization': `Bearer ${token}`
-            }
-      });
-
-      approvedDesigns= await response.json();
-      if (approvedDesigns.length === 0) {
-          designsGrid.innerHTML = `
-              <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #718096;">
-                  <div style="font-size: 4rem; margin-bottom: 20px;">🔍</div>
-                  <h3>No designs found</h3>
-                  <p>Try adjusting your filters or search terms.</p>
-              </div>
-          `;
-          return;
-      }
-
-      approvedDesigns.forEach(design => {
-          const designCard = createDesignCard(design);
-          designsGrid.appendChild(designCard);
-      });
-  }
-
-  function createDesignCard(design) {
-      const card = document.createElement('div');
-      card.className = 'design-card';
-      card.innerHTML = `
-          <div class="design-image">
-              ${design.imageUrl ? `<img src="${design.imageUrl}" alt="${design.title}" class="design-thumbnail">`
-                                : `<span style="position: relative; z-index: 1;">${getDesignIcon(designs.designType)}</span>`}
-          </div>
-          <div class="design-info">
-              <h3 class="design-title">${design.title}</h3>
-              <span class="design-type">${design.designType.toUpperCase()}</span>
-              <div class="design-specs">
-                  <div class="spec-item">
-                      <span class="spec-icon">🛏️</span>
-                      <span>${design.bedrooms} Bedrooms</span>
-                  </div>
-                  <div class="spec-item">
-                      <span class="spec-icon">🚿</span>
-                      <span>${design.bathrooms} Bathrooms</span>
-                  </div>
-                  <div class="spec-item">
-                      <span class="spec-icon">📐</span>
-                      <span>${design.area} sq ft</span>
-                  </div>
-                  <div class="spec-item">
-                      <span class="spec-icon">⭐</span>
-                      <span>4.5/5.0</span>
-                  </div>
-              </div>
-              <p class="design-description">${design.description}</p>
-              <div class="card-footer">
-                  <div>
-                      <div class="price-label">Starting from</div>
-                      <div class="price">₹${design.price} sq ft</div>
-                  </div>
-                  <button class="purchase-btn" onclick="openPurchaseModal(${design.id})">
-                      Purchase Now
-                  </button>
-              </div>
-          </div>
-      `;
-      return card;
-  }
-
-  function openPurchaseModal(designId) {
-      const design = designs.find(d => d.id === designId);
-      if (design) {
-          document.getElementById('modalDesignName').value = design.name;
-          document.getElementById('modalPrice').value = `$${design.price}`;
-          modal.style.display = 'block';
-      }
-  }
-
-  function handlePurchase(event) {
-      event.preventDefault();
-
-      const formData = new FormData(event.target);
-      const purchaseData = {
-          designName: document.getElementById('modalDesignName').value,
-          price: document.getElementById('modalPrice').value,
-          customerName: document.getElementById('customerName').value,
-          customerEmail: document.getElementById('customerEmail').value,
-          customerPhone: document.getElementById('customerPhone').value,
-          projectLocation: document.getElementById('projectLocation').value,
-          paymentMethod: document.getElementById('paymentMethod').value,
-          specialRequirements: document.getElementById('specialRequirements').value
-      };
-
-      // Simulate API call
-      console.log('Purchase Data:', purchaseData);
-
-      // Here you would typically send the data to your Spring Boot backend
-      // fetch('/api/purchases', {
-      //     method: 'POST',
-      //     headers: {
-      //         'Content-Type': 'application/json',
-      //     },
-      //     body: JSON.stringify(purchaseData)
-      // })
-
-      alert('🎉 Purchase successful! You will receive design files via email within 24 hours.');
-      modal.style.display = 'none';
-      purchaseForm.reset();
-  }
-
-   // get icon method
-    function getDesignIcon(type) {
-         const icons = { HOUSE: '🏠', VILLA: '🏡', APARTMENT: '🏢', FORM_HOUSE: '🏚️', ROW_HOUSE: '🏘️', DUPLEX: '🏰', COMMERCIAL: '🏢' };
-         return icons[type] || '🏠';
-     }*/
