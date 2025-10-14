@@ -46,6 +46,10 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/",
                                 "/index.html",
+                                "/designinfo.html",
+                                "/payment.html",
+                                "/addtocard.html",
+                                "terms-privacy.html",
                                 "/login.html",
                                 "/register.html",
                                 "/user.html",
@@ -59,6 +63,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/user/approved").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/designs/**").hasRole("VENDOR")
+                        .requestMatchers("/api/cart/**").permitAll()
                         .anyRequest().authenticated()
                 )
 

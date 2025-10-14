@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design Studio - Shopping Cart</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <link rel="stylesheet" href="css/addtocard.css">
+</head>
+<body>
+<!-- Header -->
+<header class="header">
+    <div class="header-content">
+        <div class="logo">
+            <div class="logo-icon">🛒</div>
+            <h1 class="logo-text">Design Studio</h1>
+        </div>
+        <button class="btn-history" onclick="toggleOrderHistory()">
+            🕐 Order History
+        </button>
+    </div>
+</header>
+
+<!-- Main Container -->
+<div class="container">
+    <!-- Cart Section -->
+    <div class="cart-section">
+        <div class="section-header">
+            <h2 class="section-title">Shopping Cart</h2>
+            <span class="cart-badge" id="cartBadge">0 Items</span>
+        </div>
+        <div class="cart-items" id="cartItems"></div>
+    </div>
+
+    <!-- Order Summary -->
+    <div class="order-summary">
+        <h2 class="section-title">Order Summary</h2>
+
+        <div class="summary-row">
+            <span>Subtotal</span>
+            <span id="subtotal">₹0</span>
+        </div>
+        <div class="summary-row">
+            <span>Tax (18%)</span>
+            <span id="tax">₹0</span>
+        </div>
+        <div class="summary-row summary-total">
+            <span>Total</span>
+            <span class="amount" id="total">₹0</span>
+        </div>
+
+        <button class="btn-checkout" id="checkoutBtn" onclick="openCheckout()">
+            💳 Proceed to Checkout
+        </button>
+
+        <div class="summary-features">
+            <div class="feature-item">
+                <span class="feature-icon">📦</span>
+                <span>Free delivery on orders above ₹5000</span>
+            </div>
+            <div class="feature-item">
+                <span class="feature-icon">💳</span>
+                <span>Secure payment via Razorpay</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Checkout Modal -->
+<div class="modal" id="checkoutModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Checkout</h2>
+            <p>Complete your purchase</p>
+        </div>
+        <div class="modal-body">
+            <form id="checkoutForm">
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" class="form-input" id="name" placeholder="John Doe" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" id="email" placeholder="john@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Phone</label>
+                    <input type="tel" class="form-input" id="phone" placeholder="+91 9876543210" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Address</label>
+                    <textarea class="form-input" id="address" placeholder="Enter your address" required></textarea>
+                </div>
+                <div class="payment-summary">
+                    <div class="payment-amount">
+                        <span>Amount to pay:</span>
+                        <span id="modalTotal">₹0</span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeCheckout()">Cancel</button>
+                    <button type="submit" class="btn-pay">Pay Now</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Order History Modal -->
+<div class="modal" id="orderHistoryModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Order History</h2>
+            <p>Your past orders</p>
+        </div>
+        <div class="modal-body" id="orderHistoryContent"></div>
+        <div style="padding: 0 1.5rem 1.5rem;">
+            <button class="btn-cancel" style="width: 100%;" onclick="toggleOrderHistory()">Close</button>
+        </div>
+    </div>
+</div>
+
+<script src="scripts/addtocard.js"></script>
+</body>
+</html>

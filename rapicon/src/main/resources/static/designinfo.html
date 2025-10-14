@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Design Details</title>
+  <link rel="stylesheet" href="css/designinfo.css">
+</head>
+<body>
+<div class="container">
+  <div class="back-nav" onclick="goBack()">
+    <span style="font-size: 1.5em;">←</span>
+    <span>Back to Dashboard</span>
+  </div>
+
+  <!--<div class="detail-header">
+    <h1 id="designTitle">Loading...</h1>
+    &lt;!&ndash;<div class="rating">
+      <span class="stars" id="designRating">★★★★★</span>
+      <span id="reviewCount">(0 reviews)</span>
+    </div>
+    <div class="price" id="designPrice">₹0 per sq ft</div>&ndash;&gt;
+  </div>-->
+
+  <div class="content-section">
+    <div class="image-gallery">
+      <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800" alt="Design" class="main-image" id="mainImage">
+    </div>
+
+    <div class="info-card">
+      <h2>📋 Basic Information</h2>
+      <div class="info-row">
+        <span class="info-label">Design Name:</span>
+        <span class="info-value" id="designTitle">-</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Design Type:</span>
+        <span class="info-value" id="designType">-</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Price:</span>
+        <span class="info-value" id="designPrice">-</span>
+      </div>
+     <!-- <div class="info-row">
+        <span class="info-label">Plot Size:</span>
+        <span class="info-value" id="plotSize">-</span>
+      </div>-->
+      <div class="info-row">
+        <span class="info-label">Built-up Area:</span>
+        <span class="info-value" id="builtArea">-</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Floors:</span>
+        <span class="info-value" id="floors">-</span>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <h2>🏠 Room Configuration</h2>
+      <div class="features-grid">
+        <div class="feature-item">
+          <div class="feature-icon">🛏️</div>
+          <div id="bedrooms">0 Bedrooms</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">🚿</div>
+          <div id="bathrooms">0 Bathrooms</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">🍳</div>
+          <div id="kitchens">0 Kitchen</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">🚗</div>
+          <div id="parking">0 Parking</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="description-section">
+      <h2 style="color: #667eea; margin-bottom: 15px;">📝 Description</h2>
+      <p id="designDescription">Loading design details...</p>
+    </div>
+
+    <div class="info-card" style="grid-column: 1 / -1;">
+      <h2>✨ Key Features</h2>
+      <div class="features-grid" id="keyFeatures">
+        <!-- Features will be populated here -->
+      </div>
+    </div>
+
+    <div class="action-buttons">
+      <button class="btn btn-primary" onclick="addToCart()">
+        Add To Cart
+      </button>
+      <button class="btn btn-secondary" onclick="viewCart()">
+        Buy Now
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="scripts/designinfo.js"></script>
+</body>
+</html>

@@ -1,515 +1,471 @@
-  // Sample design data
-  const designs = [
-      {
-          id: 1,
-          name: "Modern Villa Paradise",
-          type: "villa",
-          price: 1850,
-          bedrooms: 4,
-          bathrooms: 3,
-          area: "3200 sq ft",
-          rating: 4.9,
-          description: "Luxurious modern villa with contemporary design, perfect for large families.",
-          icon: "🏡"
-      },
-      {
-          id: 2,
-          name: "Cozy Farmhouse Retreat",
-          type: "farmhouse",
-          price: 1200,
-          bedrooms: 3,
-          bathrooms: 2,
-          area: "2400 sq ft",
-          rating: 4.7,
-          description: "Rustic farmhouse design with modern amenities and spacious interiors.",
-          icon: "🏚️"
-      },
-      {
-          id: 3,
-          name: "Urban Apartment Complex",
-          type: "apartment",
-          price: 680,
-          bedrooms: 2,
-          bathrooms: 2,
-          area: "1200 sq ft",
-          rating: 4.5,
-          description: "Efficient apartment design optimized for urban living and space utilization.",
-          icon: "🏢"
-      },
-      {
-          id: 4,
-          name: "Classic Family House",
-          type: "house",
-          price: 950,
-          bedrooms: 3,
-          bathrooms: 2,
-          area: "1800 sq ft",
-          rating: 4.6,
-          description: "Traditional family house with classic architecture and functional layout.",
-          icon: "🏠"
-      },
-      {
-          id: 5,
-          name: "Elegant Row House",
-          type: "rowhouse",
-          price: 1400,
-          bedrooms: 3,
-          bathrooms: 3,
-          area: "2000 sq ft",
-          rating: 4.8,
-          description: "Sophisticated row house design with optimal space utilization and modern features.",
-          icon: "🏘️"
-      },
-      {
-          id: 6,
-          name: "Luxury Duplex Estate",
-          type: "duplex",
-          price: 2200,
-          bedrooms: 4,
-          bathrooms: 4,
-          area: "3800 sq ft",
-          rating: 5.0,
-          description: "Premium duplex with luxury finishes and spacious living areas.",
-          icon: "🏰"
-      },
-      {
-          id: 7,
-          name: "Minimalist Modern House",
-          type: "house",
-          price: 1100,
-          bedrooms: 2,
-          bathrooms: 2,
-          area: "1600 sq ft",
-          rating: 4.4,
-          description: "Clean, minimalist design with focus on natural light and open spaces.",
-          icon: "🏠"
-      },
-      {
-          id: 8,
-          name: "Beachside Villa",
-          type: "villa",
-          price: 2800,
-          bedrooms: 5,
-          bathrooms: 4,
-          area: "4200 sq ft",
-          rating: 4.9,
-          description: "Stunning beachside villa with panoramic views and luxury amenities.",
-          icon: "🏖️"
-      }
-  ];
 
-  let filteredDesigns = [...designs];
-  let approvedDesigns = [];
+ let allDesigns = [];
+ let filteredDesigns = [];
 
-  // DOM elements
-  const searchInput = document.getElementById('searchInput');
-  const typeFilter = document.getElementById('typeFilter');
-  const priceFilter = document.getElementById('priceFilter');
-  const bedroomFilter = document.getElementById('bedroomFilter');
-  const sortFilter = document.getElementById('sortFilter');
-  const designsGrid = document.getElementById('designsGrid');
-  const modal = document.getElementById('purchaseModal');
-  const closeModal = document.querySelector('.close');
-  const purchaseForm = document.getElementById('purchaseForm');
+ // DOM elements
+ const searchInput = document.getElementById('searchInput');
+ const typeFilter = document.getElementById('typeFilter');
+ const priceFilter = document.getElementById('priceFilter');
+ const bedroomFilter = document.getElementById('bedroomFilter');
+ const sortFilter = document.getElementById('sortFilter');
+ const designsGrid = document.getElementById('designsGrid');
+ const modal = document.getElementById('purchaseModal');
+ const closeModal = document.querySelector('.close');
+ const purchaseForm = document.getElementById('purchaseForm');
 
-  // Initialize dashboard
+ // Initialize dashboard
+ document.addEventListener('DOMContentLoaded', function() {
+     // Check if user is logged in
+     const token = localStorage.getItem('token');
+     const fullName = localStorage.getItem("fullName");
 
-  document.addEventListener('DOMContentLoaded', function() {
-      // Check if user is logged in
-      const token = localStorage.getItem('token');
-      const fullName = localStorage.getItem("fullName");
+     if (token && fullName) {
+         // User is logged in
+         document.getElementById("welcomeUser").textContent = `Welcome, ${fullName}`;
+         // Fetch designs from server
+         renderDesigns();
+     } else {
+         // Guest user - must login to see designs
+         document.getElementById("welcomeUser").textContent = `Welcome, Guest`;
+         showNotification('Please login to view designs', 'info');
 
-      if (token && fullName) {
-          // User is logged in
-          document.getElementById("welcomeUser").textContent = `Welcome, ${fullName}`;
-      } else {
-          // Guest user
-          document.getElementById("welcomeUser").textContent = `Welcome, Guest`;
+         // Show empty state
+         designsGrid.innerHTML = `
+             <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #718096;">
+                 <div style="font-size: 4rem; margin-bottom: 20px;">🔐</div>
+                 <h3>Login Required</h3>
+                 <p>Please login to view and purchase architectural designs.</p>
+                 <button onclick="window.location.href='login.html'" style="margin-top: 20px; padding: 12px 24px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                     Go to Login
+                 </button>
+             </div>
+         `;
+     }
 
-          // Optional: Show a notice that they're browsing as guest
-          showNotification('Browsing as guest. Login to purchase designs.', 'success');
-      }
+     setupEventListeners();
+ });
 
-      renderDesigns();
-      setupEventListeners();
-  });
+ function setupEventListeners() {
+     searchInput.addEventListener('input', applyFilters);
+     typeFilter.addEventListener('change', applyFilters);
+     priceFilter.addEventListener('change', applyFilters);
+     bedroomFilter.addEventListener('change', applyFilters);
+     sortFilter.addEventListener('change', applyFilters);
 
-  function setupEventListeners() {
-      searchInput.addEventListener('input', applyFilters);
-      typeFilter.addEventListener('change', applyFilters);
-      priceFilter.addEventListener('change', applyFilters);
-      bedroomFilter.addEventListener('change', applyFilters);
-      sortFilter.addEventListener('change', applyFilters);
+     if (closeModal) {
+         closeModal.addEventListener('click', () => {
+             modal.style.display = 'none';
+         });
+     }
 
-      if (closeModal) {
-          closeModal.addEventListener('click', () => {
-              modal.style.display = 'none';
-          });
-      }
+     window.addEventListener('click', (event) => {
+         if (event.target === modal) {
+             modal.style.display = 'none';
+         }
+     });
 
-      window.addEventListener('click', (event) => {
-          if (event.target === modal) {
-              modal.style.display = 'none';
-          }
-      });
+     if (purchaseForm) {
+         purchaseForm.addEventListener('submit', handlePurchase);
+     }
+ }
 
-      if (purchaseForm) {
-          purchaseForm.addEventListener('submit', handlePurchase);
-      }
-  }
+ async function renderDesigns() {
+     designsGrid.innerHTML = `
+         <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #718096;">
+             <div style="font-size: 3rem; margin-bottom: 20px;">⏳</div>
+             <h3>Loading designs...</h3>
+         </div>
+     `;
 
-  function applyFilters() {
-      const searchTerm = searchInput.value.toLowerCase();
-      const selectedType = typeFilter.value;
-      const selectedPrice = priceFilter.value;
-      const selectedBedrooms = bedroomFilter.value;
-      const selectedSort = sortFilter.value;
+     try {
+         const token = localStorage.getItem('token');
 
-      approvedDesigns = designs.filter(design => {
-          const matchesSearch = design.name.toLowerCase().includes(searchTerm) ||
-                              design.description.toLowerCase().includes(searchTerm);
-          const matchesType = !selectedType || design.type === selectedType;
-          const matchesBedrooms = !selectedBedrooms || design.bedrooms.toString() === selectedBedrooms;
+         if (!token) {
+             designsGrid.innerHTML = `
+                 <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #718096;">
+                     <div style="font-size: 4rem; margin-bottom: 20px;">🔐</div>
+                     <h3>Login Required</h3>
+                     <p>Please login to view designs.</p>
+                 </div>
+             `;
+             return;
+         }
 
-          let matchesPrice = true;
-          if (selectedPrice) {
-              const [min, max] = selectedPrice.split('-');
-              if (max === undefined) { // "2000+" case
-                  matchesPrice = design.price >= parseInt(min);
-              } else {
-                  matchesPrice = design.price >= parseInt(min) && design.price <= parseInt(max);
-              }
-          }
+         const response = await fetch('/api/user/approved', {
+             method: 'GET',
+             headers: {
+                 'Authorization': `Bearer ${token}`
+             }
+         });
 
-          return matchesSearch && matchesType && matchesBedrooms && matchesPrice;
-      });
+         if (response.ok) {
+             allDesigns = await response.json();
+             console.log('Fetched designs from server:', allDesigns);
 
-      // Apply sorting
-      approvedDesigns.sort((a, b) => {
-          switch (selectedSort) {
-              case 'price-low':
-                  return a.price - b.price;
-              case 'price-high':
-                  return b.price - a.price;
-              case 'rating':
-                  return b.rating - a.rating;
-              case 'newest':
-              default:
-                  return b.id - a.id;
-          }
-      });
+             if (allDesigns.length === 0) {
+                 designsGrid.innerHTML = `
+                     <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #718096;">
+                         <div style="font-size: 4rem; margin-bottom: 20px;">📭</div>
+                         <h3>No Approved Designs</h3>
+                         <p>There are no approved designs available at the moment.</p>
+                     </div>
+                 `;
+                 return;
+             }
 
-      renderDesigns();
-  }
+             // Apply filters after fetching data
+             applyFilters();
+         } else if (response.status === 401) {
+             showNotification('Session expired. Please login again.', 'error');
+             setTimeout(() => {
+                 localStorage.clear();
+                 window.location.href = 'login.html';
+             }, 2000);
+         } else {
+             throw new Error('Failed to fetch designs');
+         }
+     } catch (error) {
+         console.error('Error fetching designs:', error);
+         designsGrid.innerHTML = `
+             <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #718096;">
+                 <div style="font-size: 4rem; margin-bottom: 20px;">❌</div>
+                 <h3>Error Loading Designs</h3>
+                 <p>Unable to load designs. Please try again later.</p>
+                 <button onclick="renderDesigns()" style="margin-top: 20px; padding: 12px 24px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                     Retry
+                 </button>
+             </div>
+         `;
+         showNotification('Error loading designs. Please try again.', 'error');
+     }
+ }
 
-  async function renderDesigns() {
-      designsGrid.innerHTML = '';
+ function applyFilters() {
+     const searchTerm = searchInput.value.toLowerCase();
+     const selectedType = typeFilter.value;
+     const selectedPrice = priceFilter.value;
+     const selectedBedrooms = bedroomFilter.value;
+     const selectedSort = sortFilter.value;
 
-      try {
-          const token = localStorage.getItem('token');
+     // Filter from allDesigns
+     filteredDesigns = allDesigns.filter(design => {
+         const matchesSearch = (design.title || design.name || '').toLowerCase().includes(searchTerm) ||
+                             (design.description || '').toLowerCase().includes(searchTerm);
+         const matchesType = !selectedType || (design.designType || design.type) === selectedType;
+         const matchesBedrooms = !selectedBedrooms || design.bedrooms.toString() === selectedBedrooms;
 
-          // Try to fetch from API if logged in
-          if (token) {
-              try {
-                  const response = await fetch('/api/user/approved', {
-                      method: 'GET',
-                      headers: {
-                          'Authorization': `Bearer ${token}`
-                      }
-                  });
+         let matchesPrice = true;
+         if (selectedPrice) {
+             const [min, max] = selectedPrice.split('-');
+             if (max === undefined) { // "2000+" case
+                 matchesPrice = design.price >= parseInt(min);
+             } else {
+                 matchesPrice = design.price >= parseInt(min) && design.price <= parseInt(max);
+             }
+         }
 
-                  if (response.ok) {
-                      approvedDesigns = await response.json();
-                  } else {
-                      // Fallback to sample data if API fails
-                      approvedDesigns = designs;
-                  }
-              } catch (error) {
-                  console.log('API fetch failed, using sample data:', error);
-                  approvedDesigns = designs;
-              }
-          } else {
-              // Not logged in - use sample data
-              console.log('User not logged in, showing sample designs');
-              approvedDesigns = designs;
-          }
-      } catch (error) {
-          console.error('Error fetching designs:', error);
-          // Fallback to sample data
-          approvedDesigns = designs;
-      }
+         return matchesSearch && matchesType && matchesBedrooms && matchesPrice;
+     });
 
-      if (approvedDesigns.length === 0) {
-          designsGrid.innerHTML = `
-              <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #718096;">
-                  <div style="font-size: 4rem; margin-bottom: 20px;">🔍</div>
-                  <h3>No designs found</h3>
-                  <p>Try adjusting your filters or search terms.</p>
-              </div>
-          `;
-          return;
-      }
+     // Apply sorting
+     filteredDesigns.sort((a, b) => {
+         switch (selectedSort) {
+             case 'price-low':
+                 return a.price - b.price;
+             case 'price-high':
+                 return b.price - a.price;
+             case 'rating':
+                 return (b.rating || 4.5) - (a.rating || 4.5);
+             case 'newest':
+             default:
+                 return b.id - a.id;
+         }
+     });
 
-      approvedDesigns.forEach(design => {
-          const designCard = createDesignCard(design);
-          designsGrid.appendChild(designCard);
-      });
-  }
+     // Render the filtered designs
+     displayFilteredDesigns();
+ }
 
+ function displayFilteredDesigns() {
+     designsGrid.innerHTML = '';
 
-  function createDesignCard(design) {
-      const card = document.createElement('div');
-      card.className = 'design-card';
+     if (filteredDesigns.length === 0) {
+         designsGrid.innerHTML = `
+             <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #718096;">
+                 <div style="font-size: 4rem; margin-bottom: 20px;">🔍</div>
+                 <h3>No designs found</h3>
+                 <p>Try adjusting your filters or search terms.</p>
+             </div>
+         `;
+         return;
+     }
 
-      // Fix: Use correct property names and add event listener instead of onclick
-      card.innerHTML = `
-          <div class="design-image">
-              ${design.imageUrl ? `<img src="${design.imageUrl}" alt="${design.title || design.name}" class="design-thumbnail">`
-                                : `<span style="position: relative; z-index: 1;">${getDesignIcon(design.designType || design.type)}</span>`}
-          </div>
-          <div class="design-info">
-              <h3 class="design-title">${design.title || design.name}</h3>
-              <span class="design-type">${(design.designType || design.type).toUpperCase()}</span>
-              <div class="design-specs">
-                  <div class="spec-item">
-                      <span class="spec-icon">🛏️</span>
-                      <span>${design.bedrooms} Bedrooms</span>
-                  </div>
-                  <div class="spec-item">
-                      <span class="spec-icon">🚿</span>
-                      <span>${design.bathrooms} Bathrooms</span>
-                  </div>
-                  <div class="spec-item">
-                      <span class="spec-icon">📐</span>
-                      <span>${design.area} sq ft</span>
-                  </div>
-                  <div class="spec-item">
-                      <span class="spec-icon">⭐</span>
-                      <span>${design.rating || '4.5'}/5.0</span>
-                  </div>
-              </div>
-              <p class="design-description">${design.description}</p>
-              <div class="card-footer">
-                  <div>
-                      <div class="price-label">Starting from</div>
-                      <div class="price">₹${design.price} sq ft</div>
-                  </div>
-                  <button class="purchase-btn" data-design-id="${design.id}">
-                      Purchase Now
-                  </button>
-              </div>
-          </div>
-      `;
+     filteredDesigns.forEach(design => {
+         const designCard = createDesignCard(design);
+         designsGrid.appendChild(designCard);
+     });
+ }
 
-      // Add event listener to the purchase button
-      const purchaseBtn = card.querySelector('.purchase-btn');
-      purchaseBtn.addEventListener('click', () => openPurchaseModal(design.id));
+ function createDesignCard(design) {
+     const card = document.createElement('div');
+     card.className = 'design-card';
 
-      return card;
-  }
+     card.innerHTML = `
+         <div class="design-image">
+             ${design.imageUrl ? `<img src="${design.imageUrl}" alt="${design.title || design.name}" class="design-thumbnail">`
+                               : `<span style="position: relative; z-index: 1;">${getDesignIcon(design.designType || design.type)}</span>`}
+         </div>
+         <div class="design-info">
+             <h3 class="design-title">${design.title || design.name}</h3>
+             <span class="design-type">${(design.designType || design.type).toUpperCase()}</span>
+             <div class="design-specs">
+                 <div class="spec-item">
+                     <span class="spec-icon">🛏️</span>
+                     <span>${design.bedrooms} Bedrooms</span>
+                 </div>
+                 <div class="spec-item">
+                     <span class="spec-icon">🚿</span>
+                     <span>${design.bathrooms} Bathrooms</span>
+                 </div>
+                 <div class="spec-item">
+                     <span class="spec-icon">📐</span>
+                     <span>${design.area} sq ft</span>
+                 </div>
+                 <div class="spec-item">
+                     <span class="spec-icon">⭐</span>
+                     <span>${design.rating || '4.5'}/5.0</span>
+                 </div>
+             </div>
+             <p class="design-description">${design.description}</p>
+             <div class="card-footer">
+                 <div>
+                     <div class="price-label">Starting from</div>
+                     <div class="price">₹${design.price}</div>
+                 </div>
+                 <button class="purchase-btn" data-design-id="${design.id}">
+                     Purchase Now
+                 </button>
+             </div>
+         </div>
+     `;
 
-  function openPurchaseModal(designId) {
-      // Check if user is logged in
-      const token = localStorage.getItem('token');
+     // Add event listener to the purchase button
+     const purchaseBtn = card.querySelector('.purchase-btn');
+     purchaseBtn.addEventListener('click', () => openPurchaseModal(design.id));
 
-      if (!token) {
-          // User not logged in - redirect to login
-          showNotification('Please login to purchase designs', 'error');
-          setTimeout(() => {
-              window.location.href = 'login.html';
-          }, 1500);
-          return;
-      }
+     return card;
+ }
 
-      console.log('Opening modal for design ID:', designId);
+ function openPurchaseModal(designId) {
+     // Check if user is logged in
+     const token = localStorage.getItem('token');
 
-      // Look for design in both approvedDesigns and designs arrays
-      let design = approvedDesigns.find(d => d.id === designId);
-      if (!design) {
-          design = designs.find(d => d.id === designId);
-      }
+     if (!token) {
+         showNotification('Please login to view design details', 'error');
+         setTimeout(() => {
+             window.location.href = 'login.html';
+         }, 1500);
+         return;
+     }
 
-      if (design && modal) {
-          // Populate modal fields
-          const modalDesignName = document.getElementById('modalDesignName');
-          const modalPrice = document.getElementById('modalPrice');
+     console.log('Opening design info page for design ID:', designId);
 
-          if (modalDesignName) {
-              modalDesignName.value = design.title || design.name;
-          }
-          if (modalPrice) {
-              modalPrice.value = `₹${design.price}`;
-          }
+     // Look for design in allDesigns
+     let design = allDesigns.find(d => d.id === designId);
 
-          // Store design ID for form submission
-          modal.dataset.designId = designId;
+     if (design) {
+         // Store design in sessionStorage for the detail page
+         sessionStorage.setItem('selectedDesign', JSON.stringify({
+             id: design.id,
+             name: design.title || design.name,
+             type: design.designType || design.type,
+             price: design.price,
+             location: design.location || 'Not specified',
+             bedrooms: design.bedrooms,
+             bathrooms: design.bathrooms,
+             kitchens: design.kitchens || 1,
+             parking: design.parking || 2,
+             plotSize: design.plotSize || '1500 sq.ft',
+             builtArea: design.area || '1200 sq.ft',
+             floors: design.floors || '2',
+             rating: design.rating || 4.5,
+             reviews: design.reviews || 0,
+             image: design.imageUrl || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800',
+             description: design.description || 'Beautiful architectural design.',
+             features: design.features || [
+                 { icon: '🌞', text: 'Natural Lighting' },
+                 { icon: '🌿', text: 'Green Spaces' },
+                 { icon: '🔒', text: 'Security System' },
+                 { icon: '💡', text: 'Smart Home Ready' }
+             ]
+         }));
 
-          // Show modal
-          modal.style.display = 'block';
-          console.log('Modal should be visible now');
-      } else {
-          console.error('Design not found or modal element missing:', designId);
-          showNotification('Error: Design not found', 'error');
-      }
-  }
+         // Redirect to design info page
+         window.location.href = 'designinfo.html?id=' + designId;
+     } else {
+         showNotification('Design not found', 'error');
+     }
+ }
 
-  async function handlePurchase(event) {
-      event.preventDefault();
-      console.log('Form submitted');
+ // Keep your existing handlePurchase, showNotification, and getDesignIcon functions as they are
 
-      const formData = new FormData(event.target);
-      const designId = modal.dataset.designId;
+ async function handlePurchase(event) {
+       event.preventDefault();
+       console.log('Form submitted');
 
-      const purchaseData = {
-          designId: designId,
-          designName: document.getElementById('modalDesignName')?.value || '',
-          price: document.getElementById('modalPrice')?.value || '',
-          customerName: document.getElementById('customerName')?.value || '',
-          customerEmail: document.getElementById('customerEmail')?.value || '',
-          customerPhone: document.getElementById('customerPhone')?.value || '',
-          projectLocation: document.getElementById('projectLocation')?.value || '',
-          paymentMethod: document.getElementById('paymentMethod')?.value || '',
-          specialRequirements: document.getElementById('specialRequirements')?.value || ''
-      };
+       const formData = new FormData(event.target);
+       const designId = modal.dataset.designId;
 
-      console.log('Purchase Data:', purchaseData);
+       const purchaseData = {
+           designId: designId,
+           designName: document.getElementById('modalDesignName')?.value || '',
+           price: document.getElementById('modalPrice')?.value || '',
+           customerName: document.getElementById('customerName')?.value || '',
+           customerEmail: document.getElementById('customerEmail')?.value || '',
+           customerPhone: document.getElementById('customerPhone')?.value || '',
+           projectLocation: document.getElementById('projectLocation')?.value || '',
+           paymentMethod: document.getElementById('paymentMethod')?.value || '',
+           specialRequirements: document.getElementById('specialRequirements')?.value || ''
+       };
 
-      try {
-          // Show loading state
-          const submitBtn = event.target.querySelector('button[type="submit"]');
-          const originalText = submitBtn.textContent;
-          submitBtn.textContent = 'Processing...';
-          submitBtn.disabled = true;
+       console.log('Purchase Data:', purchaseData);
 
-          // Simulate API call (replace with actual API call)
-          //const response = await simulateApiCall(purchaseData);
-          const token= localStorage.getItem('token');
-          const response = await fetch("/api/orders/create", {
-              method: "POST",
-              headers: {
-                  "Content-Type": "application/json",
-                  'Authorization': `Bearer ${token}`
-              },
-              body: JSON.stringify(purchaseData)
-          });
+       try {
+           // Show loading state
+           const submitBtn = event.target.querySelector('button[type="submit"]');
+           const originalText = submitBtn.textContent;
+           submitBtn.textContent = 'Processing...';
+           submitBtn.disabled = true;
 
-          const result = await response.json();
-          if (response.ok) {
-              showNotification('✅ Order created successfully! Our team will contact you within 24 hours.', 'success');
-              modal.style.display = 'none';
-              purchaseForm.reset();
-          } else {
-              showNotification('Error creating order. Please try again.', 'error');
-          }
+           // Simulate API call (replace with actual API call)
+           //const response = await simulateApiCall(purchaseData);
+           const token= localStorage.getItem('token');
+           const response = await fetch("/api/orders/create", {
+               method: "POST",
+               headers: {
+                   "Content-Type": "application/json",
+                   'Authorization': `Bearer ${token}`
+               },
+               body: JSON.stringify(purchaseData)
+           });
 
-          // Reset button
-          submitBtn.textContent = originalText;
-          submitBtn.disabled = false;
+           const result = await response.json();
+           if (response.ok) {
+               showNotification('✅ Order created successfully! Our team will contact you within 24 hours.', 'success');
+               modal.style.display = 'none';
+               purchaseForm.reset();
+           } else {
+               showNotification('Error creating order. Please try again.', 'error');
+           }
 
-      } catch (error) {
-          console.error('Purchase error:', error);
-          showNotification('Error processing order. Please try again.', 'error');
+           // Reset button
+           submitBtn.textContent = originalText;
+           submitBtn.disabled = false;
 
-          // Reset button
-          const submitBtn = event.target.querySelector('button[type="submit"]');
-          submitBtn.textContent = 'Purchase Now';
-          submitBtn.disabled = false;
-      }
-  }
+       } catch (error) {
+           console.error('Purchase error:', error);
+           showNotification('Error processing order. Please try again.', 'error');
 
-  // Notification function
-  function showNotification(message, type = 'success') {
-      // Create notification element
-      const notification = document.createElement('div');
-      notification.className = `notification notification-${type}`;
-      notification.innerHTML = `
-          <div class="notification-content">
-              <span class="notification-message">${message}</span>
-              <button class="notification-close">&times;</button>
-          </div>
-      `;
+           // Reset button
+           const submitBtn = event.target.querySelector('button[type="submit"]');
+           submitBtn.textContent = 'Purchase Now';
+           submitBtn.disabled = false;
+       }
+   }
 
-      // Add styles
-      notification.style.cssText = `
-          position: fixed;
-          top: 20px;
-          right: 20px;
-          background: ${type === 'success' ? '#4CAF50' : '#f44336'};
-          color: white;
-          padding: 15px 20px;
-          border-radius: 8px;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-          z-index: 10000;
-          max-width: 400px;
-          animation: slideInRight 0.3s ease;
-      `;
+   // Notification function
+   function showNotification(message, type = 'success') {
+       // Create notification element
+       const notification = document.createElement('div');
+       notification.className = `notification notification-${type}`;
+       notification.innerHTML = `
+           <div class="notification-content">
+               <span class="notification-message">${message}</span>
+               <button class="notification-close">&times;</button>
+           </div>
+       `;
 
-      // Add animation styles
-      const style = document.createElement('style');
-      style.textContent = `
-          @keyframes slideInRight {
-              from { transform: translateX(100%); opacity: 0; }
-              to { transform: translateX(0); opacity: 1; }
-          }
-          @keyframes slideOutRight {
-              from { transform: translateX(0); opacity: 1; }
-              to { transform: translateX(100%); opacity: 0; }
-          }
-          .notification-content {
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-          }
-          .notification-close {
-              background: none;
-              border: none;
-              color: white;
-              font-size: 20px;
-              cursor: pointer;
-              margin-left: 15px;
-          }
-      `;
+       // Add styles
+       notification.style.cssText = `
+           position: fixed;
+           top: 20px;
+           right: 20px;
+           background: ${type === 'success' ? '#4CAF50' : '#f44336'};
+           color: white;
+           padding: 15px 20px;
+           border-radius: 8px;
+           box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+           z-index: 10000;
+           max-width: 400px;
+           animation: slideInRight 0.3s ease;
+       `;
 
-      if (!document.querySelector('#notification-styles')) {
-          style.id = 'notification-styles';
-          document.head.appendChild(style);
-      }
+       // Add animation styles
+       const style = document.createElement('style');
+       style.textContent = `
+           @keyframes slideInRight {
+               from { transform: translateX(100%); opacity: 0; }
+               to { transform: translateX(0); opacity: 1; }
+           }
+           @keyframes slideOutRight {
+               from { transform: translateX(0); opacity: 1; }
+               to { transform: translateX(100%); opacity: 0; }
+           }
+           .notification-content {
+               display: flex;
+               justify-content: space-between;
+               align-items: center;
+           }
+           .notification-close {
+               background: none;
+               border: none;
+               color: white;
+               font-size: 20px;
+               cursor: pointer;
+               margin-left: 15px;
+           }
+       `;
 
-      // Add to body
-      document.body.appendChild(notification);
+       if (!document.querySelector('#notification-styles')) {
+           style.id = 'notification-styles';
+           document.head.appendChild(style);
+       }
 
-      // Close functionality
-      const closeBtn = notification.querySelector('.notification-close');
-      closeBtn.addEventListener('click', () => {
-          notification.style.animation = 'slideOutRight 0.3s ease';
-          setTimeout(() => notification.remove(), 300);
-      });
+       // Add to body
+       document.body.appendChild(notification);
 
-      // Auto remove after 5 seconds
-      setTimeout(() => {
-          if (notification.parentNode) {
-              notification.style.animation = 'slideOutRight 0.3s ease';
-              setTimeout(() => notification.remove(), 300);
-          }
-      }, 5000);
-  }
+       // Close functionality
+       const closeBtn = notification.querySelector('.notification-close');
+       closeBtn.addEventListener('click', () => {
+           notification.style.animation = 'slideOutRight 0.3s ease';
+           setTimeout(() => notification.remove(), 300);
+       });
 
-  // Get icon method
-  function getDesignIcon(type) {
-      const icons = {
-          HOUSE: '🏠',
-          house: '🏠',
-          VILLA: '🏡',
-          villa: '🏡',
-          APARTMENT: '🏢',
-          apartment: '🏢',
-          FORM_HOUSE: '🏚️',
-          farmhouse: '🏚️',
-          ROW_HOUSE: '🏘️',
-          rowhouse: '🏘️',
-          DUPLEX: '🏰',
-          duplex: '🏰',
-          COMMERCIAL: '🏢'
-      };
-      return icons[type] || '🏠';
-  }
+       // Auto remove after 5 seconds
+       setTimeout(() => {
+           if (notification.parentNode) {
+               notification.style.animation = 'slideOutRight 0.3s ease';
+               setTimeout(() => notification.remove(), 300);
+           }
+       }, 5000);
+   }
+
+   // Get icon method
+   function getDesignIcon(type) {
+       const icons = {
+           HOUSE: '🏠',
+           house: '🏠',
+           VILLA: '🏡',
+           villa: '🏡',
+           APARTMENT: '🏢',
+           apartment: '🏢',
+           FORM_HOUSE: '🏚️',
+           farmhouse: '🏚️',
+           ROW_HOUSE: '🏘️',
+           rowhouse: '🏘️',
+           DUPLEX: '🏰',
+           duplex: '🏰',
+           COMMERCIAL: '🏢'
+       };
+       return icons[type] || '🏠';
+   }
