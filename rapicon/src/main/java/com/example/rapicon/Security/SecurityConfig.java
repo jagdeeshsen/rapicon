@@ -50,6 +50,7 @@ public class SecurityConfig {
                                 "/payment.html",
                                 "/addtocard.html",
                                 "terms-privacy.html",
+                                "contact.html",
                                 "/login.html",
                                 "/register.html",
                                 "/user.html",
