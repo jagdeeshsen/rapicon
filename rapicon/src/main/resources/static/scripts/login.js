@@ -28,6 +28,8 @@
               localStorage.setItem('id', data.id);
               localStorage.setItem('fullName', data.fullName);
 
+              localStorage.setItem('user', JSON.stringify(data));
+
               // Redirect based on role
               switch(data.role.toLowerCase()) {
                   case 'admin':
@@ -65,8 +67,8 @@
 
   // Check if user is already logged in
   if (localStorage.getItem('token')) {
-      const user = JSON.parse(localStorage.getItem('user'));
-      switch(user.role) {
+      const role = localStorage.getItem('role'));
+      switch(role.toLowerCase()) {
           case 'admin':
               window.location.href = 'admin.html';
               break;
