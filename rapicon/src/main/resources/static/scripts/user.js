@@ -1,5 +1,93 @@
 
+let allDesigns = [];
+let filteredDesigns = [];
+
+// DOM elements - declare but don't initialize yet
+let searchInput;
+let typeFilter;
+let priceFilter;
+let bedroomFilter;
+let sortFilter;
+let designsGrid;
+let modal;
+let closeModal;
+let purchaseForm;
+let userIcon;
+
+// Initialize dashboard
+document.addEventListener('DOMContentLoaded', function() {
+    // NOW initialize all DOM elements after page loads
+    searchInput = document.getElementById('searchInput');
+    typeFilter = document.getElementById('typeFilter');
+    priceFilter = document.getElementById('priceFilter');
+    bedroomFilter = document.getElementById('bedroomFilter');
+    sortFilter = document.getElementById('sortFilter');
+    designsGrid = document.getElementById('designsGrid');
+    modal = document.getElementById('purchaseModal');
+    closeModal = document.querySelector('.close');
+    purchaseForm = document.getElementById('purchaseForm');
+    userIcon = document.getElementById("userIconBtn");
+
+    // Setup user icon click handler
+    if (userIcon) {
+        userIcon.addEventListener("click", function() {
+            // Redirect to profile page
+            const token = localStorage.getItem('token');
+
+            if (!token) {
+                showNotification('Please login to view profile', 'error');
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 1500);
+                return;
+            }
+            window.location.href = "/userprofile.html"; // change to your profile URL
+        });
+    }
+
+    // Check if user is logged in
+    const token = localStorage.getItem('token');
+    const fullName = localStorage.getItem("fullName");
+
+    // Update welcome message
+    const welcomeUser = document.getElementById("welcomeUser");
+    if (welcomeUser) {
+        welcomeUser.textContent = fullName ? `Welcome, ${fullName}` : "Welcome, Guest";
+    }
+
+    // Fetch designs from server
+    renderDesigns();
+
+    // Setup event listeners
+    setupEventListeners();
+});
+
+function setupEventListeners() {
+    if (searchInput) searchInput.addEventListener('input', applyFilters);
+    if (typeFilter) typeFilter.addEventListener('change', applyFilters);
+    if (priceFilter) priceFilter.addEventListener('change', applyFilters);
+    if (bedroomFilter) bedroomFilter.addEventListener('change', applyFilters);
+    if (sortFilter) sortFilter.addEventListener('change', applyFilters);
+
+    if (closeModal) {
+        closeModal.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+    }
+
+    window.addEventListener('click', (event) => {
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+
+    if (purchaseForm) {
+        purchaseForm.addEventListener('submit', handlePurchase);
+    }
+}
+
 /// redirect to user profile
+/*
  const userIcon = document.getElementById("userIconBtn");
 
   userIcon.addEventListener("click", function() {
@@ -42,7 +130,8 @@
       // Fetch designs from server
       renderDesigns();
 
-    /* if (token && fullName) {
+    */
+/* if (token && fullName) {
          // User is logged in
          document.getElementById("welcomeUser").textContent = `Welcome, ${fullName}`;
          // Fetch designs from server
@@ -63,7 +152,8 @@
                  </button>
              </div>
          `;
-     }*/
+     }*//*
+
 
      setupEventListeners();
  });
@@ -91,6 +181,7 @@
          purchaseForm.addEventListener('submit', handlePurchase);
      }
  }
+*/
 
  async function renderDesigns() {
      designsGrid.innerHTML = `

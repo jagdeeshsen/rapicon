@@ -90,7 +90,7 @@
                 statsObserver.unobserve(entry.target);
 
                 // Animate all counters
-                setTimeout(()=>{
+                setTimeout(() => {
                     animateCounter(document.getElementById('designCount'), 10000);
                 }, 200);
                 setTimeout(() => {

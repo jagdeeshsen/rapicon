@@ -67,7 +67,7 @@
 
   // Check if user is already logged in
   if (localStorage.getItem('token')) {
-      const role = localStorage.getItem('role'));
+      const role = localStorage.getItem('role');
       switch(role.toLowerCase()) {
           case 'admin':
               window.location.href = 'admin.html';
