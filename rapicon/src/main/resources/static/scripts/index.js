@@ -106,7 +106,11 @@
         });
     }, { threshold: 0.5 });
 
-    statsObserver.observe(document.querySelector('.stats'));
+    const statsSection = document.querySelector('.stats');
+    if (statsSection) {
+        statsObserver.observe(statsSection);
+    }
+
 
     // Mobile menu toggle
     function toggleMobileMenu() {
