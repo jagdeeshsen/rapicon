@@ -2,10 +2,17 @@ package com.example.rapicon.Models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
+import java.sql.Timestamp;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "users")
 @JsonIgnoreProperties("hibernateLazyInitializer")
@@ -33,7 +40,9 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    public User() {
+    //private Timestamp createdAt;
+
+    /*public User() {
     }
 
     public User(Long id, String username, String email, String password, String firstname, String lastname, String phone, Role role) {
@@ -111,5 +120,5 @@ public class User {
 
     public void setRole(Role role) {
         this.role = role;
-    }
+    }*/
 }

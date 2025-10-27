@@ -7,12 +7,11 @@ import com.example.rapicon.Security.JwtUtil;
 import com.example.rapicon.Security.UserDetailsImpl;
 import com.example.rapicon.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -63,4 +62,30 @@ public class authController {
                 "fullName", user.getFirstname()+" "+ user.getLastname()
         );
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Map<String, String>> logoutUser(@RequestHeader("Authorization") String tokenHeader) {
+        try {
+            if (tokenHeader == null || !tokenHeader.startsWith("Bearer ")) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("message", "Missing or invalid Authorization header"));
+            }
+
+            String token = tokenHeader.replace("Bearer ", "").trim();
+
+            // Optionally invalidate the token
+            // If you have a blacklist service, add it there
+            //jwtUtil.blacklistToken(token); // implement this in your JwtUtil or a separate service
+
+            return ResponseEntity.ok(Map.of(
+                    "message", "Logout successful",
+                    "status", "success"
+            ));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Logout failed", "error", e.getMessage()));
+        }
+    }
+
 }

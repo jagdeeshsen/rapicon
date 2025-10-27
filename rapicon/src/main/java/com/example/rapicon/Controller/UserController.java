@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/user")
@@ -33,5 +34,11 @@ public class UserController {
     public ResponseEntity<List<Design>> getApprovedDesigns(){
         List<Design> designs= service.findDesignsByStatus(Status.APPROVED);
         return ResponseEntity.ok(designs);
+    }
+
+    @GetMapping("/get-user")
+    public ResponseEntity<User> getUserById(@RequestParam Long id){
+        Optional<User> user= userService.findById(id);
+        return ResponseEntity.ok(user.get());
     }
 }

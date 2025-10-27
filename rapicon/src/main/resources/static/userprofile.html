@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="stylesheet" href="css/userprofile.css">
+</head>
+<body>
+<div class="profile-container">
+    <div class="profile-header">
+        <div class="profile-avatar" id="avatarInitial">JD</div>
+        <div class="profile-name" id="userName">John Doe</div>
+        <div class="profile-email" id="userEmail">john.doe@example.com</div>
+    </div>
+
+    <div class="profile-body">
+        <div id="alertContainer"></div>
+
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-number">24</div>
+                <div class="stat-label">Orders</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">12</div>
+                <div class="stat-label">Reviews</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">156</div>
+                <div class="stat-label">Points</div>
+            </div>
+        </div>
+
+        <div class="profile-section">
+            <div class="section-title">Personal Information</div>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Full Name</div>
+                    <div class="info-value" id="fullName">John Doe</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Email Address</div>
+                    <div class="info-value" id="email">john.doe@example.com</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Phone Number</div>
+                    <div class="info-value" id="phone">+91 9876543210</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Member Since</div>
+                    <div class="info-value" id="memberSince">January 2024</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-section">
+            <div class="section-title">Address Details</div>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Street Address</div>
+                    <div class="info-value" id="address">123 Main Street, Apartment 4B</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">City</div>
+                    <div class="info-value" id="city">Bhopal</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">State</div>
+                    <div class="info-value" id="state">Madhya Pradesh</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Pin Code</div>
+                    <div class="info-value" id="pincode">462001</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn btn-primary" id="editProfileBtn">
+                <span>✏️</span> Edit Profile
+            </button>
+            <button class="btn btn-secondary" id="changePasswordBtn">
+                <span>🔒</span> Change Password
+            </button>
+            <button class="btn btn-logout" id="logoutBtn">
+                <span>🚪</span> Logout
+            </button>
+        </div>
+    </div>
+</div>
+
+<script src="scripts/userprofile.js"></script>
+</body>
+</html>

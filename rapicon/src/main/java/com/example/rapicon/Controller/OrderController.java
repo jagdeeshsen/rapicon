@@ -125,10 +125,9 @@ public class OrderController {
     }
 
     @GetMapping("/fetch-order")
-    public ResponseEntity<?> getAllOrdersByUser(@RequestParam("id") Long id){
+    public ResponseEntity<?> getAllOrders(){
         try{
-            Optional<User> user= userService.findById(id);
-            List<Order> order= orderService.getOrderByUser(user.get());
+            List<Order> order= orderService.getAllOrders();
             return ResponseEntity.ok(order);
         }catch (Exception e){
             throw  new RuntimeException("Error to send orderItemsHistory");

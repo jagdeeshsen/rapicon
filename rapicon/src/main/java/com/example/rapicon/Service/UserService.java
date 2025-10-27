@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +28,7 @@ public class UserService {
     public void registerUser(User user) {
         // encrypt password before saving
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        //user.setCreatedAt(new Timestamp(System.currentTimeMillis()));
         userRepository.save(user);
     }
 

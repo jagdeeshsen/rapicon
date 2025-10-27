@@ -1,4 +1,22 @@
 
+/// redirect to user profile
+ const userIcon = document.getElementById("userIconBtn");
+
+  userIcon.addEventListener("click", function() {
+      // Redirect to profile page
+       const token = localStorage.getItem('token');
+
+       if (!token) {
+           showNotification('Please login to view profile', 'error');
+           setTimeout(() => {
+               window.location.href = 'login.html';
+           }, 1500);
+           return;
+       }
+      window.location.href = "/userprofile.html"; // change to your profile URL
+  });
+
+
  let allDesigns = [];
  let filteredDesigns = [];
 
@@ -19,7 +37,12 @@
      const token = localStorage.getItem('token');
      const fullName = localStorage.getItem("fullName");
 
-     if (token && fullName) {
+     // User is logged in
+      document.getElementById("welcomeUser").textContent =fullName ? `Welcome, ${fullName}` : "Welcome, Guest";
+      // Fetch designs from server
+      renderDesigns();
+
+    /* if (token && fullName) {
          // User is logged in
          document.getElementById("welcomeUser").textContent = `Welcome, ${fullName}`;
          // Fetch designs from server
@@ -40,7 +63,7 @@
                  </button>
              </div>
          `;
-     }
+     }*/
 
      setupEventListeners();
  });
@@ -80,7 +103,7 @@
      try {
          const token = localStorage.getItem('token');
 
-         if (!token) {
+         /*if (!token) {
              designsGrid.innerHTML = `
                  <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #718096;">
                      <div style="font-size: 4rem; margin-bottom: 20px;">🔐</div>
@@ -89,7 +112,7 @@
                  </div>
              `;
              return;
-         }
+         }*/
 
          const response = await fetch('/api/user/approved', {
              method: 'GET',
@@ -263,7 +286,7 @@
      if (!token) {
          showNotification('Please login to view design details', 'error');
          setTimeout(() => {
-             window.location.href = 'login.html';
+             //window.location.href = 'login.html';
          }, 1500);
          return;
      }

@@ -230,6 +230,10 @@
 
            try {
                const token = localStorage.getItem('token');
+
+               if(!token){
+                    throw new Error("Please login to see order history");
+               }
                const response = await fetch(`/api/orders/fetch-order?id=${id}`, {
                    method: 'GET',
                    headers: {

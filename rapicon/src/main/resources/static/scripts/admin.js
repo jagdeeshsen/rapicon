@@ -323,7 +323,7 @@
       const token = localStorage.getItem('token');
 
       try {
-          const response = await fetch("/api/admin/orders", {
+          const response = await fetch("/api/orders/fetch-order", {
               method: 'GET',
               headers: { 'Authorization': `Bearer ${token}` }
           });
@@ -335,13 +335,13 @@
           orderList.forEach(order => {
               const row = document.createElement('tr');
               row.innerHTML = `
-                  <td>${order.customerName || 'N/A'}</td>
-                  <td>${order.customerEmail || 'N/A'}</td>
-                  <td>${order.customerPhone || 'N/A'}</td>
-                  <td>${order.designName || 'N/A'}</td>
-                  <td>${order.price || 0}</td>
-                  <td>${order.paymentMethod || 'N/A'}</td>
-                  <td>${order.projectLocation || 'N/A'}</td>
+                  <td>${order.user.firstname} ${order.user.lastname}</td>
+                  <td>${order.user.email || 'N/A'}</td>
+                  <td>${order.user.phone || 'N/A'}</td>
+                  <td>${order.razorpayOrderId || 'N/A'}</td>
+                  <td>${order.totalAmount || 0}</td>
+                  <td>${order.createdAt ? new Date(order.createdAt).toISOString().split("T")[0] : 'N/A'}</td>
+                  <td>${order.paymentStatus || 'N/A'}</td>
               `;
               tbody.appendChild(row);
           });
