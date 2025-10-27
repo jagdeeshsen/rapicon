@@ -83,7 +83,7 @@
     }
 
     // Start counter animations when stats section is visible
-    /*const statsObserver = new IntersectionObserver((entries) => {
+    const statsObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 // Only animate once
@@ -106,10 +106,7 @@
         });
     }, { threshold: 0.5 });
 
-    const statsSection = document.querySelector('.stats');
-    if (statsSection) {
-        statsObserver.observe(statsSection);
-    }*/
+    statsObserver.observe(document.querySelector('.stats'));
 
 
     // Mobile menu toggle
