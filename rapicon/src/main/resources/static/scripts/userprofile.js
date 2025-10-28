@@ -15,6 +15,11 @@
         const token= localStorage.getItem('token');
         const id= localStorage.getItem('id');
 
+        if(!token || !id){
+            document.getElementById('userName').textContent = 'Welcome, Guest';
+            document.getElementById('fullName').textContent = 'Welcome Guest';
+        }
+
         try{
             const response= await fetch("/api/user/get-user?id="+ id,{
                 method: 'GET',
@@ -87,7 +92,13 @@
             // ✅ Clear all local storage/session data
             localStorage.removeItem('token');
             localStorage.removeItem('userData');
+            localStorage.removeItem('fullName');
+            localStorage.removeItem('role');
+            localStorage.removeItem('id');
             sessionStorage.clear();
+
+            document.getElementById('userName').textContent = 'Guest';
+            document.getElementById('fullName').textContent = 'Guest User';
 
             // ✅ Redirect to login page
             setTimeout(() => {
@@ -95,26 +106,6 @@
             }, 1000);
         }
     });
-
-
-    /*// Logout functionality
-    document.getElementById('logoutBtn').addEventListener('click', function() {
-        if (confirm('Are you sure you want to logout?')) {
-            showAlert('Logging out...', 'info');
-
-            // Clear user session/token
-            // In a real application, you would clear localStorage/sessionStorage
-            // and make an API call to invalidate the session on the server
-
-            setTimeout(() => {
-                // Redirect to login page
-                window.location.href = '/login.html'; // Change to your login page
-
-                // Or for testing, you can just show a message
-                // showAlert('Logged out successfully!', 'success');
-            }, 1000);
-        }
-    });*/
 
     // Edit Profile button
     document.getElementById('editProfileBtn').addEventListener('click', function() {

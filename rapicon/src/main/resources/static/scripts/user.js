@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Check if user is logged in
     const token = localStorage.getItem('token');
-    const fullName = localStorage.getItem("fullName");
+    const fullName = localStorage.getItem('fullName');
 
     // Update welcome message
     const welcomeUser = document.getElementById("welcomeUser");
