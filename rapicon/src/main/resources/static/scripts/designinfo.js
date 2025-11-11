@@ -17,19 +17,19 @@
 
       // ✅ Basic Info
       document.getElementById('designTitle').textContent = design.category || 'Untitled Design';
-      document.getElementById('designType').textContent = design.type || 'House';
+      document.getElementById('designType').textContent = design.type.toUpperCase() || 'House';
       document.getElementById('designPrice').textContent = design.price ? `₹${design.price}` : '₹25 sq.ft';
       document.getElementById('plotSize').textContent = design.plotSize || '1500 sq.ft';
       document.getElementById('totalArea').textContent = design.totalArea || '1200 sq.ft';
       document.getElementById('builtArea').textContent = design.builtUpArea || '1200 sq.ft';
       document.getElementById('floors').textContent = design.floors ? design.floors.length : 2;
-      document.getElementById('bedrooms').textContent = design.bedrooms + 'Bedrooms';
+      document.getElementById('bedrooms').textContent = design.bedrooms + ' Bedrooms';
       document.getElementById('bathrooms').textContent = design.bathrooms + ' Bathrooms';
       document.getElementById('kitchens').textContent = design.kitchens + ' Kitchen';
       document.getElementById('plotFacing').textContent = design.plotFacing || ' N/A';
       document.getElementById('plotLocation').textContent = design.plotLocation || 'N/A';
       document.getElementById('parking').textContent = design.parking;
-      document.getElementById('hall').textContent = design.hall+ 'Hall' || 0;
+      document.getElementById('hall').textContent = design.hall+ ' Hall' || 0;
       document.getElementById('designDescription').textContent =
                    'Beautiful architectural design with modern amenities and spacious rooms.';
 
