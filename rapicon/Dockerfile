@@ -22,7 +22,7 @@ COPY src ./src
 RUN ./mvnw package -DskipTests
 
 # Use a smaller runtime image for production
-FROM openjdk:17-jdk-slim
+FROM eclipse-temurin:17-jre-jammy
 
 WORKDIR /app
 
