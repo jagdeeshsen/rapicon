@@ -1,5 +1,6 @@
 # Use Java 17 runtime as base image
-FROM openjdk:17-jdk-slim AS build
+#FROM openjdk:17-jdk-slim AS build
+FROM openjdk:17-slim-bullseye AS build
 
 # Set working directory inside container
 WORKDIR /app
