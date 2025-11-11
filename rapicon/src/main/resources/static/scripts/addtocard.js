@@ -1,3 +1,7 @@
+const urlParams= new URLSearchParams(window.location.search);
+const price= urlParams.get('price');
+
+
 // Sample cart data
     let cartItems = [
         {
@@ -44,8 +48,8 @@
         const cartContainer = document.getElementById('cartItems');
         const cartBadge = document.getElementById('cartBadge');
 
-        const token= localStorage.getItem('token');
-        const user_id= localStorage.getItem('id');
+        const token= localStorage.getItem('user_token');
+        const user_id= localStorage.getItem('user_id');
 
         const response= await fetch("/api/cart/items?user_id=" +user_id,
         {
@@ -75,12 +79,12 @@
         } else {
             cartContainer.innerHTML = cartList.map(function(item) {
             return '<div class="cart-item">' +
-                '<img src="' + item.design.imageUrl + '" alt="' + item.design.title + '" class="item-image">' +
+                '<img src="' + item.design.elevationUrls[0] + '" alt="' + item.design.designCategory + '" class="item-image">' +
                 '<div class="item-details">' +
                     '<div class="item-header">' +
                         '<div>' +
-                            '<div class="item-name">' + item.design.title + '</div>' +
-                            '<div class="item-category">' + item.design.designType + '</div>' +
+                            '<div class="item-name">' + item.design.designType + '</div>' +
+                            '<div class="item-category">' + item.design.designCategory + '</div>' +
                         '</div>' +
                         '<button class="btn-remove" onclick="removeItem(' + item.id + ')">🗑️</button>' +
                     '</div>' +
@@ -90,7 +94,7 @@
                             *//*'<span class="qty-display">' + item.quantity + '</span>' +*//*
                             '<button class="qty-btn" onclick="updateQuantity(' + item.id + ', 1)">+</button>' +
                         '</div>' +*/
-                        '<span class="item-price">₹' + (item.design.price).toLocaleString() + '</span>' +
+                        '<span class="item-price">₹' + (price).toLocaleString() + '</span>' +
                     '</div>' +
                 '</div>' +
             '</div>';
@@ -129,7 +133,7 @@
 
     // Update order summary
     function updateSummary() {
-        const subtotal = cartList.reduce((sum, item) => sum + (item.design.price), 0);
+        const subtotal = cartList.reduce((sum, item) => sum + parseInt(price), 0);
         const tax = Math.round(subtotal * 0.18);
         const total = subtotal + tax;
         totalPayableAmount=total;

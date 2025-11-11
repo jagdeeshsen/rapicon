@@ -14,7 +14,7 @@
     </div>
 
     <form id="registerForm">
-        <div class="form-row">
+        <!--<div class="form-row">
             <div class="form-group">
                 <label for="firstName">First Name *</label>
                 <input type="text" id="firstName" name="firstName" required>
@@ -23,14 +23,14 @@
                 <label for="lastName">Last Name *</label>
                 <input type="text" id="lastName" name="lastName" required>
             </div>
-        </div>
+        </div>-->
 
         <div class="form-group">
             <label for="email">Email Address *</label>
             <input type="email" id="email" name="email" required>
         </div>
 
-        <div class="form-row">
+        <!--<div class="form-row">
             <div class="form-group">
                 <label for="password">Password *</label>
                 <input type="password" id="password" name="password" required onkeyup="checkPasswordStrength()">
@@ -41,14 +41,14 @@
                 <input type="password" id="confirmPassword" name="confirmPassword" required onkeyup="checkPasswordMatch()">
                 <div id="passwordMatch" class="password-strength"></div>
             </div>
-        </div>
+        </div>-->
 
         <div class="form-group">
             <label for="phone">Phone Number</label>
             <input type="tel" id="phone" name="phone">
         </div>
 
-        <div class="form-group">
+        <!--<div class="form-group">
             <label for="username">Username</label>
             <input type="text" id="username" name="username">
         </div>
@@ -60,7 +60,7 @@
                 <option value="user">User - Browse & Purchase Designs</option>
                 <option value="vendor">Vendor - Upload & Sell Designs</option>
             </select>
-        </div>
+        </div>-->
 
         <!-- Vendor-specific fields -->
         <div id="vendorFields" class="vendor-fields">
@@ -105,7 +105,7 @@
 
         <div class="checkbox-group">
             <input type="checkbox" id="terms" name="terms" required>
-            <label for="terms">I agree to the <a href="#" onclick="showTerms()">Terms of Service</a> and <a href="#" onclick="showPrivacy()">Privacy Policy</a> *</label>
+            <label for="terms">I agree to the <a href="terms-privacy.html" onclick="showTerms()">Terms of Service</a> and <a href="terms-privacy.html" onclick="showPrivacy()">Privacy Policy</a> *</label>
         </div>
 
         <button type="submit" class="register-btn" id="registerBtn">Create Account</button>
@@ -115,7 +115,7 @@
     </form>
 
     <div class="login-link">
-        <p>Already have an account? <a href="login.html">Sign in here</a></p>
+        <p>Already have an account? <a href="otp-login.html">Sign in here</a></p>
     </div>
 </div>
 

@@ -6,6 +6,8 @@ import com.example.rapicon.Repository.DesignRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -16,30 +18,32 @@ public class DesignService{
 
 
     public Design createDesign(Design design) {
-        Design savedDesign = designRepository.save(design);
-        System.out.println("Design created with id: {}"+ savedDesign.getId());
+
+        design.setCreatedAt(LocalDateTime.now());
+        design.setUpdatedAt(LocalDateTime.now());
+
+        Design savedDesign= designRepository.save(design);
         return savedDesign;
     }
 
 
     public Design updateDesign(Design design) {
-        //design.setUpdatedAt(LocalDateTime.now());
-        Design updatedDesign = designRepository.save(design);
-        System.out.println("Design updated with id: {}"+ updatedDesign.getId());
+        Design updatedDesign= designRepository.save(design);
         return updatedDesign;
     }
 
     public List<Design> getDesigns(Long id){
+
         return designRepository.findByVendorId(id);
     }
 
-    public void deleteDesign(Long id) {
+    public String deleteDesign(Long id) {
         if (designRepository.existsById(id)) {
             designRepository.deleteById(id);
-            System.out.println("Design deleted with id: {}"+ id);
         } else {
             throw new RuntimeException("Design not found with ID: " + id);
         }
+        return "Design Deleted Successfully.";
     }
 
 

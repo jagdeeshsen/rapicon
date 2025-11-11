@@ -24,7 +24,11 @@
 
   <div class="content-section">
     <div class="image-gallery">
-      <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800" alt="Design" class="main-image" id="mainImage">
+      <div class="image-frame">
+        <button class="scroll-btn left" id="leftBtn">&#10094;</button>
+        <img id="mainImage" class="main-image" src="assets/images/placeholder.jpg" alt="Design Image">
+        <button class="scroll-btn right" id="rightBtn">&#10095;</button>
+      </div>
     </div>
 
     <div class="info-card">
@@ -41,10 +45,14 @@
         <span class="info-label">Price:</span>
         <span class="info-value" id="designPrice">-</span>
       </div>
-     <!-- <div class="info-row">
+      <div class="info-row">
         <span class="info-label">Plot Size:</span>
         <span class="info-value" id="plotSize">-</span>
-      </div>-->
+      </div>
+      <div class="info-row">
+        <span class="info-label">Total Area:</span>
+        <span class="info-value" id="totalArea">-</span>
+      </div>
       <div class="info-row">
         <span class="info-label">Built-up Area:</span>
         <span class="info-value" id="builtArea">-</span>
@@ -52,6 +60,14 @@
       <div class="info-row">
         <span class="info-label">Floors:</span>
         <span class="info-value" id="floors">-</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Plot Facing:</span>
+        <span class="info-value" id="plotFacing">-</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Plot Location:</span>
+        <span class="info-value" id="plotLocation">-</span>
       </div>
     </div>
 
@@ -74,6 +90,10 @@
           <div class="feature-icon">🚗</div>
           <div id="parking">0 Parking</div>
         </div>
+        <div class="feature-item">
+          <div class="feature-icon">🛋️</div>
+          <div id="hall">0 Hall</div>
+        </div>
       </div>
     </div>
 
@@ -93,7 +113,7 @@
       <button class="btn btn-primary" onclick="addToCart()">
         Add To Cart
       </button>
-      <button class="btn btn-secondary" onclick="viewCart()">
+      <button class="btn btn-secondary" onclick="BuyNow()">
         Buy Now
       </button>
     </div>

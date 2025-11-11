@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Rapicon Infrastructure - Login</title>
   <link rel="stylesheet" href="css/login.css">
-
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 <div class="login-container">
@@ -22,17 +22,14 @@
 
     <div class="form-group">
       <label for="password">Password</label>
-      <input type="password" id="password" name="password" required>
+      <div class="password-wrapper">
+        <input type="password" id="password" name="password" required>
+        <i class="fa fa-eye toggle-password" id="togglePassword"></i>
+      </div>
     </div>
 
-    <div class="form-group">
-      <label for="role">Login As</label>
-      <select id="role" name="role" required>
-        <option value="">Select Role</option>
-        <option value="user">User</option>
-        <option value="vendor">Vendor</option>
-        <option value="admin">Admin</option>
-      </select>
+    <div class="forgot-password-link">
+      <a href="#" id="forgotPassword">Forgot Password?</a>
     </div>
 
     <button type="submit" class="login-btn">Login</button>
@@ -40,7 +37,7 @@
   </form>
 
   <div class="register-link">
-    <p>Don't have an account? <a href="register.html">Register here</a></p>
+    <p>Don't have an account? <a href="register-now.html">Register here</a></p>
   </div>
 </div>
 

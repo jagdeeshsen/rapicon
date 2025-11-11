@@ -50,12 +50,20 @@ public class SecurityConfig {
                                 "/payment.html",
                                 "/addtocard.html",
                                 "/userprofile.html",
+                                "/otp-login.html",
+                                "/register-now.html",
+                                "/otp-verification.html",
                                 "/terms-privacy.html",
+                                "/reset-password.html",
+                                "/reset-password.html",
+                                "/package-page.html",
+                                "/vendor-dashboard.html",
+                                "/reset-password.html/**",
+                                "/forgot-password.html",
                                 "/contact.html",
                                 "/login.html",
                                 "/register.html",
                                 "/user.html",
-                                "/vendor.html",
                                 "/admin.html",
                                 "/css/**",
                                 "/scripts/**"
@@ -63,6 +71,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/test/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll() // ✅ your custom login/register
                         .requestMatchers("/api/user/approved").permitAll()
+                        .requestMatchers("/api/vendor/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/designs/**").hasRole("VENDOR")
                         .requestMatchers("/api/cart/**").permitAll()

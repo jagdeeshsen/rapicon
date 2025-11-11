@@ -143,6 +143,7 @@
       height: 240px;
       display: flex;
       align-items: center;
+      object-fit: cover,
       justify-content: center;
       overflow: hidden;
       position: relative;

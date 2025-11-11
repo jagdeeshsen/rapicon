@@ -1,12 +1,14 @@
 package com.example.rapicon.Controller;
 
-import com.example.rapicon.Models.Design;
-import com.example.rapicon.Models.Status;
-import com.example.rapicon.Models.User;
+import com.example.rapicon.DTO.DesignRequestDTO;
+import com.example.rapicon.Models.*;
 import com.example.rapicon.Security.UserDetailsImpl;
 import com.example.rapicon.Service.DesignService;
 import com.example.rapicon.Service.S3Service;
 import com.example.rapicon.Service.UserService;
+import com.example.rapicon.Service.VendorService;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +17,11 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.security.PublicKey;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @RestController
@@ -29,6 +33,9 @@ public class DesignController {
     private UserService userService;
 
     @Autowired
+    private VendorService vendorService;
+
+    @Autowired
     private DesignService designService;
 
 
@@ -37,82 +44,92 @@ public class DesignController {
 
     // List of allowed file extensions
     private final List<String> ALLOWED_EXTENSIONS = Arrays.asList(
-            ".pdf", ".dwg", ".jpg", ".jpeg", ".png", ".zip"
+            ".jpg", ".jpeg", ".png"
     );
+    private static final long MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
 
 
 
     // --------------------------------- VENDOR END POINTS------------------------------------//
 
-    @PostMapping("/upload")
+    @PostMapping(value = "/upload", consumes = "multipart/form-data")
     @PreAuthorize("hasRole('VENDOR')")
-    public ResponseEntity<Map<String, Object>> createDesign( @RequestParam("title") String title,
-                                                             @RequestParam("designType") String designType,
-                                                             @RequestParam("price") BigDecimal price,
-                                                             @RequestParam("bedrooms") Integer bedrooms,
-                                                             @RequestParam("bathrooms") Integer bathrooms,
-                                                             @RequestParam("floors") Integer floors,
-                                                             @RequestParam("area") Double area,
-                                                             @RequestParam("description") String description,
-                                                             @RequestPart(value = "imageFile", required = false) MultipartFile imageFile,
-                                                            @AuthenticationPrincipal UserDetailsImpl userDetails)
-    {
+    public ResponseEntity<Map<String, Object>> createDesign(
+            @ModelAttribute DesignRequestDTO request,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
         Map<String, Object> response = new HashMap<>();
+        List<String> elevationUrls = new ArrayList<>();
+        List<String> twoDPlanUrls = new ArrayList<>();
 
         try {
-            User vendor= userService.findByUserName(userDetails.getUsername());
-            if(vendor==null){
-                System.out.println("vendor not found");
-            }
-
-
-            // Validate file
-            if (imageFile==null) {
+            // Get vendor
+            Vendor vendor = vendorService.getVendorByUsername(userDetails.getUsername());
+            if (vendor == null) {
                 return ResponseEntity.badRequest()
-                        .body(Map.of("error", "No file uploaded"));
+                        .body(Map.of("error", "Vendor not found"));
             }
 
-            // Check file size (50MB limit)
-            if (imageFile.getSize() > 50 * 1024 * 1024) {
+            List<MultipartFile> elevationFiles = request.getElevationFiles();
+            List<MultipartFile> twoDPlanFiles = request.getTwoDPlanFiles();
+
+            // ----------- Validate Elevation Files -----------
+            ValidationResult elevationValidation = validateFiles(elevationFiles, "Elevation");
+            if (!elevationValidation.isValid()) {
                 return ResponseEntity.badRequest()
-                        .body(Map.of("error", "File size exceeds 50MB limit"));
+                        .body(Map.of("error", elevationValidation.getErrorMessage()));
             }
 
-            // Check file extension
-            String originalFileName = imageFile.getOriginalFilename();
-            if (originalFileName == null) {
+            // Upload Elevation files to S3
+            for (MultipartFile file : elevationFiles) {
+                String imageUrl = s3Service.uploadFile(file, "designs/elevations");
+                elevationUrls.add(imageUrl);
+            }
+
+            // ----------- Validate 2D Plan Files -----------
+            ValidationResult planValidation = validateFiles(twoDPlanFiles, "2D Plan");
+            if (!planValidation.isValid()) {
                 return ResponseEntity.badRequest()
-                        .body(Map.of("error", "Invalid file name"));
+                        .body(Map.of("error", planValidation.getErrorMessage()));
             }
 
-            String fileExtension = originalFileName.substring(originalFileName.lastIndexOf('.'));
-            if (!ALLOWED_EXTENSIONS.contains(fileExtension.toLowerCase())) {
-                return ResponseEntity.badRequest()
-                        .body(Map.of("error", "File type not allowed. Allowed types: " + ALLOWED_EXTENSIONS));
+            // Upload 2D Plan files to S3
+            for (MultipartFile file : twoDPlanFiles) {
+                String imageUrl = s3Service.uploadFile(file, "designs/plans");
+                twoDPlanUrls.add(imageUrl);
             }
-
-            // Upload file to S3
-            String imageUrl = s3Service.uploadFile(imageFile, "designs");
-
-            // Format area
-            String formattedArea = (area != null) ? area + " sq ft" : "Not specified";
 
             // Create Design object
             Design design = new Design();
-            design.setTitle(title);
-            design.setDescription(description);
-            design.setPrice(price);
-            design.setDesignType(Design.DesignType.valueOf(designType));
-            design.setBedrooms(bedrooms);
-            design.setBathrooms(bathrooms);
-            design.setFloors(floors);
-            design.setStatus(Status.PENDING);
-            design.setArea(area);
+            design.setDesignType(request.getDesignType());
+            design.setDesignCategory(request.getDesignCategory());
+            design.setTotalArea(request.getTotalArea());
             design.setVendor(vendor);
-            design.setImageUrl(imageUrl);
+            design.setPlotFacing(request.getPlotFacing());
+            design.setPlotLocation(request.getPlotLocation());
+            design.setParking(request.getParking());
+            design.setBuiltUpArea(request.getBuiltUpArea());
+            design.setLength(request.getLength());
+            design.setWidth(request.getWidth());
+            design.setStatus(Status.PENDING);
+            design.setElevationUrls(elevationUrls);
+            design.setTwoDPlanUrls(twoDPlanUrls);
 
-            Design savedDesign= designService.createDesign(design);
-            System.out.println("Design created: " + savedDesign);
+            // Parse floor list
+            ObjectMapper mapper = new ObjectMapper();
+            List<Floor> floors = new ArrayList<>();
+            if (request.getFloorList() != null && !request.getFloorList().isEmpty()) {
+                try {
+                    floors = mapper.readValue(request.getFloorList(),
+                            new TypeReference<List<Floor>>() {});
+                } catch (Exception e) {
+                    return ResponseEntity.badRequest()
+                            .body(Map.of("error", "Invalid floor list JSON: " + e.getMessage()));
+                }
+            }
+            design.setFloorList(floors);
+
+            Design savedDesign = designService.createDesign(design);
 
             response.put("success", true);
             response.put("message", "Design uploaded successfully");
@@ -121,70 +138,110 @@ public class DesignController {
 
         } catch (Exception e) {
             System.err.println("Error uploading design: " + e.getMessage());
+            e.printStackTrace();
             response.put("success", false);
-            response.put("message", "Error uploading design");
+            response.put("message", "Error uploading design: " + e.getMessage());
             return ResponseEntity.status(500).body(response);
         }
     }
 
-    @PutMapping("/update")
+    @PutMapping(value = "/update/{id}", consumes = "multipart/form-data")
     @PreAuthorize("hasRole('VENDOR')")
-    public ResponseEntity<?> updateDesignByVendor(@RequestParam("id") Long id,
-                                                  @RequestParam("title") String title,
-                                                  @RequestParam("designType") String designType,
-                                                  @RequestParam("price") BigDecimal price,
-                                                  @RequestParam("bedrooms") Integer bedrooms,
-                                                  @RequestParam("bathrooms") Integer bathrooms,
-                                                  @RequestParam("floors") Integer floors,
-                                                  @RequestParam("area") Double area,
-                                                  @RequestParam("description") String description,
-                                                  @RequestPart(value = "imageFile", required = false) MultipartFile file) throws IOException {
+    public ResponseEntity<?> updateDesignByVendor(@PathVariable Long id, @ModelAttribute DesignRequestDTO request) throws IOException {
         try{
             Optional<Design> optionalDesign= designService.findDesignById(id);
             if(optionalDesign.isEmpty()){
-                ResponseEntity.status(HttpStatus.NOT_FOUND).body("Design not found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Design not found");
             }
 
             Design design= optionalDesign.get();
 
             // set the design
-            design.setTitle(title);
-            design.setDesignType(Design.DesignType.valueOf(designType));
-            design.setPrice(price);
-            design.setArea(area);
-            design.setFloors(floors);
-            design.setDescription(description);
-            design.setBathrooms(bathrooms);
-            design.setBedrooms(bedrooms);
+            design.setDesignType(request.getDesignType());
+            design.setDesignCategory(request.getDesignCategory());
+            design.setLength(request.getLength());
+            design.setWidth(request.getWidth());
+            design.setTotalArea(request.getTotalArea());
+            design.setParking(request.getParking());
+            design.setPlotFacing(request.getPlotFacing());
+            design.setPlotLocation(request.getPlotLocation());
+            design.setBuiltUpArea(request.getBuiltUpArea());
+            design.setUpdatedAt(LocalDateTime.now());
 
-            // Validate file
-            if (file==null) {
-                return ResponseEntity.badRequest()
-                        .body(Map.of("error", "No file uploaded"));
+            ObjectMapper mapper = new ObjectMapper();
+            List<Floor> floors = new ArrayList<>();
+            if (request.getFloorList() != null && !request.getFloorList().isEmpty()) {
+                floors = mapper.readValue(request.getFloorList(), new TypeReference<List<Floor>>() {});
+            }
+            design.setFloorList(floors);
+
+            List<String> elevationUrls= new ArrayList<>();
+            List<String> twoDPlanUrls= new ArrayList<>();
+
+            List<MultipartFile> elevationFiles= request.getElevationFiles();
+            List<MultipartFile> twoDPlanFiles= request.getTwoDPlanFiles();
+
+            if(elevationFiles!=null && !elevationFiles.isEmpty()){
+                // Upload Elevation file to S3
+                for(MultipartFile file: elevationFiles){
+                    // Check file extension
+                    String originalFileName = file.getOriginalFilename();
+                    if (originalFileName == null) {
+                        return ResponseEntity.badRequest()
+                                .body(Map.of("error", "Invalid Elevation file name"));
+                    }
+
+                    String fileExtension = originalFileName.substring(originalFileName.lastIndexOf('.'));
+                    if (!ALLOWED_EXTENSIONS.contains(fileExtension.toLowerCase())) {
+                        return ResponseEntity.badRequest()
+                                .body(Map.of("error", "File type not allowed. Allowed types: " + ALLOWED_EXTENSIONS));
+                    }
+                    String imageUrl = s3Service.uploadFile(file, "designs");
+                    elevationUrls.add(imageUrl);
+                }
+                design.setElevationUrls(elevationUrls);
             }
 
-            // Check file size (50MB limit)
-            if (file.getSize() > 50 * 1024 * 1024) {
-                return ResponseEntity.badRequest()
-                        .body(Map.of("error", "File size exceeds 50MB limit"));
+            // Upload 2D Plan file to S3
+            if(twoDPlanFiles!=null && !twoDPlanFiles.isEmpty()){
+                for(MultipartFile file: twoDPlanFiles){
+                    // Check file extension
+                    String originalFileName = file.getOriginalFilename();
+                    if (originalFileName == null) {
+                        return ResponseEntity.badRequest()
+                                .body(Map.of("error", "Invalid 2D Plan file name"));
+                    }
+
+                    String fileExtension = originalFileName.substring(originalFileName.lastIndexOf('.'));
+                    if (!ALLOWED_EXTENSIONS.contains(fileExtension.toLowerCase())) {
+                        return ResponseEntity.badRequest()
+                                .body(Map.of("error", "File type not allowed. Allowed types: " + ALLOWED_EXTENSIONS));
+                    }
+                    String imageUrl = s3Service.uploadFile(file, "designs");
+                    twoDPlanUrls.add(imageUrl);
+                }
+                design.setTwoDPlanUrls(twoDPlanUrls);
             }
 
-            String url= s3Service.uploadFile(file,"designs");
-            design.setImageUrl(url);
-            return ResponseEntity.ok(designService.updateDesign(design));
+            Design updatedDesign= designService.updateDesign(design);
+
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "message", "Design updated successfully.",
+                    "design", updatedDesign
+            ));
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating design: "+ e.getMessage());
         }
     }
 
 
-
-    @GetMapping("/fetch")
+    @GetMapping("/fetch-designs")
     @PreAuthorize("hasRole('VENDOR')")
     public ResponseEntity<List<Design>> getMyDesigns(@AuthenticationPrincipal UserDetailsImpl userDetails){
 
         try{
-            User vendor= userService.findByUserName(userDetails.getUsername());
+            Vendor vendor= vendorService.getVendorByUsername(userDetails.getUsername());
             List<Design> myDesign= designService.getDesigns(vendor.getId());
 
             return ResponseEntity.ok(myDesign);
@@ -200,4 +257,104 @@ public class DesignController {
         return "Design deleted successfully";
     }
 
+    // Helper method for file validation
+    private ValidationResult validateFiles(List<MultipartFile> files, String fileType) {
+        // Check if files exist
+        if (files == null || files.isEmpty()) {
+            return ValidationResult.error("No " + fileType + " files uploaded");
+        }
+
+        // Validate each file
+        for (MultipartFile file : files) {
+            // Check if file is empty
+            if (file.isEmpty()) {
+                return ValidationResult.error(fileType + " file is empty");
+            }
+
+            // Check file size
+            if (file.getSize() > MAX_FILE_SIZE) {
+                return ValidationResult.error(
+                        fileType + " file '" + file.getOriginalFilename() +
+                                "' exceeds 50MB limit (size: " + (file.getSize() / (1024 * 1024)) + "MB)"
+                );
+            }
+
+            // Check file extension
+            String originalFileName = file.getOriginalFilename();
+            if (originalFileName == null || originalFileName.isEmpty()) {
+                return ValidationResult.error("Invalid " + fileType + " file name");
+            }
+
+            int lastDotIndex = originalFileName.lastIndexOf('.');
+            if (lastDotIndex == -1) {
+                return ValidationResult.error(
+                        fileType + " file '" + originalFileName + "' has no extension"
+                );
+            }
+
+            String fileExtension = originalFileName.substring(lastDotIndex).toLowerCase();
+            if (!ALLOWED_EXTENSIONS.contains(fileExtension)) {
+                return ValidationResult.error(
+                        fileType + " file type not allowed. File: '" + originalFileName +
+                                "'. Allowed types: " + ALLOWED_EXTENSIONS
+                );
+            }
+        }
+
+        return ValidationResult.success();
+    }
+
+    // Inner class for validation results
+    private static class ValidationResult {
+        private final boolean valid;
+        private final String errorMessage;
+
+        private ValidationResult(boolean valid, String errorMessage) {
+            this.valid = valid;
+            this.errorMessage = errorMessage;
+        }
+
+        public static ValidationResult success() {
+            return new ValidationResult(true, null);
+        }
+
+        public static ValidationResult error(String message) {
+            return new ValidationResult(false, message);
+        }
+
+        public boolean isValid() {
+            return valid;
+        }
+
+        public String getErrorMessage() {
+            return errorMessage;
+        }
+    }
+
+    @GetMapping("/fetch-all-designs")
+    public ResponseEntity<List<Design>> getAllDesigns(){
+        List<Design> designList= designService.getAllDesigns();
+        return ResponseEntity.ok(designList);
+    }
+
+    @PutMapping("/update")
+    @PreAuthorize("hasRole('VENDOR')")
+    public ResponseEntity<Design> updateDesignStatus(@RequestParam("id") Long id,
+                                                     @RequestParam("status") String status){
+
+        // Validate status
+        if (!status.equalsIgnoreCase("approved")
+                && !status.equalsIgnoreCase("pending")
+                && !status.equalsIgnoreCase("rejected")) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        try{
+            Design updateDesign= designService.updateDesignStatus(id, Status.valueOf(status.toUpperCase()));
+            return ResponseEntity.ok(updateDesign);
+        }catch (RuntimeException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+    }
 }

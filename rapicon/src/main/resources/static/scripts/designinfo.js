@@ -2,52 +2,79 @@
   const urlParams = new URLSearchParams(window.location.search);
   const designId = urlParams.get('id');
 
+  let totalArea=0;
+  let builtUpArea=0;
+
   // Load design details
   function loadDesignDetails() {
-    // Retrieve from sessionStorage
     const design = JSON.parse(sessionStorage.getItem('selectedDesign') || '{}');
 
-    if (design.name) {
-      document.getElementById('designTitle').textContent = design.name;
-      /*document.getElementById('designPrice').textContent = '₹' + design.price + ' per sq ft';*/
-      document.getElementById('designType').textContent = (design.type || 'House').toUpperCase();
-      document.getElementById('designPrice').textContent = '₹' + design.price;
-      /*document.getElementById('plotSize').textContent = design.plotSize || '1500 sq.ft';*/
-      document.getElementById('builtArea').textContent = design.builtArea || '1200 sq.ft';
-      document.getElementById('floors').textContent = design.floors || '2';
-      document.getElementById('bedrooms').textContent = (design.bedrooms || 3) + ' Bedrooms';
-      document.getElementById('bathrooms').textContent = (design.bathrooms || 2) + ' Bathrooms';
-      document.getElementById('kitchens').textContent = (design.kitchens || 1) + ' Kitchen';
-      document.getElementById('parking').textContent = (design.parking || 2) + ' Parking';
-      document.getElementById('designDescription').textContent = design.description || 'Beautiful architectural design with modern amenities and spacious rooms.';
+    if (design.id) {
 
-      if (design.image) {
-        document.getElementById('mainImage').src = design.image;
-      }
+      // store area and built-up-area for package use
+      totalArea= design.totalArea;
+      builtUpArea=design.builtUpArea;
 
-      // Set rating
+      // ✅ Basic Info
+      document.getElementById('designTitle').textContent = design.category || 'Untitled Design';
+      document.getElementById('designType').textContent = design.type || 'House';
+      document.getElementById('designPrice').textContent = design.price ? `₹${design.price}` : '₹25 sq.ft';
+      document.getElementById('plotSize').textContent = design.plotSize || '1500 sq.ft';
+      document.getElementById('totalArea').textContent = design.totalArea || '1200 sq.ft';
+      document.getElementById('builtArea').textContent = design.builtUpArea || '1200 sq.ft';
+      document.getElementById('floors').textContent = design.floors ? design.floors.length : 2;
+      document.getElementById('bedrooms').textContent = design.bedrooms + 'Bedrooms';
+      document.getElementById('bathrooms').textContent = design.bathrooms + ' Bathrooms';
+      document.getElementById('kitchens').textContent = design.kitchens + ' Kitchen';
+      document.getElementById('plotFacing').textContent = design.plotFacing || ' N/A';
+      document.getElementById('plotLocation').textContent = design.plotLocation || 'N/A';
+      document.getElementById('parking').textContent = design.parking;
+      document.getElementById('hall').textContent = design.hall+ 'Hall' || 0;
+      document.getElementById('designDescription').textContent =
+                   'Beautiful architectural design with modern amenities and spacious rooms.';
+
+      // ✅ Main Image
+      document.addEventListener('DOMContentLoaded', () => {
+          const mainImg = document.getElementById('mainImage');
+          const leftBtn = document.getElementById('leftBtn');
+          const rightBtn = document.getElementById('rightBtn');
+
+          let currentIndex = 0;
+
+          // Initialize first image
+          if (design.elevationUrls && design.elevationUrls.length > 0) {
+            mainImg.src = design.elevationUrls[0];
+          }
+
+          // ✅ Scroll function
+          function scrollGallery(direction) {
+            const total = design.elevationUrls.length;
+            currentIndex += direction;
+
+            if (currentIndex < 0) currentIndex = total - 1;
+            if (currentIndex >= total) currentIndex = 0;
+
+            // Smooth fade effect
+            mainImg.style.opacity = 0;
+            setTimeout(() => {
+              mainImg.src = design.elevationUrls[currentIndex];
+              mainImg.style.opacity = 1;
+            }, 200);
+          }
+
+          // ✅ Event listeners
+          leftBtn.addEventListener('click', () => scrollGallery(-1));
+          rightBtn.addEventListener('click', () => scrollGallery(1));
+      });
+
+      // ✅ Rating
       const rating = design.rating || 4.5;
       const stars = '★'.repeat(Math.floor(rating)) + '☆'.repeat(5 - Math.floor(rating));
       document.getElementById('designRating').textContent = stars;
       document.getElementById('reviewCount').textContent = `(${design.reviews || 0} reviews)`;
 
-      // Load key features
-      const features = design.features || [
-        { icon: '🌞', text: 'Natural Lighting' },
-        { icon: '🌿', text: 'Green Spaces' },
-        { icon: '🔒', text: 'Security System' },
-        { icon: '💡', text: 'Smart Home Ready' }
-      ];
-
-      const featuresContainer = document.getElementById('keyFeatures');
-      featuresContainer.innerHTML = features.map(f => `
-        <div class="feature-item">
-          <div class="feature-icon">${f.icon}</div>
-          <div>${f.text}</div>
-        </div>
-      `).join('');
     } else {
-      // No design data found
+      // ❌ No design found
       document.getElementById('designTitle').textContent = 'Design Not Found';
       document.getElementById('designDescription').textContent = 'Please go back and select a design.';
     }
@@ -57,13 +84,15 @@
     window.location.href = '/user.html';
   }
 
-  function viewCart() {
-    window.location.href = '/addtocard.html';
+  function BuyNow() {
+    localStorage.setItem('totalArea',totalArea);
+    localStorage.setItem('builtUpArea', builtUpArea);
+    window.location.href = '/package-page.html';
   }
 
   async function addToCart() {
     const design = JSON.parse(sessionStorage.getItem('selectedDesign') || '{}');
-    const userId = localStorage.getItem('id'); // assuming you store logged-in user info
+    const userId = localStorage.getItem('user_id'); // assuming you store logged-in user info
 
     if (!userId) {
       alert('Please log in to save your design.');
@@ -87,7 +116,7 @@
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}` // if JWT is used
+          'Authorization': `Bearer ${localStorage.getItem('user_token')}` // if JWT is used
         },
         body: JSON.stringify(data)
       });
@@ -135,19 +164,6 @@
       setTimeout(() => notification.remove(), 500);
     }, 2000);
   }
-
-
-
-  /*function addToCart() {
-    const design = JSON.parse(sessionStorage.getItem('selectedDesign') || '{}');
-    if (design.name) {
-      // Store design info for payment page
-      sessionStorage.setItem('purchaseDesign', JSON.stringify(design));
-      window.location.href = '/addtocard.html';
-    } else {
-      alert('Design information not found. Please go back and select a design.');
-    }
-  }*/
 
   // Load design details when page loads
   loadDesignDetails();

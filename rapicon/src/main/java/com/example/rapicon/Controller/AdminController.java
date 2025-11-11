@@ -53,7 +53,7 @@ public class AdminController {
         return "Design deleted Successfully";
     }
 
-    @PutMapping("/update")
+    /*@PutMapping("/update")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Design> updateDesignStatus(@RequestParam("id") Long id,
                                                      @RequestParam("status") String status){
@@ -72,7 +72,7 @@ public class AdminController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-    }
+    }*/
 
     @GetMapping("/all")
     @PreAuthorize("hasRole('ADMIN')")
@@ -87,7 +87,7 @@ public class AdminController {
 
     //----------------------------- Vendor Endpoints --------------------------------//
 
-    @GetMapping("/users")
+    /*@GetMapping("/users")
     public ResponseEntity<List<User>> getAllUserByRole(@RequestParam("role")String role){
         List<User> vendors= userService.getAllUser(role);
         if(vendors.isEmpty()){
@@ -95,7 +95,7 @@ public class AdminController {
         }else {
             return ResponseEntity.ok(vendors);
         }
-    }
+    }*/
 
     //----------------------- Order Endpoints -----------------------------------//
     @GetMapping("/orders")

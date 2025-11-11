@@ -103,3 +103,45 @@
     .register-link a:hover {
         text-decoration: underline;
     }
+
+
+    /// new code
+    .password-wrapper {
+          position: relative;
+          display: flex;
+          align-items: center;
+        }
+
+        .password-wrapper input {
+          width: 100%;
+          padding-right: 20px;
+        }
+
+        .password-wrapper .toggle-password {
+          position: absolute;
+          right: 10px;
+          cursor: pointer;
+          color: #666;
+          font-size: 18px;
+          z-index: 10;
+        }
+
+        .password-wrapper .toggle-password:hover {
+          color: #333;
+        }
+
+        .forgot-password-link {
+          text-align: right;
+          margin-top: 8px;
+          margin-bottom: 15px;
+        }
+
+        .forgot-password-link a {
+          font-size: 13px;
+          color: #007bff;
+          text-decoration: none;
+        }
+
+        .forgot-password-link a:hover {
+          text-decoration: underline;
+        }

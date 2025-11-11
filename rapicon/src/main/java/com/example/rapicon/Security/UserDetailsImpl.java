@@ -1,6 +1,7 @@
 package com.example.rapicon.Security;
 
 import com.example.rapicon.Models.User;
+import com.example.rapicon.Models.Vendor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -28,11 +29,29 @@ public class UserDetailsImpl implements UserDetails {
         this.authorities = authorities;
     }
 
+    public UserDetailsImpl(Long id, String email, Collection<? extends GrantedAuthority> authorities) {
+        this.id = id;
+        this.email = email;
+        this.authorities = authorities;
+    }
+
+
+    //----------------- for user-------------------------//
+
     public static UserDetailsImpl build(User user){
-        List<GrantedAuthority> authorities= List.of(new SimpleGrantedAuthority("ROLE_"+ user.getRole().name())
+        List<GrantedAuthority> authorities= List.of(new SimpleGrantedAuthority("ROLE_USER")
         );
         return new UserDetailsImpl(user.getId(),
-                user.getUsername(), user.getEmail(), user.getPassword(),authorities);
+                user.getEmail(), authorities);
+
+    }
+
+    //--------------------for vendor------------------------//
+    public static UserDetailsImpl build(Vendor vendor){
+        List<GrantedAuthority> authorities= List.of(new SimpleGrantedAuthority("ROLE_VENDOR")
+        );
+        return new UserDetailsImpl(vendor.getId(),
+                vendor.getUsername(), vendor.getEmail(), vendor.getPassword(),authorities);
 
     }
 

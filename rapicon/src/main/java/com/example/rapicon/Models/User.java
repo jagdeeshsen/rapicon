@@ -22,103 +22,20 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable=false, unique = true)
-    private String username;
-
     @Column(nullable = false,unique = true)
     private String email;
 
-    @Column(nullable = false)
-    private String password;
 
-    @Column(nullable = false)
-    private String firstname;
+    private String fullName;
 
-    private String lastname;
+    @Column(nullable = false, unique = true)
     private String phone;
 
-    @Enumerated(EnumType.STRING)
-    private Role role;
+    private String streetAddress;
+    private String city;
+    private String state;
+    private String zipCode;
+    private String country;
+    private Timestamp createdAt;
 
-    //private Timestamp createdAt;
-
-    /*public User() {
-    }
-
-    public User(Long id, String username, String email, String password, String firstname, String lastname, String phone, Role role) {
-        this.id = id;
-        this.username = username;
-        this.email = email;
-        this.password = password;
-        this.firstname = firstname;
-        this.lastname = lastname;
-        this.phone = phone;
-        this.role = role;
-    }
-
-    /// Getter and Setter ///
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Role getRole() {
-        return role;
-    }
-
-    public String getFirstname() {
-        return firstname;
-    }
-
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
-    }
-
-    public String getLastname() {
-        return lastname;
-    }
-
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }*/
 }

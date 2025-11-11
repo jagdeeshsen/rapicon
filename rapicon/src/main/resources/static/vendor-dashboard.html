@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendor Dashboard - Modern Design</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/vendor-dashboard.css">
+
+</head>
+<body>
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-content">
+                <div class="logo-icon">V</div>
+                <div class="logo-text">VendorPanel</div>
+            </div>
+        </div>
+
+        <nav class="nav-menu">
+            <button class="nav-item active" onclick="navigateTo('upload')">
+                <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                </svg>
+                Upload Design
+            </button>
+
+            <button class="nav-item" onclick="navigateTo('view')">
+                <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                </svg>
+                View Designs
+            </button>
+
+            <button class="nav-item" onclick="navigateTo('manage')">
+                <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                Manage Designs
+            </button>
+
+            <button class="nav-item" onclick="navigateTo('profile')">
+                <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                </svg>
+                Profile
+            </button>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="page-title" id="pageTitle">Upload New Design</h1>
+            <div class="user-info">
+                <div class="user-details">
+                    <div class="user-name">Vendor Designer</div>
+                    <div class="user-email">vendor@example.com</div>
+                </div>
+                <div class="user-avatar">VD</div>
+            </div>
+        </header>
+
+        <!-- Upload Page -->
+        <div id="uploadPage" class="page-content active">
+            <div class="content-card">
+                <form id="uploadForm" class="upload-form" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label class="form-label">Select Design Type *</label>
+                        <div class="design-types">
+                            <div class="design-type-card" onclick="selectDesignType('residential')">
+                                <svg class="design-type-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                                </svg>
+                                <div class="design-type-title">Residential</div>
+                                <div class="design-type-desc">Houses, Villas, Apartments</div>
+                            </div>
+
+                            <div class="design-type-card" onclick="selectDesignType('commercial')">
+                                <svg class="design-type-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                                </svg>
+                                <div class="design-type-title">Commercial</div>
+                                <div class="design-type-desc">Offices, Shops, Complexes</div>
+                            </div>
+
+                            <div class="design-type-card" onclick="selectDesignType('semi-commercial')">
+                                <svg class="design-type-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"/>
+                                </svg>
+                                <div class="design-type-title">Semi-commercial</div>
+                                <div class="design-type-desc">Mixed Use Buildings</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Plot Information -->
+                    <div id="plotInfo" class="hidden">
+                        <div class="section-title">Plot Information</div>
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label class="form-label">Plot Length (ft) *</label>
+                                <input type="number" class="form-input" id="plotLength">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Plot Breadth (ft) *</label>
+                                <input type="number" class="form-input" id="plotBreadth">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Plot Area (sq ft) *</label>
+                                <input type="number" class="form-input" id="plotArea">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Plot Facing *</label>
+                                <select class="form-select" id="plotFacing">
+                                    <option value="">Select facing</option>
+                                    <option value="North">North</option>
+                                    <option value="South">South</option>
+                                    <option value="East">East</option>
+                                    <option value="West">West</option>
+                                    <option value="North-East">North-East</option>
+                                    <option value="North-West">North-West</option>
+                                    <option value="South-East">South-East</option>
+                                    <option value="South-West">South-West</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="residentialOnlyFields" class="hidden">
+                            <div class="grid-2">
+                                <div class="form-group">
+                                    <label class="form-label">Plot Location *</label>
+                                    <select class="form-select" id="plotLocation">
+                                        <option value="">Select location</option>
+                                        <option value="Corner">Corner</option>
+                                        <option value="Center">Center</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Design Category *</label>
+                                    <select class="form-select" id="designCategory">
+                                        <option value="">Select category</option>
+                                        <option value="House">House</option>
+                                        <option value="Villa">Villa</option>
+                                        <option value="Bungalow">Bungalow</option>
+                                        <option value="Apartment">Apartment</option>
+                                        <option value="Duplex">Duplex</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="section-divider"></div>
+                    </div>
+
+                    <!-- Number of Floors -->
+                    <div id="numFloorsSection" class="hidden">
+                        <div class="form-group">
+                            <label class="form-label">Number of Floors *</label>
+                            <input type="number" min="1" class="form-input" id="numFloors" oninput="generateFloors()">
+                        </div>
+                    </div>
+
+                    <!-- Floor Details -->
+                    <div id="floorsSection" class="hidden">
+                        <div class="floor-header">
+                            <div class="section-title">Floor Details</div>
+                            <button type="button" class="btn-add" onclick="addFloor()">
+                                <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                </svg>
+                                Add Floor
+                            </button>
+                        </div>
+                        <div id="floorsList"></div>
+                        <div class="section-divider"></div>
+                    </div>
+
+                    <!-- Common Fields -->
+                    <div id="commonFields" class="hidden">
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label class="form-label">Vehicle Parking *</label>
+                                <input type="text" class="form-input" id="vehicleParking" placeholder="e.g., 2 cars, 4 bikes">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Total Built-up Area (sq ft) *</label>
+                                <input type="number" class="form-input" id="totalBuiltUp">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Elevation Design Images *</label>
+                            <div class="upload-area" onclick="document.getElementById('elevationUpload').click()">
+                                <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                                </svg>
+                                <div class="upload-text">Click to upload elevation images</div>
+                                <div class="upload-hint">PNG, JPG up to 10MB</div>
+                            </div>
+                            <input type="file" id="elevationUpload" multiple accept="image/*" class="hidden" onchange="handleImageUpload(event, 'elevation')">
+                            <div id="elevationPreview" class="image-preview-grid"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">2D Plan Images *</label>
+                            <div class="upload-area" onclick="document.getElementById('planUpload').click()">
+                                <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                                </svg>
+                                <div class="upload-text">Click to upload 2D plan images</div>
+                                <div class="upload-hint">PNG, JPG up to 10MB</div>
+                            </div>
+                            <input type="file" id="planUpload" multiple accept="image/*" class="hidden" onchange="handleImageUpload(event, 'plan')">
+                            <div id="planPreview" class="image-preview-grid"></div>
+                        </div>
+
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-primary">Upload Design</button>
+                            <button type="button" class="btn btn-secondary" onclick="resetForm()">Reset</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- View Designs Page -->
+        <div id="viewPage" class="page-content">
+            <div class="grid-3" id="designsGrid"></div>
+        </div>
+
+        <!-- Manage Designs Page -->
+        <div id="managePage" class="page-content">
+            <div class="table-container">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Design</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Uploaded</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody id="designsTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Profile Page -->
+        <div id="profilePage" class="page-content">
+            <div class="content-card">
+                <div class="profile-header">
+                    <div class="profile-avatar">VD</div>
+                    <div class="profile-info">
+                        <h2>Vendor Designer</h2>
+                        <p>vendor@example.com</p>
+                        <p style="font-size: 13px; margin-top: 4px;">Member since Jan 2024</p>
+                    </div>
+                </div>
+
+                <form>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label class="form-label">First Name</label>
+                            <input type="text" class="form-input" value="Vendor">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Last Name</label>
+                            <input type="text" class="form-input" value="Designer">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-input" value="vendor@example.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Phone</label>
+                        <input type="tel" class="form-input" value="+91 98765 43210">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Company Name</label>
+                        <input type="text" class="form-input" value="Design Studio Pro">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Address</label>
+                        <textarea class="form-textarea">123 Design Street, Jabalpur, Madhya Pradesh</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Bio</label>
+                        <textarea class="form-textarea">Experienced architectural designer specializing in residential and commercial projects.</textarea>
+                    </div>
+
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <button type="button" class="btn btn-secondary">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="scripts/vendor-dashboard.js"></script>
+</body>
+</html>

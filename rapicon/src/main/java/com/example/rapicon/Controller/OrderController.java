@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -58,7 +59,7 @@ public class OrderController {
                 OrderItem orderItem= new OrderItem();
                 orderItem.setDesign(design);
                 orderItem.setOrder(userOrder);
-                orderItem.setPriceAtPurchase(design.getPrice());
+                orderItem.setPriceAtPurchase(new BigDecimal(2500));
                 orderItem.setCreatedAt(new Timestamp(System.currentTimeMillis()));
                 orderItemService.createOrderItem(orderItem);
             }

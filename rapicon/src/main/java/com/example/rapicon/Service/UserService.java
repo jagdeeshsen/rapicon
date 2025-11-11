@@ -26,27 +26,30 @@ public class UserService {
     }
 
     public void registerUser(User user) {
-        // encrypt password before saving
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        //user.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+        user.setCreatedAt(new Timestamp(System.currentTimeMillis()));
         userRepository.save(user);
     }
 
-    public User findByUserName(String username) {
-        Optional<User> user= userRepository.findByUsername(username);
+    public List<User> getAllUser(){
+        return userRepository.findAll();
+    }
+
+   public User existsByEmail(String email) {
+        Optional<User> user= userRepository.findByEmail(email);
         return user.get();
-    }
-
-    public List<User> getAllUser(String role){
-        Role enumRole= Role.valueOf(role.toUpperCase());
-        return userRepository.findByRole(enumRole);
-    }
-
-   public boolean existsByEmail(Long id) {
-        return userRepository.existsById(id);
     }
 
    public Optional<User> findById(Long id){
         return userRepository.findById(id);
+   }
+
+   /// =============================== new code ===================///
+
+   public Optional<User> findUserByPhone(String phone){
+        return userRepository.findByPhone(phone);
+   }
+
+   public void updateUser(User user){
+       userRepository.save(user);
    }
 }

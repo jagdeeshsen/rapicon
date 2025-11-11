@@ -1,0 +1,226 @@
+* {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
+        body {
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          min-height: 100vh;
+          padding: 20px;
+        }
+
+        .container {
+          max-width: 1400px;
+          margin: 0 auto;
+        }
+
+        .header {
+          text-align: center;
+          color: white;
+          padding: 40px 20px;
+          margin-bottom: 40px;
+        }
+
+        .header h1 {
+          font-size: 3em;
+          margin-bottom: 15px;
+          text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+          font-size: 1.3em;
+          opacity: 0.95;
+        }
+
+        .contact-info {
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          background: white;
+          padding: 12px 20px;
+          border-radius: 50px;
+          box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          z-index: 1000;
+        }
+
+        .contact-info::before {
+          content: "📞";
+          font-size: 1.2em;
+        }
+
+        .contact-info span {
+          font-weight: 600;
+          color: #667eea;
+        }
+
+        .packages-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          gap: 30px;
+          padding: 20px;
+        }
+
+        .package-card {
+          background: white;
+          border-radius: 20px;
+          overflow: hidden;
+          box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+          transition: transform 0.3s, box-shadow 0.3s;
+          position: relative;
+        }
+
+        .package-card:hover {
+          transform: translateY(-10px);
+          box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .package-badge {
+          position: absolute;
+          top: 20px;
+          right: -35px;
+          background: #f4c430;
+          color: #333;
+          padding: 8px 40px;
+          font-weight: bold;
+          transform: rotate(45deg);
+          box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+          z-index: 10;
+        }
+
+        .package-header {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          padding: 30px;
+          text-align: center;
+          color: white;
+        }
+
+        .package-card.popular .package-header {
+          background: linear-gradient(135deg, #f4c430 0%, #f39c12 100%);
+        }
+
+        .package-name {
+          font-size: 2em;
+          margin-bottom: 10px;
+          font-weight: bold;
+        }
+
+        .package-price {
+          font-size: 2.5em;
+          font-weight: bold;
+          margin-bottom: 5px;
+        }
+
+        .package-unit {
+          font-size: 1.2em;
+          opacity: 0.9;
+        }
+
+        .package-description {
+          padding: 25px;
+          color: #555;
+          line-height: 1.6;
+          border-bottom: 2px solid #f0f0f0;
+        }
+
+        .package-highlights {
+          padding: 25px;
+        }
+
+        .highlights-title {
+          color: #667eea;
+          font-weight: bold;
+          font-size: 0.9em;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          margin-bottom: 15px;
+        }
+
+        .highlight-item {
+          display: flex;
+          align-items: start;
+          gap: 12px;
+          margin-bottom: 12px;
+          padding: 10px;
+          background: #f8f9fa;
+          border-radius: 8px;
+          transition: background 0.3s;
+        }
+
+        .highlight-item:hover {
+          background: #e9ecef;
+        }
+
+        .highlight-item::before {
+          content: "✓";
+          color: #28a745;
+          font-weight: bold;
+          font-size: 1.2em;
+          flex-shrink: 0;
+        }
+
+        .package-footer {
+          padding: 25px;
+          display: flex;
+          gap: 15px;
+          flex-direction: column;
+        }
+
+        .btn {
+          padding: 15px 30px;
+          border: none;
+          border-radius: 10px;
+          font-size: 1.1em;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s;
+          text-align: center;
+          text-decoration: none;
+          display: block;
+        }
+
+        .btn-buy {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-buy:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 30px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-learn {
+          background: white;
+          color: #667eea;
+          border: 2px solid #667eea;
+        }
+
+        .btn-learn:hover {
+          background: #667eea;
+          color: white;
+        }
+
+        @media (max-width: 768px) {
+          .header h1 {
+            font-size: 2em;
+          }
+
+          .header p {
+            font-size: 1em;
+          }
+
+          .packages-grid {
+            grid-template-columns: 1fr;
+          }
+
+          .contact-info {
+            position: static;
+            margin: 0 auto 20px;
+            width: fit-content;
+          }
+        }

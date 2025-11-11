@@ -13,6 +13,12 @@ let modal;
 let closeModal;
 let purchaseForm;
 let userIcon;
+let totalBathrooms;
+let totalBedrooms;
+let totalHall;
+let totalKitchens;
+let others;
+let totalFloors;
 
 // Initialize dashboard
 document.addEventListener('DOMContentLoaded', function() {
@@ -32,12 +38,12 @@ document.addEventListener('DOMContentLoaded', function() {
     if (userIcon) {
         userIcon.addEventListener("click", function() {
             // Redirect to profile page
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('user_token');
 
             if (!token) {
                 showNotification('Please login to view profile', 'error');
                 setTimeout(() => {
-                    window.location.href = 'login.html';
+                    window.location.href = 'otp-login.html';
                 }, 1500);
                 return;
             }
@@ -46,8 +52,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Check if user is logged in
-    const token = localStorage.getItem('token');
-    const fullName = localStorage.getItem('fullName');
+    const token = localStorage.getItem('user_token');
+    const fullName = localStorage.getItem('user_fullName');
 
     // Update welcome message
     const welcomeUser = document.getElementById("welcomeUser");
@@ -192,7 +198,7 @@ function setupEventListeners() {
      `;
 
      try {
-         const token = localStorage.getItem('token');
+         const token = localStorage.getItem('user_token');
 
          /*if (!token) {
              designsGrid.innerHTML = `
@@ -215,6 +221,7 @@ function setupEventListeners() {
          if (response.ok) {
              allDesigns = await response.json();
              console.log('Fetched designs from server:', allDesigns);
+
 
              if (allDesigns.length === 0) {
                  designsGrid.innerHTML = `
@@ -324,37 +331,61 @@ function setupEventListeners() {
      const card = document.createElement('div');
      card.className = 'design-card';
 
+     // initialize
+     totalBathrooms=0;
+     totalBedrooms=0;
+     totalFloors=0;
+     totalHall=0;
+     totalKitchens=0;
+
+     // calculate no of bedrooms,bathrooms, hall , kitchen, others
+     design.floorList.forEach(floor=>{
+        totalBedrooms+= parseInt(floor.bedrooms);
+        totalBathrooms+= parseInt(floor.bathrooms);
+        totalHall+= parseInt(floor.hall);
+        totalKitchens+= parseInt(floor.kitchen);
+        others+= floor.other;
+     });
+
+
      card.innerHTML = `
          <div class="design-image">
-             ${design.imageUrl ? `<img src="${design.imageUrl}" alt="${design.title || design.name}" class="design-thumbnail">`
+             ${design.elevationUrls[0] ? `<img src="${design.elevationUrls[0]}" alt="${design.title || design.name}" class="design-thumbnail">`
                                : `<span style="position: relative; z-index: 1;">${getDesignIcon(design.designType || design.type)}</span>`}
          </div>
          <div class="design-info">
-             <h3 class="design-title">${design.title || design.name}</h3>
-             <span class="design-type">${(design.designType || design.type).toUpperCase()}</span>
+             <h3 class="design-title">${design.designCategory}</h3>
+             <span class="design-type">${(design.designType).toUpperCase()}</span>
              <div class="design-specs">
                  <div class="spec-item">
                      <span class="spec-icon">🛏️</span>
-                     <span>${design.bedrooms} Bedrooms</span>
+                     <span>${totalBedrooms} Bedrooms</span>
                  </div>
                  <div class="spec-item">
                      <span class="spec-icon">🚿</span>
-                     <span>${design.bathrooms} Bathrooms</span>
+                     <span>${totalBathrooms} Bathrooms</span>
                  </div>
                  <div class="spec-item">
                      <span class="spec-icon">📐</span>
-                     <span>${design.area} sq ft</span>
+                     <span>${design.totalArea} sq ft</span>
                  </div>
                  <div class="spec-item">
                      <span class="spec-icon">⭐</span>
                      <span>${design.rating || '4.5'}/5.0</span>
                  </div>
+                 <div class="spec-item">
+                      <span class="spec-icon">🏢</span>
+                      <span>${design.floorList.length} Floor</span>
+                 </div>
+                 <div class="spec-item">
+                      <span class="spec-icon">📏</span>
+                      <span>${design.length +"X"+ design.width} Plot size</span>
+                 </div>
              </div>
-             <p class="design-description">${design.description}</p>
              <div class="card-footer">
                  <div>
                      <div class="price-label">Starting from</div>
-                     <div class="price">₹${design.price}</div>
+                     <div class="price">₹${design.price || '25 sq.ft'}</div>
                  </div>
                  <button class="purchase-btn" data-design-id="${design.id}">
                      Purchase Now
@@ -372,7 +403,7 @@ function setupEventListeners() {
 
  function openPurchaseModal(designId) {
      // Check if user is logged in
-     const token = localStorage.getItem('token');
+     const token = localStorage.getItem('user_token');
 
      if (!token) {
          showNotification('Please login to view design details', 'error');
@@ -391,17 +422,22 @@ function setupEventListeners() {
          // Store design in sessionStorage for the detail page
          sessionStorage.setItem('selectedDesign', JSON.stringify({
              id: design.id,
-             name: design.title || design.name,
+             category: design.designCategory,
              type: design.designType || design.type,
-             price: design.price,
-             location: design.location || 'Not specified',
-             bedrooms: design.bedrooms,
-             bathrooms: design.bathrooms,
-             kitchens: design.kitchens || 1,
-             parking: design.parking || 2,
-             plotSize: design.plotSize || '1500 sq.ft',
-             builtArea: design.area || '1200 sq.ft',
-             floors: design.floors || '2',
+             //price: design.price,
+             plotLocation: design.plotLocation || 'Not specified',
+             plotFacing: design.plotFacing || 'Not specified',
+             bedrooms: totalBedrooms,
+             bathrooms: totalBathrooms,
+             kitchens: totalKitchens || 0,
+             hall: totalHall,
+             parking: design.parking || 0,
+             plotSize: design.length+ "X" + design.width || '1500 sq.ft',
+             totalArea: design.totalArea || 'N/A sq.ft',
+             builtUpArea: design.builtUpArea || 'N/A sq.ft',
+             elevationUrls: design.elevationUrls,
+             twoDPlanUrls: design.twoDPlanUrls,
+             floors: design.floors || '0',
              rating: design.rating || 4.5,
              reviews: design.reviews || 0,
              image: design.imageUrl || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800',
