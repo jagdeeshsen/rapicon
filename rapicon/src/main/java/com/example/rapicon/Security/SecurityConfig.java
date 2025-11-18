@@ -52,6 +52,7 @@ public class SecurityConfig {
                                 "/userprofile.html",
                                 "/otp-login.html",
                                 "/loan-form.html",
+                                "/privacy-policy.html",
                                 "/register-now.html",
                                 "/otp-verification.html",
                                 "/terms-privacy.html",
