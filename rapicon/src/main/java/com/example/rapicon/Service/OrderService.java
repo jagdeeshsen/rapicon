@@ -33,8 +33,8 @@ public class OrderService {
     @Autowired
     private OrderItemService orderItemService;
 
-    public void createOrder(Order order){
-        orderRepo.save(order);
+    public Order createOrder(Order order){
+        return orderRepo.save(order);
     }
 
     public Order getOrderById(Long id){

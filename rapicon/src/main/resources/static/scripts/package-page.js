@@ -1,13 +1,13 @@
 // get area for price calculation
-const totalArea= localStorage.getItem('totalArea');
-const builtUpArea= localStorage.getItem('builtUpArea');
+const totalArea= sessionStorage.getItem('totalArea');
+const builtUpArea= sessionStorage.getItem('builtUpArea');
 
 // ==========================================
     // EDIT PRICES HERE - Change values as needed
     // ==========================================
     const packagesData = [
       {
-        id: 'basic',
+        id: '1',
         name: 'Basic',
         price: 5,  // ← Edit this price
         description: 'A budget package with no compromise on quality that includes all construction essentials',
@@ -21,7 +21,7 @@ const builtUpArea= localStorage.getItem('builtUpArea');
         isPopular: false
       },
       {
-        id: 'classic',
+        id: '2',
         name: 'Classic',
         price: 25,  // ← Edit this price
         description: 'Our best seller package with upgraded brands like Jindal Steels, Hindware etc at a considerable price',
@@ -35,7 +35,7 @@ const builtUpArea= localStorage.getItem('builtUpArea');
         isPopular: true  // This package shows "POPULAR" badge
       },
       {
-        id: 'premium',
+        id: '3',
         name: 'Premium',
         price: 1499,  // ← Edit this price
         description: 'An elegant package crafted for modern living with extra provisions like solar heater setup, puja room door etc',
@@ -49,7 +49,7 @@ const builtUpArea= localStorage.getItem('builtUpArea');
         isPopular: false
       },
       {
-        id: 'royale',
+        id: '4',
         name: 'Royale',
         price: 2199,  // ← Edit this price
         description: 'An ultimate plan with high-end finishes with amenities like EV charging, copper gas connection etc',
@@ -100,6 +100,7 @@ const builtUpArea= localStorage.getItem('builtUpArea');
 
           <div class="package-footer">
             <button class="btn btn-buy" onclick="handleBuy('${pkg.name}', '${pkg.price}')">Buy Now</button>
+            <button class="btn btn-learn" onclick= "addToCart('${pkg.name}', '${pkg.price}')">Add To Cart</button>
           </div>
         `;
 
@@ -107,11 +108,96 @@ const builtUpArea= localStorage.getItem('builtUpArea');
       });
     }
 
+    async function addToCart(pkgName, pkgPrice) {
+        const design = JSON.parse(sessionStorage.getItem('selectedDesign') || '{}');
+        const userId = localStorage.getItem('user_id');
+        const totalAmount= pkgPrice * totalArea;
+
+
+        if (!userId) {
+          alert('Please log in to save your design.');
+          return;
+        }
+
+        if (!design.id) {
+          alert('Design information not found. Please select a design first.');
+          return;
+        }
+
+        // Prepare data for backend
+        const data = {
+          userId: userId,
+          design: design,
+          added_at: new Date().toISOString(),
+          totalAmount: totalAmount,
+          packageName: pkgName,
+          totalInstallments: 10
+        };
+        console.log("Data:", data);
+        try {
+          const response = await fetch("/api/cart/addItem", {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('user_token')}` // if JWT is used
+            },
+            body: JSON.stringify(data)
+          });
+
+          if (response.ok) {
+            showNotification("✅ Design added successfully!", 'success');
+            setTimeout(() => {
+                //window.location.href = '/addtocard.html';
+              }, 1500);
+          } else if (response.status === 401) {
+            alert('Session expired. Please log in again.');
+          } else {
+            const err = await response.text();
+            console.error('Failed to add to cart:', err);
+            alert('Error saving design.');
+          }
+        } catch (error) {
+          console.error('Error adding to cart:', error);
+          alert('Something went wrong. Please try again later.');
+        }
+    }
+
     function handleBuy(packageName, packagePrice) {
       //alert(`Proceeding to purchase ${packageName} package. You'll be redirected to the booking form.`);
-        packagePrice*= builtUpArea;
-      // Uncomment below to redirect to a booking page with package info
-      window.location.href = 'addtocard.html?price='+packagePrice;
+       packagePrice*= builtUpArea;
+       sessionStorage.setItem('selectedPackage', packageName);
+       window.location.href = '/addtocard.html';
+       /*if(packageName==='Basic'){
+          window.location.href = 'addtocard.html?price='+packagePrice;
+       }else{
+          window.location.href= 'installment-payment.html?price='+packagePrice;
+       }*/
+    }
+
+    function showNotification(message, type = 'success') {
+        const notification = document.createElement('div');
+        notification.textContent = message;
+        notification.className = `notification ${type}`;
+        Object.assign(notification.style, {
+          position: 'fixed',
+          top: '20px',
+          right: '20px',
+          background: type === 'success' ? '#4caf50' : '#f44336',
+          color: 'white',
+          padding: '12px 18px',
+          borderRadius: '8px',
+          fontSize: '16px',
+          zIndex: 9999,
+          transition: 'opacity 0.5s ease',
+          opacity: '1'
+        });
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+          notification.style.opacity = '0';
+          setTimeout(() => notification.remove(), 500);
+        }, 2000);
     }
 
     // Initialize page

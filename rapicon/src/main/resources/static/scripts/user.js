@@ -40,14 +40,15 @@ document.addEventListener('DOMContentLoaded', function() {
             // Redirect to profile page
             const token = localStorage.getItem('user_token');
 
-            if (!token) {
-                showNotification('Please login to view profile', 'error');
+            if (!token || isTokenExpired(token)) {
+                localStorage.clear();
+                showNotification('Session expired, please login again to view profile', 'error');
                 setTimeout(() => {
-                    window.location.href = 'otp-login.html';
+                    window.location.href = "/otp-login.html";
                 }, 1500);
                 return;
             }
-            window.location.href = "/userprofile.html"; // change to your profile URL
+            window.location.href = "/userprofile.html";
         });
     }
 
@@ -92,102 +93,6 @@ function setupEventListeners() {
     }
 }
 
-/// redirect to user profile
-/*
- const userIcon = document.getElementById("userIconBtn");
-
-  userIcon.addEventListener("click", function() {
-      // Redirect to profile page
-       const token = localStorage.getItem('token');
-
-       if (!token) {
-           showNotification('Please login to view profile', 'error');
-           setTimeout(() => {
-               window.location.href = 'login.html';
-           }, 1500);
-           return;
-       }
-      window.location.href = "/userprofile.html"; // change to your profile URL
-  });
-
-
- let allDesigns = [];
- let filteredDesigns = [];
-
- // DOM elements
- const searchInput = document.getElementById('searchInput');
- const typeFilter = document.getElementById('typeFilter');
- const priceFilter = document.getElementById('priceFilter');
- const bedroomFilter = document.getElementById('bedroomFilter');
- const sortFilter = document.getElementById('sortFilter');
- const designsGrid = document.getElementById('designsGrid');
- const modal = document.getElementById('purchaseModal');
- const closeModal = document.querySelector('.close');
- const purchaseForm = document.getElementById('purchaseForm');
-
- // Initialize dashboard
- document.addEventListener('DOMContentLoaded', function() {
-     // Check if user is logged in
-     const token = localStorage.getItem('token');
-     const fullName = localStorage.getItem("fullName");
-
-     // User is logged in
-      document.getElementById("welcomeUser").textContent =fullName ? `Welcome, ${fullName}` : "Welcome, Guest";
-      // Fetch designs from server
-      renderDesigns();
-
-    */
-/* if (token && fullName) {
-         // User is logged in
-         document.getElementById("welcomeUser").textContent = `Welcome, ${fullName}`;
-         // Fetch designs from server
-         renderDesigns();
-     } else {
-         // Guest user - must login to see designs
-         document.getElementById("welcomeUser").textContent = `Welcome, Guest`;
-         showNotification('Please login to view designs', 'info');
-
-         // Show empty state
-         designsGrid.innerHTML = `
-             <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #718096;">
-                 <div style="font-size: 4rem; margin-bottom: 20px;">🔐</div>
-                 <h3>Login Required</h3>
-                 <p>Please login to view and purchase architectural designs.</p>
-                 <button onclick="window.location.href='login.html'" style="margin-top: 20px; padding: 12px 24px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer;">
-                     Go to Login
-                 </button>
-             </div>
-         `;
-     }*//*
-
-
-     setupEventListeners();
- });
-
- function setupEventListeners() {
-     searchInput.addEventListener('input', applyFilters);
-     typeFilter.addEventListener('change', applyFilters);
-     priceFilter.addEventListener('change', applyFilters);
-     bedroomFilter.addEventListener('change', applyFilters);
-     sortFilter.addEventListener('change', applyFilters);
-
-     if (closeModal) {
-         closeModal.addEventListener('click', () => {
-             modal.style.display = 'none';
-         });
-     }
-
-     window.addEventListener('click', (event) => {
-         if (event.target === modal) {
-             modal.style.display = 'none';
-         }
-     });
-
-     if (purchaseForm) {
-         purchaseForm.addEventListener('submit', handlePurchase);
-     }
- }
-*/
 
  async function renderDesigns() {
      designsGrid.innerHTML = `
@@ -240,7 +145,7 @@ function setupEventListeners() {
              showNotification('Session expired. Please login again.', 'error');
              setTimeout(() => {
                  localStorage.clear();
-                 window.location.href = 'login.html';
+                 window.location.href = '/otp-login.html';
              }, 2000);
          } else {
              throw new Error('Failed to fetch designs');
@@ -385,7 +290,7 @@ function setupEventListeners() {
              <div class="card-footer">
                  <div>
                      <div class="price-label">Starting from</div>
-                     <div class="price">₹${design.price || '25 sq.ft'}</div>
+                     <div class="price">₹${design.builtUpArea*5}</div>
                  </div>
                  <button class="purchase-btn" data-design-id="${design.id}">
                      Purchase Now
@@ -405,10 +310,14 @@ function setupEventListeners() {
      // Check if user is logged in
      const token = localStorage.getItem('user_token');
 
-     if (!token) {
-         showNotification('Please login to view design details', 'error');
+     if (!token || isTokenExpired(token)) {
+         localStorage.removeItem('user_token');
+         localStorage.removeItem('user_id');
+         localStorage.removeItem('user_role');
+         localStorage.removeItem('user_fullName');
+         showNotification('Session expired Please login to view design details', 'error');
          setTimeout(() => {
-             //window.location.href = 'login.html';
+             window.location.href = '/otp-login.html';
          }, 1500);
          return;
      }
@@ -488,7 +397,7 @@ function setupEventListeners() {
 
            // Simulate API call (replace with actual API call)
            //const response = await simulateApiCall(purchaseData);
-           const token= localStorage.getItem('token');
+           const token= localStorage.getItem('user_token');
            const response = await fetch("/api/orders/create", {
                method: "POST",
                headers: {
@@ -597,6 +506,17 @@ function setupEventListeners() {
                setTimeout(() => notification.remove(), 300);
            }
        }, 5000);
+   }
+
+   function isTokenExpired(token) {
+     try {
+       const payload = JSON.parse(atob(token.split('.')[1]));
+       const currentTime = Math.floor(Date.now() / 1000);
+       return payload.exp < currentTime; // true if expired
+     } catch (e) {
+       console.error("Invalid token:", e);
+       return true; // treat invalid as expired
+     }
    }
 
    // Get icon method

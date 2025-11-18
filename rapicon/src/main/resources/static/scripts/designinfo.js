@@ -84,9 +84,15 @@
     window.location.href = '/user.html';
   }
 
+  function SeePlans() {
+      sessionStorage.setItem('totalArea',totalArea);
+      sessionStorage.setItem('builtUpArea', builtUpArea);
+      window.location.href = '/package-page.html';
+  }
+
   function BuyNow() {
-    localStorage.setItem('totalArea',totalArea);
-    localStorage.setItem('builtUpArea', builtUpArea);
+    sessionStorage.setItem('totalArea',totalArea);
+    sessionStorage.setItem('builtUpArea', builtUpArea);
     window.location.href = '/package-page.html';
   }
 

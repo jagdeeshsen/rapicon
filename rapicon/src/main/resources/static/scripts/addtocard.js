@@ -1,6 +1,3 @@
-const urlParams= new URLSearchParams(window.location.search);
-const price= urlParams.get('price');
-
 
 // Sample cart data
     let cartItems = [
@@ -42,6 +39,7 @@ const price= urlParams.get('price');
 
     let cartList=[];
     let totalPayableAmount=0;
+    let totalInstallments=0;
 
     // Render cart items
     async function renderCart() {
@@ -71,30 +69,31 @@ const price= urlParams.get('price');
                 <div class="empty-cart">
                     <div class="empty-cart-icon">🛒</div>
                     <p style="font-size: 1.25rem; color: #6b7280; margin-bottom: 1rem;">Your cart is empty</p>
-                    <button style="padding: 0.75rem 1.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                    <button onclick= "window.location.href='/user.html'" style="padding: 0.75rem 1.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
                         Continue Shopping
                     </button>
                 </div>
             `;
         } else {
             cartContainer.innerHTML = cartList.map(function(item) {
+            totalInstallments=item.totalInstallments;
             return '<div class="cart-item">' +
                 '<img src="' + item.design.elevationUrls[0] + '" alt="' + item.design.designCategory + '" class="item-image">' +
                 '<div class="item-details">' +
                     '<div class="item-header">' +
                         '<div>' +
-                            '<div class="item-name">' + item.design.designType + '</div>' +
+                            '<div class="item-name">Package: ' + item.packageName + '</div>' +
                             '<div class="item-category">' + item.design.designCategory + '</div>' +
                         '</div>' +
                         '<button class="btn-remove" onclick="removeItem(' + item.id + ')">🗑️</button>' +
                     '</div>' +
                     '<div class="item-footer">' +
-                       /* '<div class="quantity-control">' +
-                            '<button class="qty-btn" onclick="updateQuantity(' + item.id + ', -1)">−</button>' +
-                            *//*'<span class="qty-display">' + item.quantity + '</span>' +*//*
-                            '<button class="qty-btn" onclick="updateQuantity(' + item.id + ', 1)">+</button>' +
-                        '</div>' +*/
-                        '<span class="item-price">₹' + (price).toLocaleString() + '</span>' +
+                        '<div class="quantity-control">' +
+                            /*'<button class="qty-btn" onclick="updateQuantity(' + item.id + ', -1)">−</button>' +*/
+                            '<span class="item-price">Price: ₹' + item.totalAmount + '</span>' +
+                            /*'<button class="qty-btn" onclick="updateQuantity(' + item.id + ', 1)">+</button>' +*/
+                        '</div>' +
+                        /*'<span class="item-price">Price: ₹' + item.totalAmount + '</span>' +*/
                     '</div>' +
                 '</div>' +
             '</div>';
@@ -133,9 +132,9 @@ const price= urlParams.get('price');
 
     // Update order summary
     function updateSummary() {
-        const subtotal = cartList.reduce((sum, item) => sum + parseInt(price), 0);
+        const subtotal = cartList.reduce((sum, item) => sum + item.totalAmount, 0);
         const tax = Math.round(subtotal * 0.18);
-        const total = subtotal + tax;
+        const total = (subtotal + tax);
         totalPayableAmount=total;
 
         document.getElementById('subtotal').textContent = `₹${subtotal.toLocaleString()}`;
@@ -144,70 +143,146 @@ const price= urlParams.get('price');
         document.getElementById('modalTotal').textContent = `₹${total.toLocaleString()}`;
 
         document.getElementById('checkoutBtn').disabled = cartList.length === 0;
+        document.getElementById('checkoutBtnSecond').disabled = cartList.length === 0;
     }
 
+    // new order created
+    // for installments payment
+ /*function openCheckoutSecond() {
+       if (cartList.length === 0) {
+           alert("Your cart is empty!");
+           return;
+       }
+
+       //const allDesigns = cartList.flatMap(cart => cart.design);
+
+       const orderData = {
+           userId: cartList[0].userId,
+           totalAmount: totalPayableAmount,
+           cartList: cartList,
+           totalInstallments: totalInstallments,
+           installmentAmount: totalPayableAmount/totalInstallments
+       };
+
+       const token = localStorage.getItem('user_token');
+
+       fetch("/api/orders/create-order", {
+           method: 'POST',
+           headers: {
+               'Content-Type': 'application/json',
+               'Authorization': `Bearer ${token}`
+           },
+           body: JSON.stringify(orderData)
+       })
+       .then(res => res.json())
+       .then(data => {
+           const options = {
+               key: data.key,              // ✅ received from backend
+               amount: data.amount,
+               currency: data.currency,
+               name: "Rapicon Infrastructure Llp",
+               description: "Design Purchase",
+               order_id: data.razorpayOrderId,           // Razorpay Order ID
+               handler: function (response) {
+                   fetch("/api/orders/verify-payment", {
+                       method: "POST",
+                       headers: {
+                           "Content-Type": "application/json",
+                           "Authorization": `Bearer ${token}`
+                       },
+                       body: JSON.stringify({
+                           razorpayPaymentId: response.razorpay_payment_id,
+                           razorpayOrderId: response.razorpay_order_id,
+                           razorpaySignature: response.razorpay_signature,
+                           orderId: data.id,
+                           userId: orderData.userId
+                       })
+                   })
+                   .then(res => res.json())
+                   .then(result => {
+                       alert(result.message || "Payment verified successfully!");
+                       cartList = [];
+
+                       // stored data into sessionStorage for installment process manage
+
+                   });
+               },
+               theme: { color: "#3399cc" }
+           };
+           const rzp = new Razorpay(options);
+           rzp.open();
+       })
+       .catch(err => console.error("Error creating order:", err));
+ }*/
+
+
+ // for full payment
    function openCheckout() {
-        if (cartList.length === 0) {
-            alert("Your cart is empty!");
-            return;
-        }
+           if (cartList.length === 0) {
+               alert("Your cart is empty!");
+               return;
+           }
 
-        const allDesigns = cartList.flatMap(cart => cart.design);
+           //const allDesigns = cartList.flatMap(cart => cart.design);
 
-        const orderData = {
-            userId: cartList[0].userId,
-            totalAmount: totalPayableAmount,
-            designList: allDesigns
-        };
+           const orderData = {
+               userId: cartList[0].userId,
+               totalAmount: totalPayableAmount,
+               cartList: cartList,
+               totalInstallments: totalInstallments,
+               installmentAmount: totalPayableAmount/totalInstallments
+           };
 
-        const token = localStorage.getItem('token');
+           const token = localStorage.getItem('user_token');
 
-        fetch("/api/orders/create-order", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(orderData)
-        })
-        .then(res => res.json())
-        .then(data => {
-            const options = {
-                key: data.key,              // ✅ received from backend
-                amount: data.amount,
-                currency: data.currency,
-                name: "Rapicon Infrastructure Llp",
-                description: "Design Purchase",
-                order_id: data.razorpayOrderId,           // Razorpay Order ID
-                handler: function (response) {
-                    fetch("/api/orders/verify-payment", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "Authorization": `Bearer ${token}`
-                        },
-                        body: JSON.stringify({
-                            razorpayPaymentId: response.razorpay_payment_id,
-                            razorpayOrderId: response.razorpay_order_id,
-                            razorpaySignature: response.razorpay_signature,
-                            orderId: data.id,
-                            userId: orderData.userId
-                        })
-                    })
-                    .then(res => res.json())
-                    .then(result => {
-                        alert(result.message || "Payment verified successfully!");
-                        cartList = [];
-                    });
-                },
-                theme: { color: "#3399cc" }
-            };
+           fetch("/api/orders/create-order", {
+               method: 'POST',
+               headers: {
+                   'Content-Type': 'application/json',
+                   'Authorization': `Bearer ${token}`
+               },
+               body: JSON.stringify(orderData)
+           })
+           .then(res => res.json())
+           .then(data => {
+               const options = {
+                   key: data.key,              // ✅ received from backend
+                   amount: data.amount,
+                   currency: data.currency,
+                   name: "Rapicon Infrastructure Llp",
+                   description: "Design Purchase",
+                   order_id: data.razorpayOrderId,           // Razorpay Order ID
+                   handler: function (response) {
+                       fetch("/api/orders/verify-payment", {
+                           method: "POST",
+                           headers: {
+                               "Content-Type": "application/json",
+                               "Authorization": `Bearer ${token}`
+                           },
+                           body: JSON.stringify({
+                               razorpayPaymentId: response.razorpay_payment_id,
+                               razorpayOrderId: response.razorpay_order_id,
+                               razorpaySignature: response.razorpay_signature,
+                               orderId: data.id,
+                               userId: orderData.userId
+                           })
+                       })
+                       .then(res => res.json())
+                       .then(result => {
+                           alert(result.message || "Payment verified successfully!");
+                           cartList = [];
 
-            const rzp = new Razorpay(options);
-            rzp.open();
-        })
-        .catch(err => console.error("Error creating order:", err));
-   }
+                           // stored data into sessionStorage for installment process manage
+
+                       });
+                   },
+                   theme: { color: "#3399cc" }
+               };
+               const rzp = new Razorpay(options);
+               rzp.open();
+           })
+           .catch(err => console.error("Error creating order:", err));
+      }
 
 
 
@@ -217,101 +292,9 @@ const price= urlParams.get('price');
     }
 
     // Toggle order history
-
-   async function toggleOrderHistory() {
-       const modal = document.getElementById('orderHistoryModal');
-       const content = document.getElementById('orderHistoryContent');
-       const id = cartList?.[0]?.userId;
-
-       if (!id) {
-           alert("User ID not found.");
-           return;
-       }
-
-       if (!modal.classList.contains('active')) {
-           // Show loading message
-           content.innerHTML = `<p>Loading your order history...</p>`;
-
-           try {
-               const token = localStorage.getItem('token');
-
-               if(!token){
-                    throw new Error("Please login to see order history");
-               }
-               const response = await fetch(`/api/orders/fetch-order?id=${id}`, {
-                   method: 'GET',
-                   headers: {
-                       'Content-Type': 'application/json',
-                       'Authorization': `Bearer ${token}`
-                   }
-               });
-
-               if (!response.ok) {
-                   throw new Error(`Failed to fetch order history: ${response.status}`);
-               }
-
-               const orders = await response.json();
-               console.log("Fetched orders:", orders);
-
-               if (!Array.isArray(orders) || orders.length === 0) {
-                   content.innerHTML = `<p>No orders found.</p>`;
-                   return;
-               }
-
-               // Render order cards
-               content.innerHTML = orders.map(order => `
-                   <div class="order-history-item">
-                       <div class="order-header">
-                           <span class="order-number">${order.razorpayOrderId || order.id}</span>
-                           <span class="order-status ${order.paymentStatus === 'COMPLETED' ? 'status-completed' : 'status-pending'}">
-                               ${order.paymentStatus || 'PENDING'}
-                           </span>
-                       </div>
-                       <div class="order-details">
-                           <span>Date: ${new Date(order.orderDate || order.createdAt).toLocaleDateString()}</span>
-                           <span style="font-weight: 600; color: #1f2937;">Total: ₹${order.totalAmount?.toLocaleString() || 0}</span>
-                       </div>
-                   </div>
-               `).join('');
-
-           } catch (err) {
-               console.error("Error fetching order history:", err);
-               content.innerHTML = `<p>Error loading order history. Please try again later.</p>`;
-           }
-
-           modal.classList.add('active');
-       } else {
-           modal.classList.remove('active');
-       }
+   function toggleOrderHistory(){
+        window.location.href='/installment-payment.html';
    }
-
-
-
-    /*function toggleOrderHistory() {
-        const modal = document.getElementById('orderHistoryModal');
-        const content = document.getElementById('orderHistoryContent');
-
-        if (!modal.classList.contains('active')) {
-            content.innerHTML = orderHistory.map(order => `
-                <div class="order-history-item">
-                    <div class="order-header">
-                        <span class="order-id">${order.id}</span>
-                        <span class="order-status ${order.status === 'Delivered' ? 'status-delivered' : 'status-completed'}">
-                            ${order.status}
-                        </span>
-                    </div>
-                    <div class="order-details">
-                        <span>${order.date}</span>
-                        <span>${order.items} items</span>
-                        <span style="font-weight: 600; color: #1f2937;">₹${order.total.toLocaleString()}</span>
-                    </div>
-                </div>
-            `).join('');
-            modal.classList.add('active');
-        } else {
-            modal.classList.remove('active');
-        }
-    }*/
 
     // Close modals when clicking outside
     window.onclick = function(event) {

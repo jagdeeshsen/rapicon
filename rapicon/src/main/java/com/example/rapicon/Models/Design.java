@@ -60,23 +60,4 @@ public class Design {
     @Column(nullable = false)
     private List<String> twoDPlanUrls;
 
-
-    public enum DesignType{
-        HOUSE,
-        VILLA,
-        APARTMENT,
-        FORM_HOUSE,
-        ROW_HOUSE,
-        DUPLEX,
-        BUNGALOW,
-        STUDIO,
-        PENTHOUSE,
-        COTTAGE,
-        FARMHOUSE,
-        MANSION,
-        TOWNHOUSE,
-        OFFICE,
-        RESTAURANT
-    }
-
 }

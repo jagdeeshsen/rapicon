@@ -4,14 +4,18 @@ import com.example.rapicon.DTO.OrderHistoryDTO;
 import com.example.rapicon.DTO.OrderRequestDTO;
 import com.example.rapicon.DTO.PaymentVerificationDTO;
 import com.example.rapicon.Models.*;
+import com.example.rapicon.Repository.CartItemRepo;
 import com.example.rapicon.Service.*;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -19,6 +23,9 @@ public class OrderController {
 
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private CartItemRepo cartItemRepo;
 
     @Autowired
     private OrderItemService orderItemService;
@@ -36,37 +43,68 @@ public class OrderController {
     private PaymentService paymentService;
 
     @PostMapping("/create-order")
+    @Transactional
     public ResponseEntity<?> createOrder(@RequestBody OrderRequestDTO requestData) {
+
         try {
-            // create razorpay order
+            // 1. Razorpay
             com.razorpay.Order razorpayOrder = razorpayService.createRazorpayOrder(requestData.getTotalAmount());
 
-            // save order in db
-            Optional<User> user= userService.findById(requestData.getUserId());
+            // 2. Build order
+            User user = userService.findById(requestData.getUserId())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
 
-            Order userOrder= new Order();
-            userOrder.setUser(user.get());
-            userOrder.setOrderNumber(UUID.randomUUID().toString());
-            userOrder.setTotalAmount(requestData.getTotalAmount());
-            userOrder.setRazorpayOrderId(razorpayOrder.get("id"));
-            userOrder.setCreatedAt(new Timestamp(System.currentTimeMillis()));
-            userOrder.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
+            Order order = new Order();
+            order.setUser(user);
+            order.setOrderNumber(UUID.randomUUID().toString());
+            order.setTotalAmount(requestData.getTotalAmount());
+            order.setRazorpayOrderId(razorpayOrder.get("id"));
+            order.setTotalInstallments(requestData.getTotalInstallments());
+            order.setInstallmentAmount(requestData.getInstallmentAmount());
+            order.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+            order.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
 
-            orderService.createOrder(userOrder);
+            // 3. Create installments BEFORE saving the order
+            List<Installments> installmentsList = new ArrayList<>();
 
-            // save order item
-            for(Design design: requestData.getDesignList()){
-                OrderItem orderItem= new OrderItem();
-                orderItem.setDesign(design);
-                orderItem.setOrder(userOrder);
-                orderItem.setPriceAtPurchase(new BigDecimal(2500));
-                orderItem.setCreatedAt(new Timestamp(System.currentTimeMillis()));
-                orderItemService.createOrderItem(orderItem);
+            for (int i = 1; i <= requestData.getTotalInstallments(); i++) {
+
+                Installments inst = new Installments();
+                inst.setInstallmentAmount(requestData.getInstallmentAmount());
+                inst.setInstallmentNumber(i);
+                inst.setUnlocked(i == 1);
+                inst.setUnlockedAt(LocalDateTime.now());
+                inst.setInstallmentStatus(Installments.InstallmentStatus.PENDING);
+                inst.setCreatedAt(LocalDateTime.now());
+                inst.setUpdatedAt(LocalDateTime.now());
+                inst.setOrder(order);
+
+                installmentsList.add(inst);
             }
 
-            // Step 4: Send Razorpay details to frontend
+            order.setInstallmentsList(installmentsList);
+
+            // 4. Attach order items
+            List<OrderItem> orderItems = new ArrayList<>();
+            for(CartItem item: requestData.getCartList()){
+                OrderItem orderItem= new OrderItem();
+                orderItem.setDesign(item.getDesign());
+                orderItem.setPackageName(item.getPackageName());
+                orderItem.setTotalAmount(item.getTotalAmount());
+                orderItem.setTotalInstallments(item.getTotalInstallments());
+                orderItem.setOrder(order);
+                orderItem.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+                orderItem.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
+                orderItems.add(orderItem);
+            }
+            order.setOrdertemList(orderItems);
+
+            // 5. SAVE ONLY ONCE
+            orderService.createOrder(order);   // <--- ONLY THIS SAVE
+
+            // 6. Response
             Map<String, Object> response = new HashMap<>();
-            response.put("orderId", userOrder.getId());
+            response.put("orderId", order.getId());
             response.put("razorpayOrderId", razorpayOrder.get("id"));
             response.put("amount", razorpayOrder.get("amount"));
             response.put("currency", razorpayOrder.get("currency"));
@@ -75,9 +113,13 @@ public class OrderController {
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            e.printStackTrace();
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(error);
         }
     }
+
 
     @PostMapping("/verify-payment")
     public ResponseEntity<?> verifyPayment(@RequestBody PaymentVerificationDTO req) {
@@ -110,6 +152,12 @@ public class OrderController {
                 order.setPaymentStatus(Order.PaymentStatus.COMPLETED);
                 order.setOrderStatus(Order.OrderStatus.COMPLETED);
                 payment.setPaymentStatus(Order.PaymentStatus.COMPLETED);
+                order.setPaidAmount(order.getInstallmentAmount());
+
+                // set installment status
+                Installments installments=order.getInstallmentsList().get(0);
+                installments.setPaidDate(LocalDateTime.now());
+                installments.setInstallmentStatus(Installments.InstallmentStatus.PAID);
                 orderService.updateOrder(order);
                 paymentService.updatePayment(payment);
 
@@ -133,5 +181,12 @@ public class OrderController {
         }catch (Exception e){
             throw  new RuntimeException("Error to send orderItemsHistory");
         }
+    }
+
+    @GetMapping("/fetch-user-order/{userId}")
+    public ResponseEntity<List<Order>> getOrderById(@PathVariable Long userId){
+        Optional<User> user= userService.findById(userId);
+        List<Order> orderList= orderService.getOrderByUser(user.get());
+        return ResponseEntity.ok(orderList);
     }
 }

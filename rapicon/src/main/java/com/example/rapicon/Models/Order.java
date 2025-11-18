@@ -45,6 +45,20 @@ public class Order {
     private Timestamp createdAt;
     private  Timestamp updatedAt;
 
+    @Column(nullable = false)
+    private int totalInstallments;
+
+    private BigDecimal paidAmount;
+
+    @Column(nullable = false)
+    private BigDecimal installmentAmount;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<OrderItem> ordertemList= new ArrayList<>();
+
+    @OneToMany(mappedBy = "order",cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Installments> installmentsList= new ArrayList<>();
+
     public enum OrderStatus{
         PROCESSING,
         COMPLETED,

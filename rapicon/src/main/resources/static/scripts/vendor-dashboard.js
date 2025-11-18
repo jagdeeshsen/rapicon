@@ -13,6 +13,11 @@ let designs = [];
 async function checkSession() {
     const token = localStorage.getItem('vendor_token');
     if(!token || isTokenExpired(token)){
+        localStorage.remove(vendor_token);
+        localStorage.setItem('vendor_role');
+        localStorage.setItem('vendor_id');
+        localStorage.setItem('vendor_fullName');
+        localStorage.setItem('user');
         console.error("Session expired Please login again ");
         redirectToLogin();
     }
@@ -195,10 +200,10 @@ function selectDesignType(type) {
   numFloorsSection.classList.remove('hidden');
   commonFields.classList.remove('hidden');
 
-  if (type === 'residential') {
+  if (type === 'Residential') {
     plotInfo.classList.remove('hidden');
     residentialOnly.classList.remove('hidden');
-  } else if (type === 'semi-commercial') {
+  } else if (type === 'Semi-Commercial') {
     plotInfo.classList.remove('hidden');
   }
 
@@ -215,7 +220,7 @@ function generateFloors() {
     floors = Array.from({ length: num }, (_, i) => ({
       id: Date.now() + i,
       name: `Floor ${i + 1}`,
-      type: currentDesignType === 'semi-commercial' ? 'residential' : '',
+      type: currentDesignType === 'Semi-Commercial' ? 'Residential' : '',
       bedrooms: '',
       bathrooms: '',
       kitchen: '',
@@ -235,7 +240,7 @@ function addFloor() {
   floors.push({
     id: Date.now(),
     name: `Floor ${floors.length + 1}`,
-    type: currentDesignType === 'semi-commercial' ? 'residential' : '',
+    type: currentDesignType === 'Semi-Commercial' ? 'Residential' : '',
     bedrooms: '',
     bathrooms: '',
     kitchen: '',
@@ -265,10 +270,10 @@ function updateFloor(id, field, value) {
 function renderFloors() {
   const container = document.getElementById('floorsList');
   container.innerHTML = floors.map((floor, index) => {
-    const showResidentialFields = currentDesignType === 'residential' ||
-      (currentDesignType === 'semi-commercial' && floor.type === 'residential');
-    const showCommercialFields = currentDesignType === 'commercial' ||
-      (currentDesignType === 'semi-commercial' && floor.type === 'commercial');
+    const showResidentialFields = currentDesignType === 'Residential' ||
+      (currentDesignType === 'Semi-Commercial' && floor.type === 'Residential');
+    const showCommercialFields = currentDesignType === 'Commercial' ||
+      (currentDesignType === 'Semi-Commercial' && floor.type === 'Commercial');
 
     return `
       <div class="floor-card">
@@ -289,12 +294,12 @@ function renderFloors() {
             <input type="text" class="form-input" value="${floor.name}" onchange="updateFloor(${floor.id}, 'name', this.value)">
           </div>
 
-          ${currentDesignType === 'semi-commercial' ? `
+          ${currentDesignType === 'Semi-Commercial' ? `
             <div class="form-group">
               <label class="form-label">Floor Type</label>
               <select class="form-select" onchange="updateFloor(${floor.id}, 'type', this.value); renderFloors();">
-                <option value="residential" ${floor.type === 'residential' ? 'selected' : ''}>Residential</option>
-                <option value="commercial" ${floor.type === 'commercial' ? 'selected' : ''}>Commercial</option>
+                <option value="Residential" ${floor.type === 'Residential' ? 'selected' : ''}>Residential</option>
+                <option value="Commercial" ${floor.type === 'Commercial' ? 'selected' : ''}>Commercial</option>
               </select>
             </div>
           ` : ''}

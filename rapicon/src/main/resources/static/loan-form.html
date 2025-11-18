@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Application</title>
+    <link rel="stylesheet" href="css/loan-form.css">
+</head>
+<body>
+<div class="container">
+    <h1>Loan Application</h1>
+    <p class="subtitle">Fill out the form below to apply for a loan</p>
+
+    <form id="loanForm">
+        <div class="form-group">
+            <label for="name">Full Name <span>*</span></label>
+            <input type="text" id="name" name="name" placeholder="Enter your full name">
+            <div class="error-message" id="nameError">Please enter your full name</div>
+        </div>
+
+        <div class="form-group">
+            <label for="phone">Phone Number <span>*</span></label>
+            <input type="tel" id="phone" name="phone" placeholder="Enter your phone number">
+            <div class="error-message" id="phoneError">Please enter a valid phone number</div>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email Address <span>*</span></label>
+            <input type="email" id="email" name="email" placeholder="Enter your email">
+            <div class="error-message" id="emailError">Please enter a valid email address</div>
+        </div>
+
+        <div class="form-group">
+            <label for="business">Employment Type <span>*</span></label>
+            <select id="business" name="business">
+                <option value="">Select employment type</option>
+                <option value="employee">Employee</option>
+                <option value="self-employed">Self-Employed</option>
+                <option value="business-owner">Business Owner</option>
+                <option value="freelancer">Freelancer</option>
+                <option value="retired">Retired</option>
+                <option value="other">Other</option>
+            </select>
+            <div class="error-message" id="businessError">Please select employment type</div>
+        </div>
+
+        <div class="form-group">
+            <label for="salary">Monthly Salary/Income <span>*</span></label>
+            <input type="number" id="salary" name="salary" placeholder="Enter your monthly income" min="0">
+            <div class="error-message" id="salaryError">Please enter a valid salary amount</div>
+        </div>
+
+        <div class="form-group">
+            <label for="loanAmount">Loan Amount Required <span>*</span></label>
+            <input type="number" id="loanAmount" name="loanAmount" placeholder="Enter loan amount" min="1000">
+            <div class="error-message" id="loanAmountError">Please enter a valid loan amount</div>
+        </div>
+
+        <div class="form-group">
+            <label for="address">Address <span>*</span></label>
+            <textarea id="address" name="address" placeholder="Enter your complete address"></textarea>
+            <div class="error-message" id="addressError">Please enter your address</div>
+        </div>
+
+        <button type="submit" class="btn-submit">Submit Application</button>
+    </form>
+
+    <div class="success-message" id="successMessage">
+        ✓ Your loan application has been submitted successfully! We will contact you soon.
+    </div>
+</div>
+
+<script src="scripts/loan-form.js"></script>
+</body>
+</html>

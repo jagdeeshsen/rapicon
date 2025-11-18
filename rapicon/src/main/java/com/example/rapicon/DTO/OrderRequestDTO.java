@@ -1,17 +1,24 @@
 package com.example.rapicon.DTO;
 
+import com.example.rapicon.Models.CartItem;
 import com.example.rapicon.Models.Design;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.List;
 
+@Data
+@RequiredArgsConstructor
 public class OrderRequestDTO {
 
     private  Long userId;
     private BigDecimal totalAmount;
-    private List<Design> designList;
+    private List<CartItem> cartList;
+    private int totalInstallments;
+    private BigDecimal installmentAmount;
 
-    public Long getUserId() {
+    /*public Long getUserId() {
         return userId;
     }
 
@@ -33,5 +40,5 @@ public class OrderRequestDTO {
 
     public void setDesignList(List<Design> designList) {
         this.designList = designList;
-    }
+    }*/
 }
