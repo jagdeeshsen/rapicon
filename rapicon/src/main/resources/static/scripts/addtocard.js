@@ -40,6 +40,7 @@
     let cartList=[];
     let totalPayableAmount=0;
     let totalInstallments=0;
+    let installmentAmount=0;
 
     // Render cart items
     async function renderCart() {
@@ -136,34 +137,53 @@
         const tax = Math.round(subtotal * 0.18);
         const total = (subtotal + tax);
         totalPayableAmount=total;
+        installmentAmount= total/totalInstallments;
 
         document.getElementById('subtotal').textContent = `₹${subtotal.toLocaleString()}`;
         document.getElementById('tax').textContent = `₹${tax.toLocaleString()}`;
         document.getElementById('total').textContent = `₹${total.toLocaleString()}`;
+        document.getElementById('installment').textContent = `₹${installmentAmount.toLocaleString()}`;
         document.getElementById('modalTotal').textContent = `₹${total.toLocaleString()}`;
 
         document.getElementById('checkoutBtn').disabled = cartList.length === 0;
         document.getElementById('checkoutBtnSecond').disabled = cartList.length === 0;
     }
 
-    // new order created
-    // for installments payment
- /*function openCheckoutSecond() {
-       if (cartList.length === 0) {
+  function fullCheckout(){
+        if (cartList.length === 0) {
            alert("Your cart is empty!");
            return;
        }
 
-       //const allDesigns = cartList.flatMap(cart => cart.design);
+       const orderData = {
+           userId: cartList[0].userId,
+           totalAmount: totalPayableAmount,
+           cartList: cartList,
+           totalInstallments: 1,
+           installmentAmount: totalPayableAmount
+       };
+       console.log(orderData);
+       openCheckout(orderData);
+  }
+
+  function installmentCheckout(){
+        if (cartList.length === 0) {
+           alert("Your cart is empty!");
+           return;
+       }
 
        const orderData = {
            userId: cartList[0].userId,
            totalAmount: totalPayableAmount,
            cartList: cartList,
            totalInstallments: totalInstallments,
-           installmentAmount: totalPayableAmount/totalInstallments
+           installmentAmount: installmentAmount
        };
+       console.log(orderData);
+       openCheckout(orderData);
+  }
 
+ function openCheckout(orderData) {
        const token = localStorage.getItem('user_token');
 
        fetch("/api/orders/create-order", {
@@ -213,11 +233,10 @@
            rzp.open();
        })
        .catch(err => console.error("Error creating order:", err));
- }*/
+ }
 
 
- // for full payment
-   function openCheckout() {
+   /*function openCheckout() {
            if (cartList.length === 0) {
                alert("Your cart is empty!");
                return;
@@ -282,7 +301,7 @@
                rzp.open();
            })
            .catch(err => console.error("Error creating order:", err));
-      }
+      }*/
 
 
 

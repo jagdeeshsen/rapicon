@@ -48,11 +48,14 @@
             <span>Total</span>
             <span class="amount" id="total">₹0</span>
         </div>
-
-        <button class="btn-checkout" id="checkoutBtn" onclick="openCheckout()">
+        <div class="summary-row summary-total">
+            <span>Installment</span>
+            <span class="amount" id="installment">₹0</span>
+        </div>
+        <button class="btn-checkout" id="checkoutBtn" onclick="fullCheckout()">
             💳 Proceed to Checkout
         </button>
-        <button class="btn-checkout" id="checkoutBtnSecond" onclick="openCheckoutSecond()">
+        <button class="btn-checkout" id="checkoutBtnSecond" onclick="installmentCheckout()">
             💳 Pay in Installments
         </button>
 

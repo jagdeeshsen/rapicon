@@ -56,10 +56,6 @@ let orders=[];
              ]
          }
      ];
-
-     /*function formatMoney(amount) {
-         return "Rs. " + amount.toLocaleString();
-     }*/
      function formatMoney(amount) {
          if (amount === undefined || amount === null) return "Rs. 0";
 
@@ -87,6 +83,10 @@ let orders=[];
              var order = orders[i];
              var paidCount = 0;
 
+             // formate date and time
+             const date= order.createdAt.split("T")[0];
+             const time= order.createdAt.split("T")[1].split(".")[0]
+
              for (var j = 0; j < order.installmentsList.length; j++) {
                  if (order.installmentsList[j].installmentStatus === "PAID") {
                      paidCount++;
@@ -97,7 +97,7 @@ let orders=[];
              html += '<div class="order-header">';
              html += '<div>';
              html += '<div class="order-number">Order #' + order.orderNumber + '</div>';
-             html += '<div style="color: #666; font-size: 14px;">Placed on ' + order.createdAt + '</div>';
+             html += '<div style="color: #666; font-size: 14px;">Placed on ' + date + " " + time + '</div>';
              html += '</div>';
              html += '<div>';
              html += '<span class="badge badge-green">' + order.orderStatus + '</span>';

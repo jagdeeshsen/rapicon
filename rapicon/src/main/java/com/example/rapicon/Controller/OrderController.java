@@ -47,8 +47,14 @@ public class OrderController {
     public ResponseEntity<?> createOrder(@RequestBody OrderRequestDTO requestData) {
 
         try {
+            BigDecimal amount;
+            if(requestData.getTotalInstallments()>1){
+                amount= requestData.getInstallmentAmount();
+            }else {
+                amount= requestData.getTotalAmount();
+            }
             // 1. Razorpay
-            com.razorpay.Order razorpayOrder = razorpayService.createRazorpayOrder(requestData.getTotalAmount());
+            com.razorpay.Order razorpayOrder = razorpayService.createRazorpayOrder(amount);
 
             // 2. Build order
             User user = userService.findById(requestData.getUserId())
@@ -142,7 +148,14 @@ public class OrderController {
             payment.setRazorpayOrderId(req.getRazorpayOrderId());
             payment.setRazorpayPaymentId(req.getRazorpayPaymentId());
             payment.setRazorpaySignature(req.getRazorpaySignature());
-            payment.setAmount(order.getTotalAmount());
+
+            BigDecimal paidAmount;
+            if(order.getTotalInstallments()>1){
+                paidAmount= order.getInstallmentAmount();
+            }else{
+                paidAmount= order.getTotalAmount();
+            }
+            payment.setAmount(paidAmount);
             payment.setCreatedAt(new Timestamp(System.currentTimeMillis()));
 
             // save payment in db
@@ -152,7 +165,7 @@ public class OrderController {
                 order.setPaymentStatus(Order.PaymentStatus.COMPLETED);
                 order.setOrderStatus(Order.OrderStatus.COMPLETED);
                 payment.setPaymentStatus(Order.PaymentStatus.COMPLETED);
-                order.setPaidAmount(order.getInstallmentAmount());
+                order.setPaidAmount(paidAmount);
 
                 // set installment status
                 Installments installments=order.getInstallmentsList().get(0);

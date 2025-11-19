@@ -13,13 +13,14 @@ let designs = [];
 async function checkSession() {
     const token = localStorage.getItem('vendor_token');
     if(!token || isTokenExpired(token)){
-        localStorage.remove(vendor_token);
-        localStorage.setItem('vendor_role');
-        localStorage.setItem('vendor_id');
-        localStorage.setItem('vendor_fullName');
-        localStorage.setItem('user');
+        localStorage.removeItem('vendor_token');
+        localStorage.removeItem('vendor_role');
+        localStorage.removeItem('vendor_id');
+        localStorage.removeItem('vendor_fullName');
+        localStorage.removeItem('user');
         console.error("Session expired Please login again ");
         redirectToLogin();
+        return false;
     }
     return true;
 }
@@ -788,4 +789,4 @@ function isTokenExpired(token) {
 }
 
 // Periodic session check (every 5 minutes)
-setInterval(checkSession, 5 * 60 * 1000);
+setInterval(checkSession, 60 * 60 * 1000);
