@@ -423,3 +423,17 @@ document.getElementById('confirmPassword').addEventListener('input', function() 
         showError('confirmPassword', true);
     }
 });
+
+// Toggle password visibility
+function togglePassword(fieldId) {
+    const field = document.getElementById(fieldId);
+    const button = event.currentTarget; // Get the button that was clicked
+
+    if (field.type === 'password') {
+        field.type = 'text';
+        button.textContent = '🙈';
+    } else {
+        field.type = 'password';
+        button.textContent = '👁️';
+    }
+}

@@ -50,7 +50,7 @@
                 </div>
 
                 <div class="form-row">
-                    <div class="form-group">
+                    <!--<div class="form-group">
                         <label for="password">Password <span class="required">*</span></label>
                         <input type="password" id="password" name="password" required>
                         <div class="error-message" id="passwordError">Password must be at least 8 characters</div>
@@ -60,8 +60,32 @@
                         <label for="confirmPassword">Confirm Password <span class="required">*</span></label>
                         <input type="password" id="confirmPassword" name="confirmPassword" required>
                         <div class="error-message" id="confirmPasswordError">Passwords do not match</div>
+                    </div>-->
+                    <!-- In the password field -->
+                    <div class="form-group">
+                        <label for="password">Password <span class="required">*</span></label>
+                        <div style="position: relative;">
+                            <input type="password" id="password" name="password" required>
+                            <button type="button" class="toggle-password" onclick="togglePassword('password')" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); border: none; background: none; cursor: pointer;">
+                                👁️
+                            </button>
+                        </div>
+                        <div class="error-message" id="passwordError">Password must be at least 8 characters</div>
+                    </div>
+
+                    <!-- In the confirm password field -->
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password <span class="required">*</span></label>
+                        <div style="position: relative;">
+                            <input type="password" id="confirmPassword" name="confirmPassword" required>
+                            <button type="button" class="toggle-password" onclick="togglePassword('confirmPassword')" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); border: none; background: none; cursor: pointer;">
+                                👁️
+                            </button>
+                        </div>
+                        <div class="error-message" id="confirmPasswordError">Passwords do not match</div>
                     </div>
                 </div>
+
 
             </div>
 

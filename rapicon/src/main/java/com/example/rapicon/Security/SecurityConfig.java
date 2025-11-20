@@ -69,6 +69,8 @@ public class SecurityConfig {
                                 "/user.html",
                                 "/admin.html",
                                 "/css/**",
+                                "/images/**",
+                                "/favicon.ico",
                                 "/scripts/**"
                         ).permitAll()
                         .requestMatchers("/api/test/**").permitAll()

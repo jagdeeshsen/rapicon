@@ -41,21 +41,23 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
     }
 });
 
-// Password show/hide toggle
+// Password show/hide toggle - SIMPLE VERSION WITH EMOJI
 const togglePassword = document.getElementById('togglePassword');
 const passwordInput = document.getElementById('password');
 
 if (togglePassword && passwordInput) {
-    togglePassword.addEventListener('click', function() {
-        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-        passwordInput.setAttribute('type', type);
+    togglePassword.addEventListener('click', function(e) {
+        e.preventDefault();
 
-        // Toggle icon
-        this.classList.toggle('fa-eye');
-        this.classList.toggle('fa-eye-slash');
+        if (passwordInput.type === "password") {
+            passwordInput.type = "text";
+            this.textContent = "🙈";
+        } else {
+            passwordInput.type = "password";
+            this.textContent = "👁️";
+        }
     });
 }
-
 // Forgot password handling
 const forgotPasswordLink = document.getElementById('forgotPassword');
 if (forgotPasswordLink) {
