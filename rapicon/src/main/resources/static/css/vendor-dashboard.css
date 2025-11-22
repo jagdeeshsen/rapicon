@@ -696,3 +696,27 @@
             grid-template-columns: 1fr;
           }
         }
+
+        .contact-info {
+          position: fixed;
+          bottom: 20px;
+          right: 20px;
+          background: white;
+          padding: 12px 20px;
+          border-radius: 50px;
+          box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          z-index: 1000;
+        }
+
+        .contact-info::before {
+          content: "📞";
+          font-size: 1.2em;
+        }
+
+        .contact-info span {
+          font-weight: 600;
+          color: #667eea;
+        }

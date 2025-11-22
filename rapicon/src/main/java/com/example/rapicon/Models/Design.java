@@ -33,10 +33,10 @@ public class Design {
     private String designCategory;
 
     @Column(nullable = false)
-    private int length;
+    private double length;
 
     @Column(nullable = false)
-    private int width;
+    private double width;
 
     @Column(nullable = false)
     private BigDecimal totalArea;
@@ -47,6 +47,8 @@ public class Design {
     private String plotFacing;
     private String plotLocation;
     private String parking;
+
+    @Column(nullable = false)
     private String builtUpArea;
 
     @Enumerated(EnumType.STRING)

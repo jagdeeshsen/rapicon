@@ -5,6 +5,7 @@ public enum Status {
     APPROVED("Approved"),
     REJECTED("Rejected"),
     SUSPENDED("Suspended"),
+    DEACTIVATE("Deactivate"),
     DRAFT("Draft");
 
     private final String displayName;
@@ -28,6 +29,10 @@ public enum Status {
 
     public boolean isPending() {
         return this == PENDING;
+    }
+
+    public boolean isDeactivate(){
+        return this == DEACTIVATE;
     }
 
     public boolean isRejected() {

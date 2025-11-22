@@ -242,57 +242,57 @@ form.addEventListener('submit', async function(e) {
 
     // Validate Account Number
     const accountNumber = document.getElementById('accountNumber').value.trim();
-    if (!validateAccountNumber(accountNumber)) {
+    /*if (!validateAccountNumber(accountNumber)) {
         showError('accountNumber', true);
         isValid = false;
     } else {
         showError('accountNumber', false);
-    }
+    }*/
 
     // Validate IFSC Code
     const ifscCode = document.getElementById('ifscCode').value.trim();
-    if (!validateIFSC(ifscCode)) {
+    /*if (!validateIFSC(ifscCode)) {
         showError('ifscCode', true);
         isValid = false;
     } else {
         showError('ifscCode', false);
-    }
+    }*/
 
     // Validate Bank Name
     const bankName = document.getElementById('bankName').value.trim();
-    if (bankName.length < 2) {
+    /*if (bankName.length < 2) {
         showError('bankName', true);
         isValid = false;
     } else {
         showError('bankName', false);
-    }
+    }*/
 
     // Validate Branch Name
     const branchName = document.getElementById('branchName').value.trim();
-    if (branchName.length < 2) {
+    /*if (branchName.length < 2) {
         showError('branchName', true);
         isValid = false;
     } else {
         showError('branchName', false);
-    }
+    }*/
 
     // Validate PAN Number
     const panNumber = document.getElementById('panNumber').value.trim();
-    if (!validatePAN(panNumber)) {
+/*    if (!validatePAN(panNumber)) {
         showError('panNumber', true);
         isValid = false;
     } else {
         showError('panNumber', false);
-    }
+    }*/
 
     // Validate GST Number (optional)
     const gstNumber = document.getElementById('gstNumber').value.trim();
-    if (gstNumber && !validateGST(gstNumber)) {
+    /*if (gstNumber && !validateGST(gstNumber)) {
         showError('gstNumber', true);
         isValid = false;
     } else {
         showError('gstNumber', false);
-    }
+    }*/
 
     // Validate Street
     const street = document.getElementById('street').value.trim();

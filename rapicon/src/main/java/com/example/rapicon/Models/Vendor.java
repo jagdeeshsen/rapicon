@@ -33,16 +33,10 @@ public class Vendor {
     @Column(nullable = false)
     private String phone;
 
-    @Column(nullable = false)
+    // account details
     private String accountNumber;
-
-    @Column(nullable = false)
     private String ifscCode;
-
-    @Column(nullable = false)
     private String bankName;
-
-    @Column(nullable = false)
     private String branchName;
 
     private String companyName;
@@ -53,7 +47,6 @@ public class Vendor {
     @Column(nullable = false)
     private String experience;
 
-    @Column(nullable = false)
     private String panNumber;
 
     private String gstNumber;

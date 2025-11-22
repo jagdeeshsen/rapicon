@@ -49,7 +49,20 @@
                 </svg>
                 Profile
             </button>
+            <button class="nav-item" onclick="logoutVendor()">
+                <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M17 16l4-4m0 0l-4-4m4 4H7" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M7 4H3v16h4" />
+                </svg>
+                Logout
+            </button>
+
         </nav>
+        <div class="contact-info">
+            <span>+91 73143 42979</span>
+        </div>
     </aside>
 
     <!-- Main Content -->
@@ -93,7 +106,7 @@
                                 <svg class="design-type-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"/>
                                 </svg>
-                                <div class="design-type-title">Semi-commercial</div>
+                                <div class="design-type-title">Semi-Commercial</div>
                                 <div class="design-type-desc">Mixed Use Buildings</div>
                             </div>
                         </div>
@@ -116,7 +129,7 @@
                                 <input type="number" class="form-input" id="plotArea">
                             </div>
                             <div class="form-group">
-                                <label class="form-label">Plot Facing *</label>
+                                <label class="form-label">Plot Facing </label>
                                 <select class="form-select" id="plotFacing">
                                     <option value="">Select facing</option>
                                     <option value="North">North</option>
@@ -133,7 +146,7 @@
                         <div id="residentialOnlyFields" class="hidden">
                             <div class="grid-2">
                                 <div class="form-group">
-                                    <label class="form-label">Plot Location *</label>
+                                    <label class="form-label">Plot Location </label>
                                     <select class="form-select" id="plotLocation">
                                         <option value="">Select location</option>
                                         <option value="Corner">Corner</option>

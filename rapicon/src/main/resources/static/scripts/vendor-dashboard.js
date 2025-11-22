@@ -123,6 +123,11 @@ async function fetchVendorDesigns() {
   console.log('📊 Fetching vendor designs...');
   const token = localStorage.getItem('vendor_token');
 
+  if(!checkSession()){
+        console.error("Session expired please login again");
+        window.location.href='/login.html';
+  }
+
   try {
     const response = await fetch('/api/designs/fetch-designs', {
       method: 'GET',
@@ -157,7 +162,7 @@ async function fetchVendorDesigns() {
 // ========== NAVIGATION ==========
 
 function navigateTo(page) {
-      const pages = ['upload', 'view', 'manage', 'profile'];
+      const pages = ['upload', 'view', 'manage', 'profile',];
       const titles = {
         upload: 'Upload New Design',
         view: 'My Designs',
@@ -204,7 +209,7 @@ function selectDesignType(type) {
   if (type === 'Residential') {
     plotInfo.classList.remove('hidden');
     residentialOnly.classList.remove('hidden');
-  } else if (type === 'Semi-Commercial') {
+  } else{
     plotInfo.classList.remove('hidden');
   }
 
@@ -662,9 +667,9 @@ function renderDesignsTable() {
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
             </svg>
           </button>
-          <button class="btn-icon" style="background: #fee2e2; color: #ef4444;" onclick="deleteDesign(${design.id})" title="Delete">
+          <button class="btn-icon" style="background: #fee2e2; color: #ef4444;" onclick="deactivateDesign(${design.id})" title="Deactivate">
             <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2v10m6.364-6.364a9 9 0 11-12.728 0" />
             </svg>
           </button>
         </div>
@@ -700,34 +705,41 @@ function viewDesign(id) {
   alert('View functionality coming soon!');
 }
 
-/*async function deleteDesign(id) {
-  if (!confirm('Are you sure you want to delete this design?')) {
+async function deactivateDesign(id) {
+  if (!confirm('Are you sure you want to deactivate this design?')) {
     return;
   }
 
+  if(!checkSession()){
+      console.error("Session expired please login again");
+      window.location.href='/login.html';
+  }
+
+  const token = localStorage.getItem('vendor_token');
   try {
-    const response = await fetch(`/api/vendor/delete-design.php?id=${id}`, {
-      method: 'DELETE',
+    const response = await fetch(`/api/designs/update?id=${id}&status=DEACTIVATE`, {
+      method: 'PUT',
       credentials: 'include',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
       }
     });
 
     const result = await response.json();
 
     if (response.ok && result.success) {
-      alert('✅ Design deleted successfully!');
+      alert('Design deactivate successfully!');
       // Refresh designs list
       await fetchVendorDesigns();
     } else {
-      alert('❌ Failed to delete design: ' + (result.message || 'Unknown error'));
+      alert('❌ Failed to deactivate design: ' + (result.message || 'Unknown error'));
     }
   } catch (error) {
-    console.error('Delete error:', error);
-    alert('⚠️ Error deleting design. Please try again.');
+    console.error('Deactivate error:', error);
+    alert('⚠️ Error deactivating design. Please try again.');
   }
-}*/
+}
 
 // ========== UTILITY FUNCTIONS ==========
 
@@ -776,6 +788,56 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   console.log('✅ Vendor Dashboard Loaded Successfully');
 });
+
+
+// logout vendor
+async function logoutVendor(){
+    if (confirm('Are you sure you want to logout?')) {
+       console.log('Logging out...', 'info');
+
+       const token = localStorage.getItem('vendor_token');
+
+       try {
+           await fetch('/api/auth/logout-vendor', {
+               method: 'POST',
+               headers: {
+                   'Authorization': `Bearer ${token}`,
+                   'Content-Type': 'application/json'
+               }
+           });
+       } catch (error) {
+           console.warn('Logout request failed or not implemented on server:', error);
+       }
+
+       // Clear all local storage/session data
+       localStorage.removeItem('vendor_token');
+       localStorage.removeItem('user');
+       localStorage.removeItem('vendor_fullName');
+       localStorage.removeItem('vendor_role');
+       localStorage.removeItem('vendor_id');
+       sessionStorage.clear();
+
+
+       // Redirect to login page
+       setTimeout(() => {
+           window.location.href = '/login.html';
+       }, 1000);
+   }
+}
+
+ // Show alert message
+/*function showAlert(message, type = 'success') {
+   const alertContainer = document.getElementById('alertContainer');
+   const alert = document.createElement('div');
+   alert.className = `alert alert-${type} show`;
+   alert.innerHTML = `<span>${message}</span>`;
+   alertContainer.appendChild(alert);
+
+   setTimeout(() => {
+       alert.classList.remove('show');
+       setTimeout(() => alert.remove(), 300);
+   }, 3000);
+}*/
 
 function isTokenExpired(token) {
   try {

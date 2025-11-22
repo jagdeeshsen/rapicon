@@ -345,7 +345,8 @@ public class DesignController {
         // Validate status
         if (!status.equalsIgnoreCase("approved")
                 && !status.equalsIgnoreCase("pending")
-                && !status.equalsIgnoreCase("rejected")) {
+                && !status.equalsIgnoreCase("rejected")
+                && !status.equalsIgnoreCase("deactivate")) {
             return ResponseEntity.badRequest().build();
         }
 
