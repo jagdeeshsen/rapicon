@@ -21,8 +21,8 @@ public class DesignRequestDTO {
 
     private String designType;
     private String designCategory;
-    private int length;
-    private int width;
+    private double length;
+    private double width;
     private BigDecimal totalArea;
 
     private String floorList;
@@ -30,7 +30,7 @@ public class DesignRequestDTO {
     private String plotFacing;
     private String plotLocation;
     private String parking;
-    private String builtUpArea;
+    private BigDecimal builtUpArea;
 
     private ArrayList<MultipartFile> elevationFiles;
     private ArrayList<MultipartFile> twoDPlanFiles;

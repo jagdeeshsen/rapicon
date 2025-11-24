@@ -9,6 +9,5 @@ public class RapiconApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(RapiconApplication.class, args);
 	}
-
 }
 

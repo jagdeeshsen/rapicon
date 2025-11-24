@@ -161,29 +161,63 @@ async function fetchVendorDesigns() {
 
 // ========== NAVIGATION ==========
 
-function navigateTo(page) {
-      const pages = ['upload', 'view', 'manage', 'profile',];
-      const titles = {
-        upload: 'Upload New Design',
-        view: 'My Designs',
-        manage: 'Manage Designs',
-        profile: 'Vendor Profile'
-      };
+function navigateTo(page, sourceEvent = null) {
+  const pages = ['upload', 'view', 'manage', 'profile'];
+  const titles = {
+    upload: 'Upload New Design',
+    view: 'My Designs',
+    manage: 'Manage Designs',
+    profile: 'Vendor Profile'
+  };
 
-      pages.forEach(p => {
-        document.getElementById(p + 'Page').classList.remove('active');
-      });
-      document.getElementById(page + 'Page').classList.add('active');
+  pages.forEach(p => {
+    document.getElementById(p + 'Page').classList.remove('active');
+  });
+  document.getElementById(page + 'Page').classList.add('active');
 
-      document.querySelectorAll('.nav-item').forEach(item => {
-        item.classList.remove('active');
-      });
-      event.target.closest('.nav-item').classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.classList.remove('active');
+  });
 
-      document.getElementById('pageTitle').textContent = titles[page];
+  // Only try to update nav item if sourceEvent exists
+  if (sourceEvent && sourceEvent.target) {
+    const navItem = sourceEvent.target.closest('.nav-item');
+    if (navItem) {
+      navItem.classList.add('active');
+    }
+  } else {
+    // If no event, find and activate the nav item by page name
+    const navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach(item => {
+      const itemText = item.textContent.trim().toLowerCase();
+      if (
+        (page === 'upload' && itemText.includes('upload')) ||
+        (page === 'view' && itemText.includes('view')) ||
+        (page === 'manage' && itemText.includes('manage')) ||
+        (page === 'profile' && itemText.includes('profile'))
+      ) {
+        item.classList.add('active');
+      }
+    });
+  }
 
-      if (page === 'view') renderDesignsGrid();
-      if (page === 'manage') renderDesignsTable();
+  document.getElementById('pageTitle').textContent = titles[page];
+
+  // Reset form when navigating away from upload page (except when editing)
+  if (page !== 'upload') {
+    const uploadForm = document.getElementById('uploadForm');
+    if (uploadForm && uploadForm.dataset.editingId) {
+      // Clear editing mode when navigating away
+      delete uploadForm.dataset.editingId;
+      const submitBtn = document.querySelector('.btn-primary');
+      if (submitBtn) {
+        submitBtn.textContent = 'Upload Design';
+      }
+    }
+  }
+
+  if (page === 'view') renderDesignsGrid();
+  if (page === 'manage') renderDesignsTable();
 }
 
 // ========== DESIGN TYPE SELECTION ==========
@@ -353,6 +387,7 @@ function renderFloors() {
 
 function handleImageUpload(event, type) {
   const files = Array.from(event.target.files);
+  const preview = document.getElementById(type + 'Preview');
 
   files.forEach(file => {
     const url = URL.createObjectURL(file);
@@ -363,6 +398,7 @@ function handleImageUpload(event, type) {
     }
   });
 
+  // Render new images along with existing ones
   renderImagePreview(type);
 }
 
@@ -370,9 +406,42 @@ function renderImagePreview(type) {
   const images = type === 'elevation' ? elevationImages : planImages;
   const container = document.getElementById(type + 'Preview');
 
-  container.innerHTML = images.map((img, idx) => `
+  // Get existing images HTML (if in edit mode)
+  const uploadForm = document.getElementById('uploadForm');
+  const isEditing = !!uploadForm.dataset.editingId;
+  let existingHtml = '';
+
+  if (isEditing) {
+    const existingUrlsKey = type === 'elevation' ? 'existingElevationUrls' : 'existingPlanUrls';
+    let existingUrls = [];
+    try {
+      existingUrls = JSON.parse(uploadForm.dataset[existingUrlsKey] || '[]');
+    } catch (e) {
+      console.error('Error parsing existing URLs:', e);
+    }
+
+    existingHtml = existingUrls.map((url) => `
+      <div class="image-preview-item" data-existing="true" data-url="${url}">
+        <img src="${url}" alt="${type}">
+        <div style="position: absolute; top: 8px; right: 8px; background: rgba(59, 130, 246, 0.9); color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px;">
+          Current
+        </div>
+        <button type="button" class="image-remove" onclick="removeExistingImage('${type}', '${url}')">
+          <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+    `).join('');
+  }
+
+  // Render new images
+  const newImagesHtml = images.map((img, idx) => `
     <div class="image-preview-item">
       <img src="${img}" alt="${type} ${idx + 1}">
+      <div style="position: absolute; top: 8px; right: 8px; background: rgba(34, 197, 94, 0.9); color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px;">
+        New
+      </div>
       <button type="button" class="image-remove" onclick="removeImage(${idx}, '${type}')">
         <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -380,7 +449,10 @@ function renderImagePreview(type) {
       </button>
     </div>
   `).join('');
+
+  container.innerHTML = existingHtml + newImagesHtml;
 }
+
 
 function removeImage(index, type) {
   if (type === 'elevation') {
@@ -400,6 +472,15 @@ function resetForm() {
   planImages = [];
 
   document.getElementById('uploadForm').reset();
+
+  // ADD THESE TWO LINES:
+    delete document.getElementById('uploadForm').dataset.editingId;
+    const submitBtn = document.querySelector('.btn-primary');
+    if (submitBtn) {
+      submitBtn.textContent = 'Upload Design';
+    }
+    // END OF NEW LINES
+
   document.querySelectorAll('.design-type-card').forEach(card => {
     card.classList.remove('selected');
   });
@@ -599,7 +680,7 @@ function renderDesignsGrid() {
     <div class="design-card">
       <img src="${design.thumbnail || design.elevationUrls?.[0] || 'https://via.placeholder.com/400x300'}" alt="${design.name}" class="design-thumbnail">
       <div class="design-info">
-        <div class="design-name">${design.designCategory.toUpperCase() || 'Untitled Design'}</div>
+        <div class="design-name">${design.designCategory.toUpperCase() || design.designType.toUpperCase()}</div>
         <span class="status-badge status-${design.status}">
           ${getStatusIcon(design.status)}
           ${design.status.charAt(0).toUpperCase() + design.status.slice(1)}
@@ -641,7 +722,7 @@ function renderDesignsTable() {
         <div class="table-design-info">
           <img src="${design.thumbnail || design.elevationUrls?.[0] || 'https://via.placeholder.com/64'}" alt="${design.name}" class="table-thumbnail">
           <div class="table-design-details">
-            <div class="table-design-name">${design.designCategory.toUpperCase() || 'Untitled Design'}</div>
+            <div class="table-design-name">${design.designCategory.toUpperCase() || design.designType.toUpperCase()}</div>
             <div class="table-design-area">${design.totalArea + ' sq ft' || 'N/A'}</div>
           </div>
         </div>
@@ -667,11 +748,14 @@ function renderDesignsTable() {
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
             </svg>
           </button>
-          <button class="btn-icon" style="background: #fee2e2; color: #ef4444;" onclick="deactivateDesign(${design.id})" title="Deactivate">
+          <button class="btn-icon" style="background: #fee2e2; color: #ef4444;"
+                  onclick="deactivateDesign(${design.id}, '${design.status}')" title="Deactivate">
             <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2v10m6.364-6.364a9 9 0 11-12.728 0" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 2v10m6.364-6.364a9 9 0 11-12.728 0" />
             </svg>
           </button>
+
         </div>
       </td>
     </tr>
@@ -693,52 +777,192 @@ function getStatusIcon(status) {
 
 // ========== DESIGN ACTIONS ==========
 
+async function deactivateDesign(id, status){
+    if(status.toUpperCase()==='APPROVED'){
+        alert("Approved design can not be deactivated");
+        return ;
+    }
+
+    const token= localStorage.getItem('vendor_token');
+
+    try{
+        const response= await fetch(`/api/designs/update?id=${id}&status=DEACTIVATE`,{
+            method: 'PUT',
+            headers:{
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if(!response.ok){
+            throw new Error("Error deactivating design");
+        }
+
+        alert("design deactivate successfully");
+        fetchVendorDesigns();
+
+    }catch(e){
+        console.error("error", e)
+    }
+}
+
 function editDesign(id) {
-  // TODO: Implement edit functionality
   console.log('Edit design:', id);
-  alert('Edit functionality coming soon!');
-}
 
-function viewDesign(id) {
-  // TODO: Implement view functionality
-  console.log('View design:', id);
-  alert('View functionality coming soon!');
-}
-
-async function deactivateDesign(id) {
-  if (!confirm('Are you sure you want to deactivate this design?')) {
+  // Find the design to edit
+  const design = designs.find(d => d.id === id);
+  if (!design) {
+    alert('Design not found!');
     return;
   }
 
-  if(!checkSession()){
-      console.error("Session expired please login again");
-      window.location.href='/login.html';
-  }
+  // Navigate to upload page - MANUALLY ACTIVATE IT
+  const pages = ['upload', 'view', 'manage', 'profile'];
+  pages.forEach(p => {
+    document.getElementById(p + 'Page').classList.remove('active');
+  });
+  document.getElementById('uploadPage').classList.add('active');
 
-  const token = localStorage.getItem('vendor_token');
-  try {
-    const response = await fetch(`/api/designs/update?id=${id}&status=DEACTIVATE`, {
-      method: 'PUT',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      }
-    });
-
-    const result = await response.json();
-
-    if (response.ok && result.success) {
-      alert('Design deactivate successfully!');
-      // Refresh designs list
-      await fetchVendorDesigns();
-    } else {
-      alert('❌ Failed to deactivate design: ' + (result.message || 'Unknown error'));
+  // Update navigation
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.classList.remove('active');
+    if (item.textContent.trim().toLowerCase().includes('upload')) {
+      item.classList.add('active');
     }
-  } catch (error) {
-    console.error('Deactivate error:', error);
-    alert('⚠️ Error deactivating design. Please try again.');
+  });
+
+  // Update page title
+  document.getElementById('pageTitle').textContent = 'Edit Design';
+
+  // IMPORTANT: Don't reset form, just clear the dataset
+  const uploadForm = document.getElementById('uploadForm');
+  delete uploadForm.dataset.editingId;
+
+  // Clear form fields but not the structure
+  uploadForm.reset();
+
+  // Clear floors and images
+  floors = [];
+  elevationImages = [];
+  planImages = [];
+
+  // Set design type
+  currentDesignType = design.designType || design.type;
+
+  // Select the appropriate design type card
+  const designTypeCards = document.querySelectorAll('.design-type-card');
+  designTypeCards.forEach(card => {
+    card.classList.remove('selected');
+    const cardTitle = card.querySelector('.design-type-title').textContent;
+    if (cardTitle === currentDesignType) {
+      card.classList.add('selected');
+    }
+  });
+
+  // Show appropriate sections
+  const plotInfo = document.getElementById('plotInfo');
+  const residentialOnly = document.getElementById('residentialOnlyFields');
+  const numFloorsSection = document.getElementById('numFloorsSection');
+  const commonFields = document.getElementById('commonFields');
+
+  plotInfo.classList.remove('hidden');
+  numFloorsSection.classList.remove('hidden');
+  commonFields.classList.remove('hidden');
+
+  if (currentDesignType === 'Residential') {
+    residentialOnly.classList.remove('hidden');
+  } else {
+    residentialOnly.classList.add('hidden');
   }
+
+  // Populate plot information
+  if (design.length) document.getElementById('plotLength').value = design.length;
+  if (design.width) document.getElementById('plotBreadth').value = design.width;
+  if (design.totalArea) document.getElementById('plotArea').value = design.totalArea;
+  if (design.plotFacing) document.getElementById('plotFacing').value = design.plotFacing;
+
+  // Populate residential-only fields
+  if (design.plotLocation) document.getElementById('plotLocation').value = design.plotLocation;
+  if (design.designCategory) document.getElementById('designCategory').value = design.designCategory;
+
+  // Populate common fields
+  if (design.parking) document.getElementById('vehicleParking').value = design.parking;
+  if (design.builtUpArea) document.getElementById('totalBuiltUp').value = design.builtUpArea;
+
+  // Populate floor data
+  if (design.floorList && design.floorList.length > 0) {
+    floors = design.floorList.map((floor, index) => ({
+      id: Date.now() + index,
+      name: floor.name || `Floor ${index + 1}`,
+      type: floor.type || (currentDesignType === 'Semi-Commercial' ? 'Residential' : ''),
+      bedrooms: floor.bedrooms || '',
+      bathrooms: floor.bathrooms || '',
+      kitchen: floor.kitchen || '',
+      hall: floor.hall || '',
+      other: floor.other || '',
+      businessUnits: floor.businessUnits || '',
+      unitDetails: floor.unitDetails || ''
+    }));
+
+    document.getElementById('numFloors').value = floors.length;
+    document.getElementById('floorsSection').classList.remove('hidden');
+    renderFloors();
+  }
+
+  // Handle existing images - show preview WITH ability to remove
+  const elevationPreview = document.getElementById('elevationPreview');
+  const planPreview = document.getElementById('planPreview');
+
+  // Store existing image URLs for reference
+  uploadForm.dataset.existingElevationUrls = JSON.stringify(design.elevationUrls || []);
+  uploadForm.dataset.existingPlanUrls = JSON.stringify(design.twoDPlanUrls || []);
+
+  if (design.elevationUrls && design.elevationUrls.length > 0) {
+    elevationPreview.innerHTML = design.elevationUrls.map((url, idx) => `
+      <div class="image-preview-item" data-existing="true" data-url="${url}">
+        <img src="${url}" alt="elevation ${idx + 1}">
+        <div style="position: absolute; top: 8px; right: 8px; background: rgba(59, 130, 246, 0.9); color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px;">
+          Current
+        </div>
+        <button type="button" class="image-remove" onclick="removeExistingImage('elevation', '${url}')">
+          <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+    `).join('');
+  }
+
+  if (design.twoDPlanUrls && design.twoDPlanUrls.length > 0) {
+    planPreview.innerHTML = design.twoDPlanUrls.map((url, idx) => `
+      <div class="image-preview-item" data-existing="true" data-url="${url}">
+        <img src="${url}" alt="plan ${idx + 1}">
+        <div style="position: absolute; top: 8px; right: 8px; background: rgba(59, 130, 246, 0.9); color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px;">
+          Current
+        </div>
+        <button type="button" class="image-remove" onclick="removeExistingImage('plan', '${url}')">
+          <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+    `).join('');
+  }
+
+  // Store the design ID for update operation
+  uploadForm.dataset.editingId = id;
+
+  // Change submit button text
+  const submitBtn = document.querySelector('.btn-primary');
+  if (submitBtn) {
+    submitBtn.textContent = 'Update Design';
+  }
+
+  // Scroll to top of form
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  console.log('✅ Design loaded for editing:', design);
+  console.log('📋 Current design type:', currentDesignType);
+  console.log('🏢 Floors loaded:', floors);
 }
 
 // ========== UTILITY FUNCTIONS ==========
@@ -781,13 +1005,50 @@ window.addEventListener('DOMContentLoaded', async () => {
   if (uploadForm) {
     uploadForm.addEventListener('submit', function (e) {
       e.preventDefault();
+      console.log('📤 Form submitted');
+
+      // Check if we're editing or creating new
+      const editingId = document.getElementById('uploadForm').dataset.editingId;
+
+      if (editingId) {
+        console.log('✏️ Calling update function');
+        updateDesignForm(); // Call update function
+      } else {
+        console.log('📝 Calling upload function');
+        submitDesignForm(); // Call upload function
+      }
+    });
+  }
+
+  console.log('✅ Vendor Dashboard Loaded Successfully');
+});
+/*window.addEventListener('DOMContentLoaded', async () => {
+  console.log('🚀 Vendor Dashboard Loading...');
+
+  // Check session first
+  const isAuthenticated = await checkSession();
+  if (!isAuthenticated) {
+    return; // Will redirect to login
+  }
+
+  // Fetch vendor data
+  await fetchVendorData();
+
+  // Fetch designs
+  await fetchVendorDesigns();
+
+  // Setup form submission
+  const uploadForm = document.getElementById('uploadForm');
+  if (uploadForm) {
+    uploadForm.addEventListener('submit', function (e) {
+      e.preventDefault();
       console.log('📤 Upload button clicked');
       submitDesignForm();
     });
   }
 
   console.log('✅ Vendor Dashboard Loaded Successfully');
-});
+});*/
 
 
 // logout vendor
@@ -825,20 +1086,6 @@ async function logoutVendor(){
    }
 }
 
- // Show alert message
-/*function showAlert(message, type = 'success') {
-   const alertContainer = document.getElementById('alertContainer');
-   const alert = document.createElement('div');
-   alert.className = `alert alert-${type} show`;
-   alert.innerHTML = `<span>${message}</span>`;
-   alertContainer.appendChild(alert);
-
-   setTimeout(() => {
-       alert.classList.remove('show');
-       setTimeout(() => alert.remove(), 300);
-   }, 3000);
-}*/
-
 function isTokenExpired(token) {
   try {
     const payload = JSON.parse(atob(token.split('.')[1]));
@@ -852,3 +1099,273 @@ function isTokenExpired(token) {
 
 // Periodic session check (every 5 minutes)
 setInterval(checkSession, 60 * 60 * 1000);
+
+// ========== UPDATE DESIGN FUNCTION ==========
+
+async function updateDesignForm() {
+  console.log('Starting design update...');
+
+  const editingId = document.getElementById('uploadForm').dataset.editingId;
+
+  if (!editingId) {
+    alert('❌ No design selected for editing');
+    return;
+  }
+
+  // Validate required fields
+  if (!currentDesignType) {
+    alert('❌ Please select a design type');
+    return;
+  }
+
+  // Get file inputs
+  const elevationInput = document.getElementById('elevationUpload');
+  const planInput = document.getElementById('planUpload');
+
+  const elevationFiles = elevationInput?.files || [];
+  const planFiles = planInput?.files || [];
+
+  console.log('📁 Files selected for update:');
+  console.log('  - New elevation files:', elevationFiles.length);
+  console.log('  - New plan files:', planFiles.length);
+
+  // Get existing images that should be kept
+  const uploadForm = document.getElementById('uploadForm');
+  let existingElevationUrls = [];
+  let existingPlanUrls = [];
+
+  try {
+    existingElevationUrls = JSON.parse(uploadForm.dataset.existingElevationUrls || '[]');
+    existingPlanUrls = JSON.parse(uploadForm.dataset.existingPlanUrls || '[]');
+  } catch (e) {
+    console.error('Error parsing existing URLs:', e);
+  }
+
+  console.log('📷 Existing images to keep:');
+  console.log('  - Elevation URLs:', existingElevationUrls.length);
+  console.log('  - Plan URLs:', existingPlanUrls.length);
+
+  // Validate that we have at least some images (existing or new)
+  if (existingElevationUrls.length === 0 && elevationFiles.length === 0) {
+    alert('❌ Please keep at least one elevation image or upload new ones');
+    return;
+  }
+  if (existingPlanUrls.length === 0 && planFiles.length === 0) {
+    alert('❌ Please keep at least one plan image or upload new ones');
+    return;
+  }
+
+  // Validate file sizes if new files are uploaded
+  const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+
+  for (let file of elevationFiles) {
+    console.log(`  ✓ Elevation: ${file.name} (${(file.size / (1024 * 1024)).toFixed(2)}MB)`);
+    if (file.size > MAX_FILE_SIZE) {
+      alert(`❌ Elevation file "${file.name}" exceeds 50MB limit`);
+      return;
+    }
+  }
+
+  for (let file of planFiles) {
+    console.log(`  ✓ Plan: ${file.name} (${(file.size / (1024 * 1024)).toFixed(2)}MB)`);
+    if (file.size > MAX_FILE_SIZE) {
+      alert(`❌ Plan file "${file.name}" exceeds 50MB limit`);
+      return;
+    }
+  }
+
+  const formData = new FormData();
+
+  // Add design ID
+  formData.append('id', editingId);
+
+  // Add design type and basic info
+  const formFields = {
+    designType: currentDesignType,
+    designCategory: document.getElementById('designCategory')?.value || '',
+    plotLocation: document.getElementById('plotLocation')?.value || '',
+    length: document.getElementById('plotLength')?.value || '',
+    width: document.getElementById('plotBreadth')?.value || '',
+    totalArea: document.getElementById('plotArea')?.value || '',
+    plotFacing: document.getElementById('plotFacing')?.value || '',
+    parking: document.getElementById('vehicleParking')?.value || '',
+    builtUpArea: document.getElementById('totalBuiltUp')?.value || ''
+  };
+
+  console.log('📋 Form data for update:', formFields);
+
+  // Append all form fields
+  Object.entries(formFields).forEach(([key, value]) => {
+    formData.append(key, value);
+  });
+
+  // Add floor details as JSON
+  console.log('🏢 Updated floors data:', floors);
+  formData.append('floorList', JSON.stringify(floors));
+
+  // Send existing image URLs to keep (as JSON strings)
+  formData.append('keepElevationUrls', JSON.stringify(existingElevationUrls));
+  formData.append('keepPlanUrls', JSON.stringify(existingPlanUrls));
+
+  console.log('📸 Images to keep:');
+  console.log('  - Elevation:', existingElevationUrls);
+  console.log('  - Plan:', existingPlanUrls);
+
+  // Append new elevation image files (if any)
+  if (elevationFiles.length > 0) {
+    console.log('📤 Adding new elevation files...');
+    for (let file of elevationFiles) {
+      formData.append('elevationFiles', file);
+      console.log(`  + ${file.name}`);
+    }
+  }
+
+  // Append new plan image files (if any)
+  if (planFiles.length > 0) {
+    console.log('📤 Adding new plan files...');
+    for (let file of planFiles) {
+      formData.append('twoDPlanFiles', file);
+      console.log(`  + ${file.name}`);
+    }
+  }
+
+  // Log FormData contents (for debugging)
+  console.log('📦 FormData contents for update:');
+  for (let pair of formData.entries()) {
+    if (pair[1] instanceof File) {
+      console.log(`  ${pair[0]}: [File] ${pair[1].name}`);
+    } else {
+      console.log(`  ${pair[0]}: ${pair[1]}`);
+    }
+  }
+
+  try {
+    // Show loading state
+    const submitBtn = document.querySelector('.btn-primary');
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = 'Updating...';
+    submitBtn.disabled = true;
+
+    const token = localStorage.getItem('vendor_token');
+
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    console.log('🔐 Sending update request with token...');
+
+    const response = await fetch(`/api/designs/update/${editingId}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+      body: formData
+    });
+
+    console.log('📡 Response status:', response.status, response.statusText);
+
+    // Get response text first to handle both JSON and non-JSON responses
+    const responseText = await response.text();
+    console.log('📄 Raw response:', responseText);
+
+    let result;
+    try {
+      result = JSON.parse(responseText);
+      console.log('✅ Parsed JSON response:', result);
+    } catch (e) {
+      console.error('❌ Failed to parse JSON. Response was:', responseText);
+      throw new Error('Server returned invalid JSON: ' + responseText.substring(0, 100));
+    }
+
+    if (response.ok && result.success) {
+      alert('✅ Design updated successfully!');
+      console.log('🎉 Success! Updated design data:', result.design);
+
+      // Reset form
+      resetForm();
+
+      // Refresh designs list if function exists
+      if (typeof fetchVendorDesigns === 'function') {
+        await fetchVendorDesigns();
+      }
+
+      // Navigate to manage page to see the updated design
+      const pages = ['upload', 'view', 'manage', 'profile'];
+      pages.forEach(p => {
+        document.getElementById(p + 'Page').classList.remove('active');
+      });
+      document.getElementById('managePage').classList.add('active');
+
+      // Update navigation
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+        if (item.textContent.trim().toLowerCase().includes('manage')) {
+          item.classList.add('active');
+        }
+      });
+
+      // Update page title
+      document.getElementById('pageTitle').textContent = 'Manage Designs';
+
+      // Render designs table
+      if (typeof renderDesignsTable === 'function') {
+        renderDesignsTable();
+      }
+
+    } else {
+      // Show detailed error
+      const errorMsg = result.error || result.message || 'Unknown error';
+      console.error('❌ Update failed:', result);
+      alert(`❌ Update failed: ${errorMsg}`);
+
+      // Log full error for debugging
+      console.error('Full error object:', result);
+    }
+
+    // Restore button
+    submitBtn.textContent = originalText;
+    submitBtn.disabled = false;
+
+  } catch (error) {
+    console.error('💥 Update error:', error);
+    console.error('Error stack:', error.stack);
+    alert(`⚠️ Error: ${error.message}`);
+
+    // Restore button
+    const submitBtn = document.querySelector('.btn-primary');
+    if (submitBtn) {
+      submitBtn.textContent = 'Update Design';
+      submitBtn.disabled = false;
+    }
+  }
+}
+
+// ========== EXISTING IMAGE MANAGEMENT ==========
+
+function removeExistingImage(type, url) {
+  const uploadForm = document.getElementById('uploadForm');
+  const existingUrlsKey = type === 'elevation' ? 'existingElevationUrls' : 'existingPlanUrls';
+
+  // Get current existing URLs
+  let existingUrls = [];
+  try {
+    existingUrls = JSON.parse(uploadForm.dataset[existingUrlsKey] || '[]');
+  } catch (e) {
+    console.error('Error parsing existing URLs:', e);
+  }
+
+  // Remove the URL
+  existingUrls = existingUrls.filter(u => u !== url);
+
+  // Update the dataset
+  uploadForm.dataset[existingUrlsKey] = JSON.stringify(existingUrls);
+
+  // Remove from preview
+  const preview = document.getElementById(type + 'Preview');
+  const itemToRemove = preview.querySelector(`[data-url="${url}"]`);
+  if (itemToRemove) {
+    itemToRemove.remove();
+  }
+
+  console.log(`Removed ${type} image:`, url);
+}

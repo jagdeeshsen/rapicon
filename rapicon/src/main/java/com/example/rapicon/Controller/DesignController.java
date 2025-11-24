@@ -339,7 +339,7 @@ public class DesignController {
 
     @PutMapping("/update")
     @PreAuthorize("hasRole('VENDOR')")
-    public ResponseEntity<Design> updateDesignStatus(@RequestParam("id") Long id,
+    public ResponseEntity<?> updateDesignStatus(@RequestParam("id") Long id,
                                                      @RequestParam("status") String status){
 
         // Validate status
@@ -352,7 +352,10 @@ public class DesignController {
 
         try{
             Design updateDesign= designService.updateDesignStatus(id, Status.valueOf(status.toUpperCase()));
-            return ResponseEntity.ok(updateDesign);
+            return ResponseEntity.ok(Map.of("design", updateDesign,
+                                             "message", "design deactivated successfully",
+                                             "status","DEACTIVATE",
+                                             "success", true));
         }catch (RuntimeException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }

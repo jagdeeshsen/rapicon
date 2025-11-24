@@ -179,7 +179,8 @@ public class authController {
 
         // Check password manually
         if (!new BCryptPasswordEncoder().matches(password, vendor.getPassword())) {
-            throw new RuntimeException("Invalid credentials");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message","Invalid username or password"));
+            //throw new RuntimeException("Invalid credentials");
         }
 
         // Build UserDetailsImpl from your User entity

@@ -49,7 +49,7 @@ public class Design {
     private String parking;
 
     @Column(nullable = false)
-    private String builtUpArea;
+    private BigDecimal builtUpArea;
 
     @Enumerated(EnumType.STRING)
     private Status status= Status.PENDING;
