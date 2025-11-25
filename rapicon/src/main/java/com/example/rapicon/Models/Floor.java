@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Embeddable
 public class Floor {
 
+    /// frontend accept only numbers for bedroom,bathroom,business unit
     private Long id;
     private String name;
     private String type;

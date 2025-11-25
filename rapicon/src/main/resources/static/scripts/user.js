@@ -13,12 +13,6 @@ let modal;
 let closeModal;
 let purchaseForm;
 let userIcon;
-let totalBathrooms;
-let totalBedrooms;
-let totalHall;
-let totalKitchens;
-let others;
-let totalFloors;
 
 // Initialize dashboard
 document.addEventListener('DOMContentLoaded', function() {
@@ -224,21 +218,67 @@ function createDesignCard(design) {
     card.className = 'design-card';
 
     // initialize
-    totalBathrooms = 0;
-    totalBedrooms = 0;
-    totalFloors = 0;
-    totalHall = 0;
-    totalKitchens = 0;
-    others = 0;
+    let totalBathrooms = 0;
+    let totalBedrooms = 0;
+    let totalFloors = 0;
+    let totalBusinessUnits=0;
 
-    // calculate no of bedrooms, bathrooms, hall, kitchen, others
+
     design.floorList.forEach(floor => {
-        totalBedrooms += parseInt(floor.bedrooms);
-        totalBathrooms += parseInt(floor.bathrooms);
-        totalHall += parseInt(floor.hall);
-        totalKitchens += parseInt(floor.kitchen);
-        others += floor.other;
+        totalBedrooms += parseInt(floor.bedrooms || "0") || 0;
+        totalBathrooms += parseInt(floor.bathrooms || "0") || 0;
+        totalBusinessUnits += parseInt(floor.businessUnits || "0") || 0;
     });
+
+    const category = (design.designType || "").toUpperCase();
+    const isCommercial = category === "COMMERCIAL";
+    const isResidential = category === "RESIDENTIAL" || category === "SEMI-COMMERCIAL";
+
+    let specsHTML = `
+        <div class="spec-item">
+            <span class="spec-icon">📐</span>
+            <span>${design.totalArea} sq ft</span>
+        </div>
+        <div class="spec-item">
+            <span class="spec-icon">⭐</span>
+            <span>${design.rating || '4.5'}/5.0</span>
+        </div>
+        <div class="spec-item">
+            <span class="spec-icon">🏢</span>
+            <span>${design.floorList.length} Floor</span>
+        </div>
+        <div class="spec-item">
+            <span class="spec-icon">📏</span>
+            <span>${design.length} X ${design.width} Plot size</span>
+        </div>
+    `;
+
+    if(isResidential) {
+        specsHTML = `
+            <div class="spec-item">
+                <span class="spec-icon">🛏️</span>
+                <span>${totalBedrooms} Bedrooms</span>
+            </div>
+            <div class="spec-item">
+                <span class="spec-icon">🚿</span>
+                <span>${totalBathrooms} Bathrooms</span>
+            </div>
+        ` + specsHTML;
+    }
+
+    if(isCommercial) {
+        specsHTML = `
+            <div class="spec-item">
+                <span class="spec-icon">🏬</span>
+                <span>${totalBusinessUnits || 0} Business Units</span>
+            </div>
+            <div class="spec-item">
+                <span class="spec-icon">🧭</span>
+                <span>${design.plotFacing} Plot Facing</span>
+            </div>
+        ` + specsHTML;
+    }
+
 
     card.innerHTML = `
         <div class="design-image">
@@ -246,33 +286,10 @@ function createDesignCard(design) {
                               : `<span style="position: relative; z-index: 1;">${getDesignIcon(design.designType || design.type)}</span>`}
         </div>
         <div class="design-info">
-            <h3 class="design-title">${design.designCategory}</h3>
+            <h3 class="design-title">${design.designCategory || design.designType}</h3>
             <span class="design-type">${(design.designType).toUpperCase()}</span>
             <div class="design-specs">
-                <div class="spec-item">
-                    <span class="spec-icon">🛏️</span>
-                    <span>${totalBedrooms} Bedrooms</span>
-                </div>
-                <div class="spec-item">
-                    <span class="spec-icon">🚿</span>
-                    <span>${totalBathrooms} Bathrooms</span>
-                </div>
-                <div class="spec-item">
-                    <span class="spec-icon">📐</span>
-                    <span>${design.totalArea} sq ft</span>
-                </div>
-                <div class="spec-item">
-                    <span class="spec-icon">⭐</span>
-                    <span>${design.rating || '4.5'}/5.0</span>
-                </div>
-                <div class="spec-item">
-                     <span class="spec-icon">🏢</span>
-                     <span>${design.floorList.length} Floor</span>
-                </div>
-                <div class="spec-item">
-                     <span class="spec-icon">📏</span>
-                     <span>${design.length + "X" + design.width} Plot size</span>
-                </div>
+                ${specsHTML}
             </div>
             <div class="card-footer">
                 <div>
@@ -320,12 +337,16 @@ function openPurchaseModal(designId) {
         let designBathrooms = 0;
         let designKitchens = 0;
         let designHall = 0;
+        let description="";
+        let businessUnits=0;
 
         design.floorList.forEach(floor => {
             designBedrooms += parseInt(floor.bedrooms);
             designBathrooms += parseInt(floor.bathrooms);
             designHall += parseInt(floor.hall);
             designKitchens += parseInt(floor.kitchen);
+            description += floor.name.toUpperCase()+": "+ floor.other+". ";
+            businessUnits += parseInt(floor.businessUnits);
         });
 
         // Store design in sessionStorage for the detail page
@@ -335,8 +356,8 @@ function openPurchaseModal(designId) {
             type: design.designType || design.type,
             plotLocation: design.plotLocation || 'Not specified',
             plotFacing: design.plotFacing || 'Not specified',
-            bedrooms: designBedrooms,
-            bathrooms: designBathrooms,
+            bedrooms: designBathrooms,
+            bathrooms: designBedrooms,
             kitchens: designKitchens || 0,
             hall: designHall,
             parking: design.parking || 0,
@@ -346,11 +367,12 @@ function openPurchaseModal(designId) {
             price: design.builtUpArea * 5,
             elevationUrls: design.elevationUrls,
             twoDPlanUrls: design.twoDPlanUrls,
+            businessUnits: businessUnits,
             floors: design.floorList || '0',
             rating: design.rating || 4.5,
             reviews: design.reviews || 0,
             image: design.imageUrl || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800',
-            description: design.description || 'Beautiful architectural design.',
+            description: description || 'Beautiful architectural design.',
             features: design.features || [
                 { icon: '🌞', text: 'Natural Lighting' },
                 { icon: '🌿', text: 'Green Spaces' },

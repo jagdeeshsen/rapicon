@@ -9,10 +9,10 @@
             line-height: 1.6;
             color: #333;
             overflow-x: hidden;
-            background: url('../images/bg7.png') no-repeat center center fixed;
-            background-size: cover;  /* makes image fill the page */
+            /*background: url('../images/bg7.png') no-repeat center center fixed;
+            background-size: cover;  *//* makes image fill the page *//*
             margin: 0;
-            padding: 0;
+            padding: 0;*/
         }
 
         /* Header & Navigation */
@@ -135,7 +135,7 @@
         }
 
         /* Hero Section */
-        .hero {
+       /* .hero {
             height: 100vh;
             background: url('../images/bg7.png') no-repeat center center / cover;
             display: flex;
@@ -144,14 +144,14 @@
             text-align: center;
             color: white;
             position: relative;
-        }
+        }*/
 
         /*.hero-content h1,
         .hero-content p {
             color: black;
         }*/
 
-        /*.hero {
+        .hero {
             height: 100vh;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
@@ -161,9 +161,9 @@
             color: white;
             position: relative;
             overflow: hidden;
-        }*/
+        }
 
-       /* .hero::before {
+        .hero::before {
             content: '';
             position: absolute;
             top: 0;
@@ -172,7 +172,7 @@
             bottom: 0;
             background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><polygon fill="rgba(255,255,255,0.1)" points="0,1000 1000,0 1000,1000"/></svg>');
             background-size: cover;
-        }*/
+        }
 
         .hero-content {
             max-width: 800px;
