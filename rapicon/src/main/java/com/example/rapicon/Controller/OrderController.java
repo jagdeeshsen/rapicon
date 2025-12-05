@@ -1,12 +1,12 @@
 package com.example.rapicon.Controller;
 
-import com.example.rapicon.DTO.OrderHistoryDTO;
-import com.example.rapicon.DTO.OrderRequestDTO;
-import com.example.rapicon.DTO.PaymentVerificationDTO;
+import com.example.rapicon.DTO.*;
 import com.example.rapicon.Models.*;
 import com.example.rapicon.Repository.CartItemRepo;
 import com.example.rapicon.Service.*;
-import jakarta.transaction.Transactional;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,10 +15,11 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/orders")
+@CrossOrigin(origins = "*")
+@Slf4j
 public class OrderController {
 
     @Autowired
@@ -31,40 +32,42 @@ public class OrderController {
     private OrderItemService orderItemService;
 
     @Autowired
-    private RazorpayService razorpayService;
-
-    @Autowired
     private DesignService designService;
 
     @Autowired
     private UserService userService;
 
     @Autowired
-    private PaymentService paymentService;
+    private PaymentDetailsService paymentDetailsService;
 
     @PostMapping("/create-order")
-    @Transactional
-    public ResponseEntity<?> createOrder(@RequestBody OrderRequestDTO requestData) {
-
+    public ResponseEntity<Map<String, Object>> createOrder(@RequestBody OrderRequestDTO requestData) {
         try {
+            // generate order and merchantOrder ids
+            //String orderId= "ORD-" + System.currentTimeMillis() + "-" + (int)(Math.random()*10000);
+            String merchantOrderId = "ORD" + (int)(Math.random() * 900000);
+
             BigDecimal amount;
             if(requestData.getTotalInstallments()>1){
                 amount= requestData.getInstallmentAmount();
             }else {
                 amount= requestData.getTotalAmount();
             }
-            // 1. Razorpay
-            com.razorpay.Order razorpayOrder = razorpayService.createRazorpayOrder(amount);
+            BigDecimal amountInPaisa= amount.multiply(new BigDecimal(100));
 
             // 2. Build order
             User user = userService.findById(requestData.getUserId())
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
             Order order = new Order();
-            order.setUser(user);
-            order.setOrderNumber(UUID.randomUUID().toString());
+            order.setUserId(user.getId());
+            order.setCustomerName(user.getFullName());
+            order.setCustomerEmail(user.getEmail());
+            order.setCustomerPhone(user.getPhone());
             order.setTotalAmount(requestData.getTotalAmount());
-            order.setRazorpayOrderId(razorpayOrder.get("id"));
+            order.setMerchantOrderId(merchantOrderId);
+            order.setOrderStatus(Order.OrderStatus.PROCESSING);
+            order.setPaymentStatus(Order.PaymentStatus.PENDING);
             order.setTotalInstallments(requestData.getTotalInstallments());
             order.setInstallmentAmount(requestData.getInstallmentAmount());
             order.setCreatedAt(new Timestamp(System.currentTimeMillis()));
@@ -80,6 +83,7 @@ public class OrderController {
                 inst.setInstallmentNumber(i);
                 inst.setUnlocked(i == 1);
                 inst.setUnlockedAt(LocalDateTime.now());
+                inst.setDueDate(LocalDateTime.now().plusMonths(i));
                 inst.setInstallmentStatus(Installments.InstallmentStatus.PENDING);
                 inst.setCreatedAt(LocalDateTime.now());
                 inst.setUpdatedAt(LocalDateTime.now());
@@ -97,7 +101,6 @@ public class OrderController {
                 orderItem.setDesign(item.getDesign());
                 orderItem.setPackageName(item.getPackageName());
                 orderItem.setTotalAmount(item.getTotalAmount());
-                orderItem.setTotalInstallments(item.getTotalInstallments());
                 orderItem.setOrder(order);
                 orderItem.setCreatedAt(new Timestamp(System.currentTimeMillis()));
                 orderItem.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
@@ -106,100 +109,180 @@ public class OrderController {
             order.setOrdertemList(orderItems);
 
             // 5. SAVE ONLY ONCE
-            orderService.createOrder(order);   // <--- ONLY THIS SAVE
+            Order savedOrder = orderService.createOrder(order);
 
-            // 6. Response
             Map<String, Object> response = new HashMap<>();
-            response.put("orderId", order.getId());
-            response.put("razorpayOrderId", razorpayOrder.get("id"));
-            response.put("amount", razorpayOrder.get("amount"));
-            response.put("currency", razorpayOrder.get("currency"));
-            response.put("key", razorpayService.getKeyId());
+            response.put("id", savedOrder.getId());  // Your internal DB order ID
+            response.put("merchantOrderId", merchantOrderId);     // Order ID for PhonePe
+            response.put("amount", amountInPaisa);
+            response.put("userId", user.getId());
+            response.put("customerName", user.getFullName());
+            response.put("customerEmail", user.getEmail());
+            response.put("customerPhone", user.getPhone());
+            response.put("status", "CREATED");
 
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            e.printStackTrace();
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", e.getMessage());
-            return ResponseEntity.badRequest().body(error);
+            log.error("Failed to create order", e);
+            return ResponseEntity.badRequest().body(
+                    Map.of("error", "Failed to create order: " + e.getMessage())
+            );
         }
     }
 
-
+    /**
+     * Verify Payment
+     * This endpoint verifies the payment and updates order status
+     */
     @PostMapping("/verify-payment")
-    public ResponseEntity<?> verifyPayment(@RequestBody PaymentVerificationDTO req) {
+    public ResponseEntity<Map<String, Object>> verifyPayment(@RequestBody Map<String, Object> paymentData) {
+        ObjectMapper mapper= new ObjectMapper();
+
         try {
-            String data = req.getRazorpayOrderId() + "|" + req.getRazorpayPaymentId();
-            boolean isValid = razorpayService.verifySignature(data, req.getRazorpaySignature());
+            String Id = paymentData.get("orderId").toString();
+            String merchantOrderId = (String) paymentData.get("merchantOrderId");
+            String phonePeOrderId = (String) paymentData.get("phonePeOrderId");
+            String paymentState = (String) paymentData.get("paymentState");
+            Long amount = ((Number) paymentData.get("amount")).longValue();
 
-            System.out.println("Data for signature: '" + data + "'");
-            System.out.println("Received signature: '" + req.getRazorpaySignature() + "'");
+            List<PaymentDetailDTO> paymentDetailList =
+                    mapper.convertValue(paymentData.get("paymentDetails"),
+                            new TypeReference<List<PaymentDetailDTO>>() {});
 
-            Optional<Order> optionalOrder = orderService.findByRazorpayOrderId(req.getRazorpayOrderId());
+            // TODO: Verify payment in your database
+            // 1. Check if order exists
+            Order order = orderService.getOrderById(Long.parseLong(Id));
 
-            if (optionalOrder.isEmpty()){
-                return ResponseEntity.badRequest().body("Verification failed: Order not found");
-            }
-
-            Order order=optionalOrder.get();
-            Payment payment = new Payment();
-            payment.setOrder(order);
-            payment.setRazorpayOrderId(req.getRazorpayOrderId());
-            payment.setRazorpayPaymentId(req.getRazorpayPaymentId());
-            payment.setRazorpaySignature(req.getRazorpaySignature());
-
-            BigDecimal paidAmount;
+            // 2. Verify amount matches
+            BigDecimal savedAmount;
             if(order.getTotalInstallments()>1){
-                paidAmount= order.getInstallmentAmount();
+                savedAmount= order.getInstallmentAmount();
+            }else {
+                savedAmount= order.getTotalAmount();
+            }
+            BigDecimal amountInPaisa= savedAmount.multiply(new BigDecimal(100));
+            System.out.println("saved Amount: "+ savedAmount+ ","+ "amount: "+ amountInPaisa);
+            if (amountInPaisa.compareTo(new BigDecimal(amount))!=0) {
+                 throw new RuntimeException("Amount mismatch");
             }else{
-                paidAmount= order.getTotalAmount();
+                order.setPaidAmount(savedAmount);
             }
-            payment.setAmount(paidAmount);
-            payment.setCreatedAt(new Timestamp(System.currentTimeMillis()));
 
-            // save payment in db
-            paymentService.createPayment(payment);
-
-            if (isValid) {
+            // 3. Update order with payment details
+            if(paymentState.equalsIgnoreCase("COMPLETED")) {
                 order.setPaymentStatus(Order.PaymentStatus.COMPLETED);
-                order.setOrderStatus(Order.OrderStatus.COMPLETED);
-                payment.setPaymentStatus(Order.PaymentStatus.COMPLETED);
-                order.setPaidAmount(paidAmount);
-
-                // set installment status
-                Installments installments=order.getInstallmentsList().get(0);
-                installments.setPaidDate(LocalDateTime.now());
-                installments.setInstallmentStatus(Installments.InstallmentStatus.PAID);
-                orderService.updateOrder(order);
-                paymentService.updatePayment(payment);
-
-                return ResponseEntity.ok("Payment verified successfully");
-            } else {
-                order.setPaymentStatus(Order.PaymentStatus.FAILED);
-                orderService.updateOrder(order);
-                return ResponseEntity.badRequest().body("Invalid payment signature");
             }
+            order.setOrderStatus(Order.OrderStatus.COMPLETED);
+
+            PaymentDetailDTO details= paymentDetailList.get(0);
+
+            PaymentDetails pd= new PaymentDetails();
+            pd.setPhonePeOrderId(phonePeOrderId);
+            pd.setAmount(details.getAmount().divide(new BigDecimal(100)));
+            pd.setPaymentMode(details.getPaymentMode());
+            pd.setState(details.getState());
+            pd.setTransactionId(details.getTransactionId());
+            pd.setFeeAmount(details.getFeeAmount());
+            pd.setPayableAmount(details.getPayableAmount().divide(new BigDecimal(100)));
+            pd.setCreatedAt(details.getTimestamp());
+
+            // update installment
+            List<Installments> installmentsList= order.getInstallmentsList();
+
+            for(Installments installments: installmentsList){
+                if(installments.isUnlocked()){
+                    installments.setInstallmentStatus(Installments.InstallmentStatus.PAID);
+                    installments.setPaidDate(LocalDateTime.now());
+                }
+
+                if(!installments.isUnlocked() && installments.getInstallmentStatus()== Installments.InstallmentStatus.PENDING){
+                    installments.setUnlocked(true);
+                    break;
+                }
+            }
+
+            paymentDetailsService.createPayment(pd);
+
+            orderService.updateOrder(order);
+
+            // 4. Send confirmation email/notification
+            //emailService.sendOrderConfirmation(order);*/
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Payment verified successfully! Your order has been placed.");
+            response.put("orderId", Id);
+            response.put("phonePeOrderId", phonePeOrderId);
+
+            return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("Verification failed: " + e.getMessage());
+            log.error("Payment verification failed", e);
+            return ResponseEntity.badRequest().body(
+                    Map.of("success", false, "error", "Payment verification failed: " + e.getMessage())
+            );
         }
     }
 
-    @GetMapping("/fetch-order")
-    public ResponseEntity<?> getAllOrders(){
-        try{
-            List<Order> order= orderService.getAllOrders();
-            return ResponseEntity.ok(order);
-        }catch (Exception e){
-            throw  new RuntimeException("Error to send orderItemsHistory");
+    /**
+     * Update Order Status
+     * This endpoint updates the order status (CANCELLED, FAILED, etc.)
+     */
+    @PutMapping("/{orderId}/status")
+    public ResponseEntity<Map<String, Object>> updateOrderStatus(
+            @PathVariable String orderId,
+            @RequestBody Map<String, String> statusData) {
+        log.info("Updating order status: {} to {}", orderId, statusData.get("status"));
+
+        try {
+            String status = statusData.get("status");
+
+            // TODO: Update order status in database
+            // Order order = orderService.findById(orderId);
+            // order.setStatus(status);
+            // orderService.save(order);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Order status updated");
+            response.put("orderId", orderId);
+            response.put("status", status);
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            log.error("Failed to update order status", e);
+            return ResponseEntity.badRequest().body(
+                    Map.of("success", false, "error", e.getMessage())
+            );
         }
     }
 
-    @GetMapping("/fetch-user-order/{userId}")
-    public ResponseEntity<List<Order>> getOrderById(@PathVariable Long userId){
-        Optional<User> user= userService.findById(userId);
-        List<Order> orderList= orderService.getOrderByUser(user.get());
-        return ResponseEntity.ok(orderList);
+    /**
+     * Get Order Details
+     * Fetch order details by ID
+     */
+    @GetMapping("/{orderId}")
+    public ResponseEntity<Map<String, Object>> getOrderDetails(@PathVariable String orderId) {
+        log.info("Fetching order details: {}", orderId);
+
+        try {
+            // TODO: Fetch from database
+            // Order order = orderService.findById(orderId);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("id", orderId);
+            response.put("status", "COMPLETED");
+            response.put("amount", 100000L);
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            log.error("Failed to fetch order", e);
+            return ResponseEntity.badRequest().body(
+                    Map.of("error", e.getMessage())
+            );
+        }
     }
 }

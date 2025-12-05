@@ -20,15 +20,24 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private Long userId;
 
-    @Column(name = "oder_number", nullable = false, unique = true)
-    private String orderNumber;
+    @Column(name = "customer_name", length = 255)
+    private String customerName;
+
+    @Column(name = "customer_email", length = 255)
+    private String customerEmail;
+
+    @Column(name = "customer_phone", length = 20)
+    private String customerPhone;
+
 
     @Column(nullable = false)
     private BigDecimal totalAmount;
+
+    // PhonePe Payment Details
+    @Column(name = "merchant_order_id", unique = true, length = 100)
+    private String merchantOrderId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_status", nullable = false)
@@ -37,10 +46,6 @@ public class Order {
     @Enumerated(EnumType.STRING)
     @Column(name = "order_status", nullable = false)
     private OrderStatus orderStatus= OrderStatus.PROCESSING;
-
-    @Column(name = "razorpay_order_id")
-    private String razorpayOrderId; // 🔹 To map Razorpay order
-
 
     private Timestamp createdAt;
     private  Timestamp updatedAt;
@@ -62,7 +67,11 @@ public class Order {
     public enum OrderStatus{
         PROCESSING,
         COMPLETED,
-        CANCELLED;
+        CANCELLED,
+        CREATED,
+        FAILED,
+        REFUNDED,
+        EXPIRED;
     }
 
     public enum PaymentStatus{

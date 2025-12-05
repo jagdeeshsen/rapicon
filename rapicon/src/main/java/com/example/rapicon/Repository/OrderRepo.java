@@ -14,8 +14,5 @@ import java.util.Optional;
 public interface OrderRepo extends JpaRepository<Order,Long> {
     Optional<Order> findById(Long id);
 
-    List<Order> findByUser(User user);
-
-    // ✅ Find order by Razorpay Order ID
-    Optional<Order> findByRazorpayOrderId(String razorpayOrderId);
+    List<Order> findByUserId(Long userId);
 }

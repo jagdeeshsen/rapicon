@@ -193,7 +193,8 @@ public class authController {
                 "token", token,
                 "role", "VENDOR",
                 "id", String.valueOf(vendor.getId()), // optional, just for client convenience
-                "fullName", vendor.getFullName()
+                "fullName", vendor.getFullName(),
+                "email",vendor.getEmail()
         ));
     }
 

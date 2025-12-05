@@ -34,9 +34,6 @@ public class OrderItem {
     private String packageName;
 
     @Column(nullable = false)
-    private int totalInstallments;
-
-    @Column(nullable = false)
     private BigDecimal totalAmount;
 
     private Timestamp createdAt;

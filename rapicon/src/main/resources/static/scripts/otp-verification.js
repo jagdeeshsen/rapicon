@@ -38,6 +38,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 localStorage.setItem('user_role', data.role);
                 localStorage.setItem('user_fullName', data.fullName);
                 localStorage.removeItem('pendingPhone');
+                //initUserSession(data.token, data.id)
 
                 alert("Login successful!");
                 window.location.href = "user.html";

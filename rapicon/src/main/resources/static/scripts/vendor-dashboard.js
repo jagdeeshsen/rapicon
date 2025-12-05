@@ -1053,6 +1053,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
 // logout vendor
 async function logoutVendor(){
+    //const result = showMessage.confirm('Are you sure you want to logout?')
     if (confirm('Are you sure you want to logout?')) {
        console.log('Logging out...', 'info');
 
@@ -1067,7 +1068,8 @@ async function logoutVendor(){
                }
            });
        } catch (error) {
-           console.warn('Logout request failed or not implemented on server:', error);
+           showMessage.warning(error);
+           //showMessage.warning('Logout request failed or not implemented on server:', error);
        }
 
        // Clear all local storage/session data

@@ -46,14 +46,9 @@ public class OrderService {
         return orderRepo.findAll();
     }
 
-    public List<Order> getOrderByUser(User user){
-        return orderRepo.findByUser(user);
+    public List<Order> getOrderByUser(Long userId){
+        return orderRepo.findByUserId(userId);
     }
-
-    public Optional<Order> findByRazorpayOrderId(String orderId){
-        return orderRepo.findByRazorpayOrderId(orderId);
-    }
-
     public Order updateOrder(Order order){
         return orderRepo.save(order);
     }

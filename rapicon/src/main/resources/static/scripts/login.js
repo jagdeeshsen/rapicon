@@ -25,6 +25,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
             localStorage.setItem('vendor_role', data.role);
             localStorage.setItem('vendor_id', data.id);
             localStorage.setItem('vendor_fullName', data.fullName);
+            localStorage.setItem('vendor_email', data.email);
             localStorage.setItem('user', JSON.stringify(data));
 
             // Redirect to vendor page
@@ -33,11 +34,11 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
             }
         } else {
             const errorData = await response.json();
-            showError(errorData.message || 'Login failed. Please try again.');
+            showMessage.error(errorData.message || 'Login failed. Please try again.');
         }
     } catch (error) {
         console.error('Login error:', error);
-        showError('Network error. Please check your connection.');
+        showMessage.error('Network error. Please check your connection.');
     }
 });
 
@@ -65,6 +66,7 @@ if (forgotPasswordLink) {
         e.preventDefault();
 
         const email = prompt('Please enter your email address:');
+        //const email= showMessage.prompt('Please enter you email address:');
         if (email) {
             handleForgotPassword(email);
         }
@@ -82,18 +84,18 @@ async function handleForgotPassword(email) {
         });
 
         if (response.ok) {
-            showSuccess('Password reset link has been sent to your email.');
+            showMessage.success('Password reset link has been sent to your registered email.');
         } else {
             const errorData = await response.json();
-            showError(errorData.message || 'Failed to send reset link.');
+            showMessage.error(errorData.message || 'Failed to send reset link.');
         }
     } catch (error) {
         console.error('Forgot password error:', error);
-        showError('Network error. Please try again later.');
+        showMessage.error('Network error. Please try again later.');
     }
 }
 
-function showError(message) {
+/*function showError(message) {
     const errorElement = document.getElementById('errorMessage');
     if (errorElement) {
         errorElement.textContent = message;
@@ -104,9 +106,9 @@ function showError(message) {
             errorElement.style.display = 'none';
         }, 5000);
     }
-}
+}*/
 
-function showSuccess(message) {
+/*function showSuccess(message) {
     const errorElement = document.getElementById('errorMessage');
     if (errorElement) {
         errorElement.textContent = message;
@@ -117,7 +119,7 @@ function showSuccess(message) {
             errorElement.style.display = 'none';
         }, 5000);
     }
-}
+}*/
 
 // Check if user is already logged in
 if (localStorage.getItem('vendor_token')) {

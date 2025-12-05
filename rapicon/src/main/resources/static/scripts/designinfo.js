@@ -23,7 +23,13 @@
       document.getElementById('totalArea').textContent = design.totalArea || '1200 sq.ft';
       document.getElementById('builtArea').textContent = design.builtUpArea || '1200 sq.ft';
       document.getElementById('floors').textContent = design.floors ? design.floors.length : 2;
-      document.getElementById('bedrooms').textContent = (design.bedrooms || design.businessUnits) + (design.bedrooms ? ' Bedrooms' : ' Business Units');
+
+      if(design.type == "Commercial"){
+        document.getElementById('bedrooms').textContent = design.businessUnits + ' Business Units';
+      }else{
+        document.getElementById('bedrooms').textContent = design.bedrooms + ' Bedrooms';
+      }
+
       document.getElementById('bathrooms').textContent = (design.bathrooms || 0) + ' Bathrooms';
       document.getElementById('kitchens').textContent = design.kitchens + ' Kitchen';
       document.getElementById('plotFacing').textContent = design.plotFacing || ' N/A';
