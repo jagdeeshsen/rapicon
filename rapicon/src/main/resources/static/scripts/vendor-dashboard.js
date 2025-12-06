@@ -18,7 +18,7 @@ async function checkSession() {
         localStorage.removeItem('vendor_id');
         localStorage.removeItem('vendor_fullName');
         localStorage.removeItem('user');
-        console.error("Session expired Please login again ");
+        showMessage.error("Session expired Please login again ");
         redirectToLogin();
         return false;
     }
@@ -60,7 +60,7 @@ async function fetchVendorData() {
 
     return data;
   } catch (error) {
-    console.error('Error fetching vendor data:', error);
+    showMessage.error('Error fetching vendor data:', error);
     return null;
   }
 }
@@ -120,11 +120,10 @@ function updateVendorUI(data) {
 // ========== FETCH VENDOR DESIGNS ==========
 
 async function fetchVendorDesigns() {
-  console.log('📊 Fetching vendor designs...');
   const token = localStorage.getItem('vendor_token');
 
   if(!checkSession()){
-        console.error("Session expired please login again");
+        showMessage.error("Session expired please login again");
         window.location.href='/login.html';
   }
 
@@ -138,14 +137,12 @@ async function fetchVendorDesigns() {
     });
 
     if (!response.ok) {
-      console.warn('Failed to fetch designs:', response.status);
+      showMessage.warning('Failed to fetch designs:', response.status);
       return [];
     }
 
     const data = await response.json();
     designs = data.designs || data || [];
-
-    console.log('✅ Fetched designs:', designs.length);
 
     // Render designs if on view/manage page
     if (typeof renderDesignsGrid === 'function') renderDesignsGrid();
@@ -417,7 +414,7 @@ function renderImagePreview(type) {
     try {
       existingUrls = JSON.parse(uploadForm.dataset[existingUrlsKey] || '[]');
     } catch (e) {
-      console.error('Error parsing existing URLs:', e);
+      showMessage.error('Error parsing existing URLs:', e);
     }
 
     existingHtml = existingUrls.map((url) => `
@@ -496,11 +493,10 @@ function resetForm() {
 // ========== FORM SUBMISSION ==========
 
 async function submitDesignForm() {
-  console.log('🚀 Starting form submission...');
 
   // Validate required fields
   if (!currentDesignType) {
-    alert('❌ Please select a design type');
+    alert('Please select a design type');
     return;
   }
 
@@ -511,17 +507,13 @@ async function submitDesignForm() {
   const elevationFiles = elevationInput?.files || [];
   const planFiles = planInput?.files || [];
 
-  console.log('📁 Files selected:');
-  console.log('  - Elevation files:', elevationFiles.length);
-  console.log('  - Plan files:', planFiles.length);
-
   // Validate files exist
   if (elevationFiles.length === 0) {
-    alert('❌ Please upload at least one elevation image');
+    alert('Please upload at least one elevation image');
     return;
   }
   if (planFiles.length === 0) {
-    alert('❌ Please upload at least one 2D plan image');
+    alert('Please upload at least one 2D plan image');
     return;
   }
 
@@ -529,17 +521,15 @@ async function submitDesignForm() {
   const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
 
   for (let file of elevationFiles) {
-    console.log(`  ✓ Elevation: ${file.name} (${(file.size / (1024 * 1024)).toFixed(2)}MB)`);
     if (file.size > MAX_FILE_SIZE) {
-      alert(`❌ Elevation file "${file.name}" exceeds 50MB limit`);
+      alert(`Elevation file "${file.name}" exceeds 50MB limit`);
       return;
     }
   }
 
   for (let file of planFiles) {
-    console.log(`  ✓ Plan: ${file.name} (${(file.size / (1024 * 1024)).toFixed(2)}MB)`);
     if (file.size > MAX_FILE_SIZE) {
-      alert(`❌ Plan file "${file.name}" exceeds 50MB limit`);
+      alert(`Plan file "${file.name}" exceeds 50MB limit`);
       return;
     }
   }
@@ -559,15 +549,12 @@ async function submitDesignForm() {
     builtUpArea: document.getElementById('totalBuiltUp')?.value || ''
   };
 
-  console.log('📋 Form data:', formFields);
-
   // Append all form fields
   Object.entries(formFields).forEach(([key, value]) => {
     formData.append(key, value);
   });
 
   // Add floor details as JSON
-  console.log('🏢 Floors data:', floors);
   formData.append('floorList', JSON.stringify(floors));
 
   // Append elevation image files
@@ -581,7 +568,6 @@ async function submitDesignForm() {
   }
 
   // Log FormData contents (for debugging)
-  console.log('📦 FormData contents:');
   for (let pair of formData.entries()) {
     if (pair[1] instanceof File) {
       console.log(`  ${pair[0]}: [File] ${pair[1].name}`);
@@ -603,8 +589,6 @@ async function submitDesignForm() {
       throw new Error('No authentication token found');
     }
 
-    console.log('🔐 Sending request with token...');
-
     const response = await fetch('/api/designs/upload', {
       method: 'POST',
       headers: {
@@ -613,24 +597,18 @@ async function submitDesignForm() {
       body: formData
     });
 
-    console.log('📡 Response status:', response.status, response.statusText);
-
     // Get response text first to handle both JSON and non-JSON responses
     const responseText = await response.text();
-    console.log('📄 Raw response:', responseText);
 
     let result;
     try {
       result = JSON.parse(responseText);
-      console.log('✅ Parsed JSON response:', result);
     } catch (e) {
-      console.error('❌ Failed to parse JSON. Response was:', responseText);
       throw new Error('Server returned invalid JSON: ' + responseText.substring(0, 100));
     }
 
     if (response.ok && result.success) {
-      alert('✅ Design uploaded successfully!');
-      console.log('🎉 Success! Design data:', result.design);
+      showMessage.success('Design uploaded successfully!');
       resetForm();
 
       // Refresh designs list if function exists
@@ -640,11 +618,8 @@ async function submitDesignForm() {
     } else {
       // Show detailed error
       const errorMsg = result.error || result.message || 'Unknown error';
-      console.error('❌ Upload failed:', result);
-      alert(`❌ Upload failed: ${errorMsg}`);
-
-      // Log full error for debugging
-      console.error('Full error object:', result);
+      showMessage.error('Upload failed.');
+      alert(`Upload failed: ${errorMsg}`);
     }
 
     // Restore button
@@ -652,8 +627,8 @@ async function submitDesignForm() {
     submitBtn.disabled = false;
 
   } catch (error) {
-    console.error('💥 Upload error:', error);
-    console.error('Error stack:', error.stack);
+    showMessage.error('💥 Upload error:', error);
+    showMessage.error('Error stack:', error.stack);
     alert(`⚠️ Error: ${error.message}`);
 
     // Restore button
@@ -779,7 +754,7 @@ function getStatusIcon(status) {
 
 async function deactivateDesign(id, status){
     if(status.toUpperCase()==='APPROVED'){
-        alert("Approved design can not be deactivated");
+        await showMessage.alert("Approved design can not be deactivated");
         return ;
     }
 
@@ -797,16 +772,15 @@ async function deactivateDesign(id, status){
             throw new Error("Error deactivating design");
         }
 
-        alert("design deactivate successfully");
+        showMessage.success("design deactivate successfully");
         fetchVendorDesigns();
 
     }catch(e){
-        console.error("error", e)
+        showMessage.error("error", e);
     }
 }
 
 function editDesign(id) {
-  console.log('Edit design:', id);
 
   // Find the design to edit
   const design = designs.find(d => d.id === id);
@@ -959,10 +933,6 @@ function editDesign(id) {
 
   // Scroll to top of form
   window.scrollTo({ top: 0, behavior: 'smooth' });
-
-  console.log('✅ Design loaded for editing:', design);
-  console.log('📋 Current design type:', currentDesignType);
-  console.log('🏢 Floors loaded:', floors);
 }
 
 // ========== UTILITY FUNCTIONS ==========
@@ -986,7 +956,6 @@ function formatDate(dateString) {
 // ========== INITIALIZATION ==========
 
 window.addEventListener('DOMContentLoaded', async () => {
-  console.log('🚀 Vendor Dashboard Loading...');
 
   // Check session first
   const isAuthenticated = await checkSession();
@@ -1005,57 +974,26 @@ window.addEventListener('DOMContentLoaded', async () => {
   if (uploadForm) {
     uploadForm.addEventListener('submit', function (e) {
       e.preventDefault();
-      console.log('📤 Form submitted');
 
       // Check if we're editing or creating new
       const editingId = document.getElementById('uploadForm').dataset.editingId;
 
       if (editingId) {
-        console.log('✏️ Calling update function');
         updateDesignForm(); // Call update function
       } else {
-        console.log('📝 Calling upload function');
         submitDesignForm(); // Call upload function
       }
     });
   }
 
-  console.log('✅ Vendor Dashboard Loaded Successfully');
 });
-/*window.addEventListener('DOMContentLoaded', async () => {
-  console.log('🚀 Vendor Dashboard Loading...');
-
-  // Check session first
-  const isAuthenticated = await checkSession();
-  if (!isAuthenticated) {
-    return; // Will redirect to login
-  }
-
-  // Fetch vendor data
-  await fetchVendorData();
-
-  // Fetch designs
-  await fetchVendorDesigns();
-
-  // Setup form submission
-  const uploadForm = document.getElementById('uploadForm');
-  if (uploadForm) {
-    uploadForm.addEventListener('submit', function (e) {
-      e.preventDefault();
-      console.log('📤 Upload button clicked');
-      submitDesignForm();
-    });
-  }
-
-  console.log('✅ Vendor Dashboard Loaded Successfully');
-});*/
 
 
-// logout vendor
+//===================== logout vendor ====================
+
 async function logoutVendor(){
-    //const result = showMessage.confirm('Are you sure you want to logout?')
-    if (confirm('Are you sure you want to logout?')) {
-       console.log('Logging out...', 'info');
+    const result = await showMessage.confirm('Are you sure you want to logout?')
+    if (result) {
 
        const token = localStorage.getItem('vendor_token');
 
@@ -1088,6 +1026,8 @@ async function logoutVendor(){
    }
 }
 
+//==================== check token expired ===================
+
 function isTokenExpired(token) {
   try {
     const payload = JSON.parse(atob(token.split('.')[1]));
@@ -1105,18 +1045,17 @@ setInterval(checkSession, 60 * 60 * 1000);
 // ========== UPDATE DESIGN FUNCTION ==========
 
 async function updateDesignForm() {
-  console.log('Starting design update...');
 
   const editingId = document.getElementById('uploadForm').dataset.editingId;
 
   if (!editingId) {
-    alert('❌ No design selected for editing');
+    await showMessage.alert('No design selected for editing');
     return;
   }
 
   // Validate required fields
   if (!currentDesignType) {
-    alert('❌ Please select a design type');
+    await showMessage.alert('Please select a design type');
     return;
   }
 
@@ -1126,10 +1065,6 @@ async function updateDesignForm() {
 
   const elevationFiles = elevationInput?.files || [];
   const planFiles = planInput?.files || [];
-
-  console.log('📁 Files selected for update:');
-  console.log('  - New elevation files:', elevationFiles.length);
-  console.log('  - New plan files:', planFiles.length);
 
   // Get existing images that should be kept
   const uploadForm = document.getElementById('uploadForm');
@@ -1143,17 +1078,13 @@ async function updateDesignForm() {
     console.error('Error parsing existing URLs:', e);
   }
 
-  console.log('📷 Existing images to keep:');
-  console.log('  - Elevation URLs:', existingElevationUrls.length);
-  console.log('  - Plan URLs:', existingPlanUrls.length);
-
   // Validate that we have at least some images (existing or new)
   if (existingElevationUrls.length === 0 && elevationFiles.length === 0) {
-    alert('❌ Please keep at least one elevation image or upload new ones');
+    await showMessage.alert('Please keep at least one elevation image or upload new ones');
     return;
   }
   if (existingPlanUrls.length === 0 && planFiles.length === 0) {
-    alert('❌ Please keep at least one plan image or upload new ones');
+    await showMessage.alert('Please keep at least one plan image or upload new ones');
     return;
   }
 
@@ -1161,17 +1092,15 @@ async function updateDesignForm() {
   const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
 
   for (let file of elevationFiles) {
-    console.log(`  ✓ Elevation: ${file.name} (${(file.size / (1024 * 1024)).toFixed(2)}MB)`);
     if (file.size > MAX_FILE_SIZE) {
-      alert(`❌ Elevation file "${file.name}" exceeds 50MB limit`);
+      await showMessage.alert(`Elevation file "${file.name}" exceeds 50MB limit`);
       return;
     }
   }
 
   for (let file of planFiles) {
-    console.log(`  ✓ Plan: ${file.name} (${(file.size / (1024 * 1024)).toFixed(2)}MB)`);
     if (file.size > MAX_FILE_SIZE) {
-      alert(`❌ Plan file "${file.name}" exceeds 50MB limit`);
+      await showMessage.alert(`Plan file "${file.name}" exceeds 50MB limit`);
       return;
     }
   }
@@ -1194,52 +1123,41 @@ async function updateDesignForm() {
     builtUpArea: document.getElementById('totalBuiltUp')?.value || ''
   };
 
-  console.log('📋 Form data for update:', formFields);
-
   // Append all form fields
   Object.entries(formFields).forEach(([key, value]) => {
     formData.append(key, value);
   });
 
   // Add floor details as JSON
-  console.log('🏢 Updated floors data:', floors);
   formData.append('floorList', JSON.stringify(floors));
 
   // Send existing image URLs to keep (as JSON strings)
   formData.append('keepElevationUrls', JSON.stringify(existingElevationUrls));
   formData.append('keepPlanUrls', JSON.stringify(existingPlanUrls));
 
-  console.log('📸 Images to keep:');
-  console.log('  - Elevation:', existingElevationUrls);
-  console.log('  - Plan:', existingPlanUrls);
 
   // Append new elevation image files (if any)
   if (elevationFiles.length > 0) {
-    console.log('📤 Adding new elevation files...');
     for (let file of elevationFiles) {
       formData.append('elevationFiles', file);
-      console.log(`  + ${file.name}`);
     }
   }
 
   // Append new plan image files (if any)
   if (planFiles.length > 0) {
-    console.log('📤 Adding new plan files...');
     for (let file of planFiles) {
       formData.append('twoDPlanFiles', file);
-      console.log(`  + ${file.name}`);
     }
   }
 
-  // Log FormData contents (for debugging)
-  console.log('📦 FormData contents for update:');
+  /*// Log FormData contents (for debugging)
   for (let pair of formData.entries()) {
     if (pair[1] instanceof File) {
       console.log(`  ${pair[0]}: [File] ${pair[1].name}`);
     } else {
       console.log(`  ${pair[0]}: ${pair[1]}`);
     }
-  }
+  }*/
 
   try {
     // Show loading state
@@ -1254,8 +1172,6 @@ async function updateDesignForm() {
       throw new Error('No authentication token found');
     }
 
-    console.log('🔐 Sending update request with token...');
-
     const response = await fetch(`/api/designs/update/${editingId}`, {
       method: 'PUT',
       headers: {
@@ -1264,24 +1180,19 @@ async function updateDesignForm() {
       body: formData
     });
 
-    console.log('📡 Response status:', response.status, response.statusText);
-
     // Get response text first to handle both JSON and non-JSON responses
     const responseText = await response.text();
-    console.log('📄 Raw response:', responseText);
 
     let result;
     try {
       result = JSON.parse(responseText);
-      console.log('✅ Parsed JSON response:', result);
     } catch (e) {
-      console.error('❌ Failed to parse JSON. Response was:', responseText);
+      await showMessage.error('Failed to parse JSON. Response was:', responseText);
       throw new Error('Server returned invalid JSON: ' + responseText.substring(0, 100));
     }
 
     if (response.ok && result.success) {
-      alert('✅ Design updated successfully!');
-      console.log('🎉 Success! Updated design data:', result.design);
+      showMessage.success('Design updated successfully!');
 
       // Reset form
       resetForm();
@@ -1317,11 +1228,7 @@ async function updateDesignForm() {
     } else {
       // Show detailed error
       const errorMsg = result.error || result.message || 'Unknown error';
-      console.error('❌ Update failed:', result);
-      alert(`❌ Update failed: ${errorMsg}`);
-
-      // Log full error for debugging
-      console.error('Full error object:', result);
+      await showMessage.alert(`Update failed: ${errorMsg}`);
     }
 
     // Restore button
@@ -1329,9 +1236,9 @@ async function updateDesignForm() {
     submitBtn.disabled = false;
 
   } catch (error) {
-    console.error('💥 Update error:', error);
+    console.error('Update error:', error);
     console.error('Error stack:', error.stack);
-    alert(`⚠️ Error: ${error.message}`);
+    alert(`Error: ${error.message}`);
 
     // Restore button
     const submitBtn = document.querySelector('.btn-primary');

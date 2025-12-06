@@ -3,10 +3,8 @@ package com.example.rapicon.Controller;
 import com.example.rapicon.DTO.ApiResponse;
 import com.example.rapicon.DTO.ForgotPasswordRequest;
 import com.example.rapicon.DTO.ResetPasswordRequest;
-import com.example.rapicon.Models.Role;
 import com.example.rapicon.Models.User;
 import com.example.rapicon.Models.Vendor;
-import com.example.rapicon.Repository.userRepo;
 import com.example.rapicon.Security.JwtUtil;
 import com.example.rapicon.Security.UserDetailsImpl;
 import com.example.rapicon.Service.OTPService;
@@ -17,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -57,19 +54,27 @@ public class authController {
     @PostMapping("/register-user")
     public ResponseEntity<Map<String, String>> register(@RequestBody Map<String, String> request) {
 
-        // check is user already exists
-        Optional<User> optionalUser= userService.findUserByPhone(request.get("phone"));
-        if(optionalUser.isPresent()){
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(Map.of("message", "User with this phone number already exists"));
+        try{
+            // check if user already exists
+            Optional<User> optionalUser= userService.findUserByPhone(request.get("phone"));
+
+            if(optionalUser.isPresent()){
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(Map.of("message", "User with this phone number already exists"));
+            }
+
+            User user= new User();
+            user.setPhone(request.get("phone"));
+            user.setEmail(request.get("email"));
+            userService.registerUser(user);
+            Map<String, String> response= new HashMap<>();
+            response.put("message", "User registered successfully");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message","Registration failed.","error",e.getMessage()));
         }
-        User user= new User();
-        user.setPhone(request.get("phone"));
-        user.setEmail(request.get("email"));
-        userService.registerUser(user);
-        Map<String, String> response= new HashMap<>();
-        response.put("message", "User registered successfully");
-        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/logout-user")
@@ -160,10 +165,28 @@ public class authController {
 
     @PostMapping("/create-vendor")
     public ResponseEntity<Map<String, String>> createVendor(@RequestBody Vendor vendor){
-        vendorService.registerVendor(vendor);
-        Map<String, String> response= new HashMap<>();
-        response.put("message", "Vendor registered successfully!");
-        return ResponseEntity.ok(response);
+        try {
+            // check if vendor exists
+            boolean emailExist= vendorService.vendorExistsByEmail(vendor.getEmail());
+            boolean usernameExits = vendorService.vendorExistsByUsername(vendor.getUsername());
+
+            if(emailExist){
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(Map.of("message", "Email already exists try with another email address"));
+            } else if (usernameExits) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(Map.of("message", "Username already exists try with another username"));
+            }
+
+            vendorService.registerVendor(vendor);
+            Map<String, String> response= new HashMap<>();
+            response.put("message", "Vendor registered successfully!");
+            return ResponseEntity.ok(response);
+        }catch(Exception e){
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message","Registration failed", "error", e.getMessage()));
+        }
     }
 
     @PostMapping("/login-vendor")

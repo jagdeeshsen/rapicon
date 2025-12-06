@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (!token || isTokenExpired(token)) {
                 localStorage.clear();
-                showNotification('Session expired, please login again to view profile', 'error');
+                showMassage.warning('Session expired, please login again to view profile', 'error');
                 setTimeout(() => {
                     window.location.href = "/otp-login.html";
                 }, 1500);
@@ -108,7 +108,6 @@ async function renderDesigns() {
 
         if (response.ok) {
             allDesigns = await response.json();
-            console.log('Fetched designs from server:', allDesigns);
 
             if (allDesigns.length === 0) {
                 designsGrid.innerHTML = `
@@ -124,7 +123,7 @@ async function renderDesigns() {
             // Apply filters after fetching data
             applyFilters();
         } else if (response.status === 401) {
-            showNotification('Session expired. Please login again.', 'error');
+            showMessage.warning('Session expired. Please login again.', 'error');
             setTimeout(() => {
                 localStorage.clear();
                 window.location.href = '/otp-login.html';
@@ -144,7 +143,7 @@ async function renderDesigns() {
                 </button>
             </div>
         `;
-        showNotification('Error loading designs. Please try again.', 'error');
+        showMessage.error('Error loading designs. Please try again.', 'error');
     }
 }
 
@@ -319,14 +318,12 @@ function openPurchaseModal(designId) {
         localStorage.removeItem('user_id');
         localStorage.removeItem('user_role');
         localStorage.removeItem('user_fullName');
-        showNotification('Session expired Please login to view design details', 'error');
+        showMessage.warning('Session expired Please login to view design details', 'error');
         setTimeout(() => {
             window.location.href = '/otp-login.html';
         }, 1500);
         return;
     }
-
-    console.log('Opening design info page for design ID:', designId);
 
     // Look for design in allDesigns
     let design = allDesigns.find(d => d.id === designId);
@@ -384,13 +381,12 @@ function openPurchaseModal(designId) {
         // Redirect to design info page
         window.location.href = 'designinfo.html?id=' + designId;
     } else {
-        showNotification('Design not found', 'error');
+        showMassage.warning('Design not found', 'error');
     }
 }
 
 async function handlePurchase(event) {
     event.preventDefault();
-    console.log('Form submitted');
 
     const formData = new FormData(event.target);
     const designId = modal.dataset.designId;
@@ -406,8 +402,6 @@ async function handlePurchase(event) {
         paymentMethod: document.getElementById('paymentMethod')?.value || '',
         specialRequirements: document.getElementById('specialRequirements')?.value || ''
     };
-
-    console.log('Purchase Data:', purchaseData);
 
     try {
         // Show loading state
@@ -428,7 +422,7 @@ async function handlePurchase(event) {
 
         const result = await response.json();
         if (response.ok) {
-            showNotification('✅ Order created successfully! Our team will contact you within 24 hours.', 'success');
+            showMassage.success('Order created successfully! Our team will contact you within 24 hours.', 'success');
             modal.style.display = 'none';
             purchaseForm.reset();
         } else {
@@ -440,8 +434,7 @@ async function handlePurchase(event) {
         submitBtn.disabled = false;
 
     } catch (error) {
-        console.error('Purchase error:', error);
-        showNotification('Error processing order. Please try again.', 'error');
+        showMessage.error('Error processing order. Please try again.', 'error');
 
         // Reset button
         const submitBtn = event.target.querySelector('button[type="submit"]');
@@ -451,7 +444,7 @@ async function handlePurchase(event) {
 }
 
 // Notification function
-function showNotification(message, type = 'success') {
+/*function showNotification(message, type = 'success') {
     // Create notification element
     const notification = document.createElement('div');
     notification.className = `notification notification-${type}`;
@@ -525,7 +518,7 @@ function showNotification(message, type = 'success') {
             setTimeout(() => notification.remove(), 300);
         }
     }, 5000);
-}
+}*/
 
 function isTokenExpired(token) {
     try {
@@ -537,583 +530,3 @@ function isTokenExpired(token) {
         return true; // treat invalid as expired
     }
 }
-
-// Get icon method
-function getDesignIcon(type) {
-    const icons = {
-        HOUSE: '🏠',
-        house: '🏠',
-        House: '🏠',
-        VILLA: '🏡',
-        villa: '🏡',
-        Villa: '🏡',
-        APARTMENT: '🏢',
-        apartment: '🏢',
-        Apartment: '🏢',
-        FORM_HOUSE: '🏚️',
-        'Form-House': '🏚️',
-        farmhouse: '🏚️',
-        ROW_HOUSE: '🏘️',
-        'Row_House': '🏘️',
-        rowhouse: '🏘️',
-        DUPLEX: '🏰',
-        duplex: '🏰',
-        Duplex: '🏰',
-        COMMERCIAL: '🏢'
-    };
-    return icons[type] || '🏠';
-}
-
-
-
-
-
-
-
-
-
-
-/*
-
-let allDesigns = [];
-let filteredDesigns = [];
-
-// DOM elements - declare but don't initialize yet
-let searchInput;
-let typeFilter;
-let priceFilter;
-let bedroomFilter;
-let sortFilter;
-let designsGrid;
-let modal;
-let closeModal;
-let purchaseForm;
-let userIcon;
-let totalBathrooms;
-let totalBedrooms;
-let totalHall;
-let totalKitchens;
-let others;
-let totalFloors;
-
-// Initialize dashboard
-document.addEventListener('DOMContentLoaded', function() {
-    // NOW initialize all DOM elements after page loads
-    searchInput = document.getElementById('searchInput');
-    typeFilter = document.getElementById('typeFilter');
-    priceFilter = document.getElementById('priceFilter');
-    bedroomFilter = document.getElementById('bedroomFilter');
-    sortFilter = document.getElementById('sortFilter');
-    designsGrid = document.getElementById('designsGrid');
-    modal = document.getElementById('purchaseModal');
-    closeModal = document.querySelector('.close');
-    purchaseForm = document.getElementById('purchaseForm');
-    userIcon = document.getElementById("userIconBtn");
-
-    // Setup user icon click handler
-    if (userIcon) {
-        userIcon.addEventListener("click", function() {
-            // Redirect to profile page
-            const token = localStorage.getItem('user_token');
-
-            if (!token || isTokenExpired(token)) {
-                localStorage.clear();
-                showNotification('Session expired, please login again to view profile', 'error');
-                setTimeout(() => {
-                    window.location.href = "/otp-login.html";
-                }, 1500);
-                return;
-            }
-            window.location.href = "/userprofile.html";
-        });
-    }
-
-    // Check if user is logged in
-    const token = localStorage.getItem('user_token');
-    const fullName = localStorage.getItem('user_fullName');
-
-    // Update welcome message
-    const welcomeUser = document.getElementById("welcomeUser");
-    if (welcomeUser) {
-        welcomeUser.textContent = fullName ? `Welcome, ${fullName}` : "Welcome, Guest";
-    }
-
-    // Fetch designs from server
-    renderDesigns();
-
-    // Setup event listeners
-    setupEventListeners();
-});
-
-function setupEventListeners() {
-    if (searchInput) searchInput.addEventListener('input', applyFilters);
-    if (typeFilter) typeFilter.addEventListener('change', applyFilters);
-    if (priceFilter) priceFilter.addEventListener('change', applyFilters);
-    if (bedroomFilter) bedroomFilter.addEventListener('change', applyFilters);
-    if (sortFilter) sortFilter.addEventListener('change', applyFilters);
-
-    if (closeModal) {
-        closeModal.addEventListener('click', () => {
-            modal.style.display = 'none';
-        });
-    }
-
-    window.addEventListener('click', (event) => {
-        if (event.target === modal) {
-            modal.style.display = 'none';
-        }
-    });
-
-    if (purchaseForm) {
-        purchaseForm.addEventListener('submit', handlePurchase);
-    }
-}
-
-
- async function renderDesigns() {
-     designsGrid.innerHTML = `
-         <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #718096;">
-             <div style="font-size: 3rem; margin-bottom: 20px;">⏳</div>
-             <h3>Loading designs...</h3>
-         </div>
-     `;
-
-     try {
-         const token = localStorage.getItem('user_token');
-
-         */
-/*if (!token) {
-             designsGrid.innerHTML = `
-                 <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #718096;">
-                     <div style="font-size: 4rem; margin-bottom: 20px;">🔐</div>
-                     <h3>Login Required</h3>
-                     <p>Please login to view designs.</p>
-                 </div>
-             `;
-             return;
-         }*//*
-
-
-         const response = await fetch('/api/user/approved', {
-             method: 'GET',
-             headers: {
-                 'Authorization': `Bearer ${token}`
-             }
-         });
-
-         if (response.ok) {
-             allDesigns = await response.json();
-             console.log('Fetched designs from server:', allDesigns);
-
-
-             if (allDesigns.length === 0) {
-                 designsGrid.innerHTML = `
-                     <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #718096;">
-                         <div style="font-size: 4rem; margin-bottom: 20px;">📭</div>
-                         <h3>No Approved Designs</h3>
-                         <p>There are no approved designs available at the moment.</p>
-                     </div>
-                 `;
-                 return;
-             }
-
-             // Apply filters after fetching data
-             applyFilters();
-         } else if (response.status === 401) {
-             showNotification('Session expired. Please login again.', 'error');
-             setTimeout(() => {
-                 localStorage.clear();
-                 window.location.href = '/otp-login.html';
-             }, 2000);
-         } else {
-             throw new Error('Failed to fetch designs');
-         }
-     } catch (error) {
-         console.error('Error fetching designs:', error);
-         designsGrid.innerHTML = `
-             <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #718096;">
-                 <div style="font-size: 4rem; margin-bottom: 20px;">❌</div>
-                 <h3>Error Loading Designs</h3>
-                 <p>Unable to load designs. Please try again later.</p>
-                 <button onclick="renderDesigns()" style="margin-top: 20px; padding: 12px 24px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer;">
-                     Retry
-                 </button>
-             </div>
-         `;
-         showNotification('Error loading designs. Please try again.', 'error');
-     }
- }
-
- function applyFilters() {
-     const searchTerm = searchInput.value.toLowerCase();
-     const selectedType = typeFilter.value;
-     const selectedPrice = priceFilter.value;
-     const selectedBedrooms = bedroomFilter.value;
-     const selectedSort = sortFilter.value;
-
-     // Filter from allDesigns
-     filteredDesigns = allDesigns.filter(design => {
-         const matchesSearch = (design.title || design.name || '').toLowerCase().includes(searchTerm) ||
-                             (design.description || '').toLowerCase().includes(searchTerm);
-         const matchesType = !selectedType || (design.designType || design.type) === selectedType;
-         const matchesBedrooms = !selectedBedrooms || design.bedrooms.toString() === selectedBedrooms;
-
-         let matchesPrice = true;
-         if (selectedPrice) {
-             const [min, max] = selectedPrice.split('-');
-             if (max === undefined) { // "2000+" case
-                 matchesPrice = design.price >= parseInt(min);
-             } else {
-                 matchesPrice = design.price >= parseInt(min) && design.price <= parseInt(max);
-             }
-         }
-
-         return matchesSearch && matchesType && matchesBedrooms && matchesPrice;
-     });
-
-     // Apply sorting
-     filteredDesigns.sort((a, b) => {
-         switch (selectedSort) {
-             case 'price-low':
-                 return a.price - b.price;
-             case 'price-high':
-                 return b.price - a.price;
-             case 'rating':
-                 return (b.rating || 4.5) - (a.rating || 4.5);
-             case 'newest':
-             default:
-                 return b.id - a.id;
-         }
-     });
-
-     // Render the filtered designs
-     displayFilteredDesigns();
- }
-
- function displayFilteredDesigns() {
-     designsGrid.innerHTML = '';
-
-     if (filteredDesigns.length === 0) {
-         designsGrid.innerHTML = `
-             <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #718096;">
-                 <div style="font-size: 4rem; margin-bottom: 20px;">🔍</div>
-                 <h3>No designs found</h3>
-                 <p>Try adjusting your filters or search terms.</p>
-             </div>
-         `;
-         return;
-     }
-
-     filteredDesigns.forEach(design => {
-         const designCard = createDesignCard(design);
-         designsGrid.appendChild(designCard);
-     });
- }
-
- function createDesignCard(design) {
-     const card = document.createElement('div');
-     card.className = 'design-card';
-
-     // initialize
-     totalBathrooms=0;
-     totalBedrooms=0;
-     totalFloors=0;
-     totalHall=0;
-     totalKitchens=0;
-
-     // calculate no of bedrooms,bathrooms, hall , kitchen, others
-     design.floorList.forEach(floor=>{
-        totalBedrooms+= parseInt(floor.bedrooms);
-        totalBathrooms+= parseInt(floor.bathrooms);
-        totalHall+= parseInt(floor.hall);
-        totalKitchens+= parseInt(floor.kitchen);
-        others+= floor.other;
-     });
-
-
-     card.innerHTML = `
-         <div class="design-image">
-             ${design.elevationUrls[0] ? `<img src="${design.elevationUrls[0]}" alt="${design.title || design.name}" class="design-thumbnail">`
-                               : `<span style="position: relative; z-index: 1;">${getDesignIcon(design.designType || design.type)}</span>`}
-         </div>
-         <div class="design-info">
-             <h3 class="design-title">${design.designCategory}</h3>
-             <span class="design-type">${(design.designType).toUpperCase()}</span>
-             <div class="design-specs">
-                 <div class="spec-item">
-                     <span class="spec-icon">🛏️</span>
-                     <span>${totalBedrooms} Bedrooms</span>
-                 </div>
-                 <div class="spec-item">
-                     <span class="spec-icon">🚿</span>
-                     <span>${totalBathrooms} Bathrooms</span>
-                 </div>
-                 <div class="spec-item">
-                     <span class="spec-icon">📐</span>
-                     <span>${design.totalArea} sq ft</span>
-                 </div>
-                 <div class="spec-item">
-                     <span class="spec-icon">⭐</span>
-                     <span>${design.rating || '4.5'}/5.0</span>
-                 </div>
-                 <div class="spec-item">
-                      <span class="spec-icon">🏢</span>
-                      <span>${design.floorList.length} Floor</span>
-                 </div>
-                 <div class="spec-item">
-                      <span class="spec-icon">📏</span>
-                      <span>${design.length +"X"+ design.width} Plot size</span>
-                 </div>
-             </div>
-             <div class="card-footer">
-                 <div>
-                     <div class="price-label">Starting from</div>
-                     <div class="price">₹${design.builtUpArea*5}</div>
-                 </div>
-                 <button class="purchase-btn" data-design-id="${design.id}">
-                     Purchase Now
-                 </button>
-             </div>
-         </div>
-     `;
-
-     // Add event listener to the purchase button
-     const purchaseBtn = card.querySelector('.purchase-btn');
-     purchaseBtn.addEventListener('click', () => openPurchaseModal(design.id));
-
-     return card;
- }
-
- function openPurchaseModal(designId) {
-     // Check if user is logged in
-     const token = localStorage.getItem('user_token');
-
-     if (!token || isTokenExpired(token)) {
-         localStorage.removeItem('user_token');
-         localStorage.removeItem('user_id');
-         localStorage.removeItem('user_role');
-         localStorage.removeItem('user_fullName');
-         showNotification('Session expired Please login to view design details', 'error');
-         setTimeout(() => {
-             window.location.href = '/otp-login.html';
-         }, 1500);
-         return;
-     }
-
-     console.log('Opening design info page for design ID:', designId);
-
-     // Look for design in allDesigns
-     let design = allDesigns.find(d => d.id === designId);
-
-     if (design) {
-         // Store design in sessionStorage for the detail page
-         sessionStorage.setItem('selectedDesign', JSON.stringify({
-             id: design.id,
-             category: design.designCategory,
-             type: design.designType || design.type,
-             plotLocation: design.plotLocation || 'Not specified',
-             plotFacing: design.plotFacing || 'Not specified',
-             bedrooms: totalBedrooms,
-             bathrooms: totalBathrooms,
-             kitchens: totalKitchens || 0,
-             hall: totalHall,
-             parking: design.parking || 0,
-             plotSize: design.length+ "X" + design.width || '1500 sq.ft',
-             totalArea: design.totalArea || 'N/A sq.ft',
-             builtUpArea: design.builtUpArea || 'N/A sq.ft',
-             price: design.builtUpArea*5,
-             elevationUrls: design.elevationUrls,
-             twoDPlanUrls: design.twoDPlanUrls,
-             floors: design.floorList || '0',
-             rating: design.rating || 4.5,
-             reviews: design.reviews || 0,
-             image: design.imageUrl || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800',
-             description: design.description || 'Beautiful architectural design.',
-             features: design.features || [
-                 { icon: '🌞', text: 'Natural Lighting' },
-                 { icon: '🌿', text: 'Green Spaces' },
-                 { icon: '🔒', text: 'Security System' },
-                 { icon: '💡', text: 'Smart Home Ready' }
-             ]
-         }));
-
-         // Redirect to design info page
-         window.location.href = 'designinfo.html?id=' + designId;
-     } else {
-         showNotification('Design not found', 'error');
-     }
- }
-
- // Keep your existing handlePurchase, showNotification, and getDesignIcon functions as they are
-
- async function handlePurchase(event) {
-       event.preventDefault();
-       console.log('Form submitted');
-
-       const formData = new FormData(event.target);
-       const designId = modal.dataset.designId;
-
-       const purchaseData = {
-           designId: designId,
-           designName: document.getElementById('modalDesignName')?.value || '',
-           price: document.getElementById('modalPrice')?.value || '',
-           customerName: document.getElementById('customerName')?.value || '',
-           customerEmail: document.getElementById('customerEmail')?.value || '',
-           customerPhone: document.getElementById('customerPhone')?.value || '',
-           projectLocation: document.getElementById('projectLocation')?.value || '',
-           paymentMethod: document.getElementById('paymentMethod')?.value || '',
-           specialRequirements: document.getElementById('specialRequirements')?.value || ''
-       };
-
-       console.log('Purchase Data:', purchaseData);
-
-       try {
-           // Show loading state
-           const submitBtn = event.target.querySelector('button[type="submit"]');
-           const originalText = submitBtn.textContent;
-           submitBtn.textContent = 'Processing...';
-           submitBtn.disabled = true;
-
-           // Simulate API call (replace with actual API call)
-           //const response = await simulateApiCall(purchaseData);
-           const token= localStorage.getItem('user_token');
-           const response = await fetch("/api/orders/create", {
-               method: "POST",
-               headers: {
-                   "Content-Type": "application/json",
-                   'Authorization': `Bearer ${token}`
-               },
-               body: JSON.stringify(purchaseData)
-           });
-
-           const result = await response.json();
-           if (response.ok) {
-               showNotification('✅ Order created successfully! Our team will contact you within 24 hours.', 'success');
-               modal.style.display = 'none';
-               purchaseForm.reset();
-           } else {
-               showNotification('Error creating order. Please try again.', 'error');
-           }
-
-           // Reset button
-           submitBtn.textContent = originalText;
-           submitBtn.disabled = false;
-
-       } catch (error) {
-           console.error('Purchase error:', error);
-           showNotification('Error processing order. Please try again.', 'error');
-
-           // Reset button
-           const submitBtn = event.target.querySelector('button[type="submit"]');
-           submitBtn.textContent = 'Purchase Now';
-           submitBtn.disabled = false;
-       }
-   }
-
-   // Notification function
-   function showNotification(message, type = 'success') {
-       // Create notification element
-       const notification = document.createElement('div');
-       notification.className = `notification notification-${type}`;
-       notification.innerHTML = `
-           <div class="notification-content">
-               <span class="notification-message">${message}</span>
-               <button class="notification-close">&times;</button>
-           </div>
-       `;
-
-       // Add styles
-       notification.style.cssText = `
-           position: fixed;
-           top: 20px;
-           right: 20px;
-           background: ${type === 'success' ? '#4CAF50' : '#f44336'};
-           color: white;
-           padding: 15px 20px;
-           border-radius: 8px;
-           box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-           z-index: 10000;
-           max-width: 400px;
-           animation: slideInRight 0.3s ease;
-       `;
-
-       // Add animation styles
-       const style = document.createElement('style');
-       style.textContent = `
-           @keyframes slideInRight {
-               from { transform: translateX(100%); opacity: 0; }
-               to { transform: translateX(0); opacity: 1; }
-           }
-           @keyframes slideOutRight {
-               from { transform: translateX(0); opacity: 1; }
-               to { transform: translateX(100%); opacity: 0; }
-           }
-           .notification-content {
-               display: flex;
-               justify-content: space-between;
-               align-items: center;
-           }
-           .notification-close {
-               background: none;
-               border: none;
-               color: white;
-               font-size: 20px;
-               cursor: pointer;
-               margin-left: 15px;
-           }
-       `;
-
-       if (!document.querySelector('#notification-styles')) {
-           style.id = 'notification-styles';
-           document.head.appendChild(style);
-       }
-
-       // Add to body
-       document.body.appendChild(notification);
-
-       // Close functionality
-       const closeBtn = notification.querySelector('.notification-close');
-       closeBtn.addEventListener('click', () => {
-           notification.style.animation = 'slideOutRight 0.3s ease';
-           setTimeout(() => notification.remove(), 300);
-       });
-
-       // Auto remove after 5 seconds
-       setTimeout(() => {
-           if (notification.parentNode) {
-               notification.style.animation = 'slideOutRight 0.3s ease';
-               setTimeout(() => notification.remove(), 300);
-           }
-       }, 5000);
-   }
-
-   function isTokenExpired(token) {
-     try {
-       const payload = JSON.parse(atob(token.split('.')[1]));
-       const currentTime = Math.floor(Date.now() / 1000);
-       return payload.exp < currentTime; // true if expired
-     } catch (e) {
-       console.error("Invalid token:", e);
-       return true; // treat invalid as expired
-     }
-   }
-
-   // Get icon method
-   function getDesignIcon(type) {
-       const icons = {
-           HOUSE: '🏠',
-           house: '🏠',
-           VILLA: '🏡',
-           villa: '🏡',
-           APARTMENT: '🏢',
-           apartment: '🏢',
-           FORM_HOUSE: '🏚️',
-           farmhouse: '🏚️',
-           ROW_HOUSE: '🏘️',
-           rowhouse: '🏘️',
-           DUPLEX: '🏰',
-           duplex: '🏰',
-           COMMERCIAL: '🏢'
-       };
-       return icons[type] || '🏠';
-   }*/

@@ -29,15 +29,20 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
             localStorage.setItem('user', JSON.stringify(data));
 
             // Redirect to vendor page
-            if(data.role.toLowerCase()== "vendor"){
-                window.location.href = 'vendor-dashboard.html';
+            if (data.role.toLowerCase() === "vendor") {
+
+                showMessage.success("Login successful!");
+
+                // Wait 2 seconds before redirect
+                setTimeout(() => {
+                    window.location.href = 'vendor-dashboard.html';
+                }, 2000);
             }
         } else {
             const errorData = await response.json();
             showMessage.error(errorData.message || 'Login failed. Please try again.');
         }
     } catch (error) {
-        console.error('Login error:', error);
         showMessage.error('Network error. Please check your connection.');
     }
 });
@@ -62,11 +67,11 @@ if (togglePassword && passwordInput) {
 // Forgot password handling
 const forgotPasswordLink = document.getElementById('forgotPassword');
 if (forgotPasswordLink) {
-    forgotPasswordLink.addEventListener('click', function(e) {
+    forgotPasswordLink.addEventListener('click', async function(e) {
         e.preventDefault();
 
-        const email = prompt('Please enter your email address:');
-        //const email= showMessage.prompt('Please enter you email address:');
+        const email= await showMessage.prompt('Please enter you email address:');
+        console.log("email"+ email);
         if (email) {
             handleForgotPassword(email);
         }
@@ -84,42 +89,18 @@ async function handleForgotPassword(email) {
         });
 
         if (response.ok) {
-            showMessage.success('Password reset link has been sent to your registered email.');
+            await showMessage.alert('Password reset link has been sent to your registered email.',{
+                title: 'success',
+                type: 'success'
+            });
         } else {
             const errorData = await response.json();
             showMessage.error(errorData.message || 'Failed to send reset link.');
         }
     } catch (error) {
-        console.error('Forgot password error:', error);
         showMessage.error('Network error. Please try again later.');
     }
 }
-
-/*function showError(message) {
-    const errorElement = document.getElementById('errorMessage');
-    if (errorElement) {
-        errorElement.textContent = message;
-        errorElement.style.display = 'block';
-        errorElement.className = 'alert alert-danger';
-
-        setTimeout(() => {
-            errorElement.style.display = 'none';
-        }, 5000);
-    }
-}*/
-
-/*function showSuccess(message) {
-    const errorElement = document.getElementById('errorMessage');
-    if (errorElement) {
-        errorElement.textContent = message;
-        errorElement.style.display = 'block';
-        errorElement.className = 'alert alert-success';
-
-        setTimeout(() => {
-            errorElement.style.display = 'none';
-        }, 5000);
-    }
-}*/
 
 // Check if user is already logged in
 if (localStorage.getItem('vendor_token')) {

@@ -1,11 +1,11 @@
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async function () {
     const verifyForm = document.getElementById('verifyForm');
     const errorMessage = document.getElementById('errorMessage');
     const resendOtpLink = document.getElementById('resendOtp');
 
     const phone = localStorage.getItem('pendingPhone');
     if (!phone) {
-        alert("Session expired. Please login again.");
+        await showMessage.alert("Session expired. Please login again.");
         window.location.href = "otp-login.html";
         return;
     }
@@ -38,16 +38,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 localStorage.setItem('user_role', data.role);
                 localStorage.setItem('user_fullName', data.fullName);
                 localStorage.removeItem('pendingPhone');
-                //initUserSession(data.token, data.id)
 
-                alert("Login successful!");
-                window.location.href = "user.html";
+                showMessage.success("Login successfully!");
+                // Wait 2 seconds before redirect
+                setTimeout(() => {
+                    window.location.href = "user.html";
+                }, 2000);
             } else {
                 const err = await response.json();
                 errorMessage.textContent = err.message || "Invalid OTP. Please try again.";
             }
         } catch (error) {
-            console.error("Error verifying OTP:", error);
             errorMessage.textContent = "Something went wrong. Please try again.";
         }
     });
@@ -65,12 +66,14 @@ document.addEventListener('DOMContentLoaded', function () {
             });
 
             if (response.ok) {
-                alert("OTP resent successfully!");
+                await showMessage.alert("OTP resent successfully!",{
+                    title: 'success',
+                    type: 'success'
+                });
             } else {
                 errorMessage.textContent = "Failed to resend OTP. Try again.";
             }
         } catch (error) {
-            console.error("Error resending OTP:", error);
             errorMessage.textContent = "Error resending OTP. Try again.";
         }
     });

@@ -33,7 +33,7 @@
 
            displayUserData(userData);
        } catch (error) {
-           console.error('Error loading user data:', error);
+           showMessage.error('Error loading user data:', error);
            document.getElementById('userName').textContent = 'Error loading profile';
        }
    }
@@ -58,7 +58,7 @@
    }
 
    // Convert text fields to input fields for editing
-   function enableEditMode() {
+   async function enableEditMode() {
        isEditMode = true;
 
        // List of editable fields (excluding email and memberSince)
@@ -93,22 +93,17 @@
        //document.getElementById('changePasswordBtn').classList.remove('btn-secondary');
        document.getElementById('changePasswordBtn').classList.add('btn-success');
 
-       showAlert('Edit mode enabled. Make your changes and click Save.', 'info');
+       await showMessage.alert('Edit mode enabled. Make your changes and click Save.', 'info');
    }
 
    // Convert input fields back to text and save
    async function saveProfile() {
-       /*if (!isEditMode) {
-           // Original "Change Password" functionality
-           showAlert('Change password feature - Redirect to change password page', 'info');
-           return;
-       }*/
 
        const token = localStorage.getItem('user_token');
        const id = localStorage.getItem('user_id');
 
        if (!token || !id) {
-           showAlert('Authentication required. Please login again.', 'error');
+           await showMessage.alert('Authentication required. Please login again.', 'error');
            return;
        }
 
@@ -159,7 +154,7 @@
            originalUserData = { ...originalUserData, ...updatedData };
            disableEditMode(updatedData);
 
-           showAlert('Profile updated successfully!', 'success');
+           showMessage.success('Profile updated successfully!');
 
            // Update header name
            document.getElementById('userName').textContent = updatedData.fullName;
@@ -167,7 +162,6 @@
            document.getElementById('avatarInitial').textContent = initials;
 
        } catch (error) {
-           console.error('Error updating profile:', error);
            showAlert(error.message || 'Failed to update profile. Please try again.', 'error');
        }
    }
@@ -213,7 +207,8 @@
 
    // Logout functionality
    document.getElementById('logoutBtn').addEventListener('click', async function() {
-       if (confirm('Are you sure you want to logout?')) {
+       const result= await showMessage.confirm('Are you sure you want to logout?');
+       if (result) {
            showAlert('Logging out...', 'info');
 
            const token = localStorage.getItem('user_token');

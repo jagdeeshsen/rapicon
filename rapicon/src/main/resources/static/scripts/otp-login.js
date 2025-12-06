@@ -15,8 +15,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         try {
-            console.log("Sending OTP request for phone:", phone); // Debug log
-
             const response = await fetch('/api/auth/send-otp', {
                 method: 'POST',
                 headers: {
@@ -25,29 +23,26 @@ document.addEventListener('DOMContentLoaded', function () {
                 body: JSON.stringify({ phone })
             });
 
-            console.log("Response status:", response.status); // Debug log
-
             if (response.ok) {
                 const data = await response.json();
-                console.log("Success response:", data); // Debug log
 
                 localStorage.setItem('pendingPhone', phone);
-                alert("OTP sent successfully!");
+                await showMessage.alert("OTP sent successfully!", {
+                    title: "success",
+                    type: "success"
+                });
                 window.location.href = "otp-verification.html?mode=login";
             } else {
                 // Handle error responses
                 const contentType = response.headers.get("content-type");
-                console.log("Error content-type:", contentType); // Debug log
 
                 let message = "Something went wrong.";
 
                 if (contentType && contentType.includes("application/json")) {
                     const errData = await response.json();
-                    console.log("Error data:", errData); // Debug log
                     message = errData.message || message;
                 } else {
                     const errText = await response.text();
-                    console.log("Error text:", errText); // Debug log
                     message = errText || message;
                 }
 
@@ -55,10 +50,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 errorMessage.textContent = message;
                 errorMessage.style.display = 'block';
 
-                console.log("Displaying error:", message); // Debug log
             }
         } catch (error) {
-            console.error("Caught error:", error); // Debug log
             errorMessage.textContent = "Network error. Please check your connection and try again.";
             errorMessage.style.display = 'block';
         }

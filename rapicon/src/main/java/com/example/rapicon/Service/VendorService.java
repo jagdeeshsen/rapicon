@@ -37,4 +37,12 @@ public class VendorService {
     public Vendor getVendorByUsername(String username){
         return vendorRepo.findByUsername(username);
     }
+
+    public boolean vendorExistsByEmail(String email){
+        return vendorRepo.existsByEmail(email);
+    }
+
+    public boolean vendorExistsByUsername(String username){
+        return vendorRepo.existsByUsername(username);
+    }
 }

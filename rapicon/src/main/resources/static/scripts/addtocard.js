@@ -16,7 +16,7 @@ async function renderCart() {
     const cartBadge = document.getElementById('cartBadge');
 
     if (!userToken || !userId) {
-        console.error('User not authenticated');
+        showMessage.error('User not authenticated');
         return;
     }
 
@@ -29,7 +29,7 @@ async function renderCart() {
         });
 
         if (!response.ok) {
-            throw new Error('Failed to fetch cart items');
+            showMessage.error('Failed to fetch cart items');
         }
 
         cartList = await response.json();
@@ -82,7 +82,11 @@ async function renderCart() {
 // Remove item from cart
 async function removeItem(id) {
     if (!userToken) {
-        alert('Please login to continue');
+        await showMessage.alert('Please login to continue');
+
+        setTimeout(() => {
+        window.location.href='/otp-login.html'
+        }, 2000);
         return;
     }
 
@@ -95,13 +99,12 @@ async function removeItem(id) {
         });
 
         if (!response.ok) {
-            throw new Error('Failed to delete cart item');
+            showMessage.error('Failed to delete cart item');
         }
 
         renderCart();
     } catch (error) {
-        console.error('Error removing item:', error);
-        alert('Failed to remove item from cart');
+        showMessage.error('Failed to remove item from cart');
     }
 }
 
@@ -130,7 +133,7 @@ function updateSummary() {
 // Full payment checkout
 function fullCheckout() {
     if (cartList.length === 0) {
-        alert('Your cart is empty!');
+        showMessage.error('Your cart is empty!');
         return;
     }
 
@@ -148,7 +151,7 @@ function fullCheckout() {
 // Installment checkout
 function installmentCheckout() {
     if (cartList.length === 0) {
-        alert('Your cart is empty!');
+        showMessage.error('Your cart is empty!');
         return;
     }
 
@@ -166,7 +169,7 @@ function installmentCheckout() {
 // Main checkout function - PhonePe Integration
 async function openCheckout(orderData) {
     if (!userToken) {
-        alert('Please login to continue');
+        await showMessage.alert('Please login to continue');
         return;
     }
 
@@ -184,7 +187,7 @@ async function openCheckout(orderData) {
         });
 
         if (!orderResponse.ok) {
-            throw new Error('Failed to create order');
+            showMessage.error('Failed to create order');
         }
 
         const orderResult = await orderResponse.json();
@@ -217,7 +220,7 @@ async function openCheckout(orderData) {
         });
 
         if (!paymentResponse.ok) {
-            throw new Error('Failed to initiate payment');
+            showMessage.error('Failed to initiate payment');
         }
 
         const paymentResult = await paymentResponse.json();
@@ -226,8 +229,6 @@ async function openCheckout(orderData) {
             throw new Error(paymentResult.message || 'Payment initiation failed');
         }
 
-        console.log('Payment initiated:', paymentResult);
-
         // open phonepe UI
         window.PhonePeCheckout.transact(
         {
@@ -235,30 +236,29 @@ async function openCheckout(orderData) {
         });
 
     } catch (error) {
-        console.error('Checkout error:', error);
-        //hidePaymentVerificationLoader();
-        alert('Failed to process checkout: ' + error.message);
+        showMessage.error('Failed to process checkout: ' + error.message);
     }
 }
 
 // callback function
 function callback (response) {
   if (response === 'USER_CANCEL') {
-    /* Add merchant's logic if they have any custom thing to trigger on UI after the transaction is cancelled by the user*/
-    console.log("user cancel the payment");
-    window.location.href='/addtocard.html'
+    showMessage.error("Payment is cancelled by user");
+
+    // wait 2 sec before redirect
+    setTimeout(() => {
+        window.location.href='/addtocard.html'
+    }, 2000);
+
     return;
   } else if (response === 'CONCLUDED') {
-    console.log("payment successfully");
+    showMessage.success("Payment successfully!");
     checkOrderStatus();
-    /* Add merchant's logic if they have any custom thing to trigger on UI after the transaction is in terminal state*/
     return;
   }
 }
 
 async function checkOrderStatus(){
-    // Payment process concluded, verify the payment status
-    console.log('Payment concluded, verifying status...');
 
     // Wait a bit for PhonePe to process
     await new Promise(resolve => setTimeout(resolve, 2000));
@@ -274,7 +274,7 @@ async function checkOrderStatus(){
         });
 
         if (!statusResponse.ok) {
-            throw new Error('Failed to verify payment status');
+            showMessage.error('Failed to verify payment status');
         }
 
         const statusResult = await statusResponse.json();
@@ -290,23 +290,13 @@ async function checkOrderStatus(){
             console.log('order completed');
 
         } else if (statusResult.state === 'FAILED') {
-            // Payment failed
-            //hidePaymentVerificationLoader();
-            alert('Payment failed. Please try again.');
-            //await updateOrderStatus(orderResult.id, 'FAILED', token);
-
+            showMessage.error('Payment failed. Please try again.');
         } else if (statusResult.state === 'PENDING') {
-            // Payment still pending - poll status
-            //hidePaymentVerificationLoader();
-            alert('Payment is being processed. We will notify you once completed.');
-            // Optionally implement polling mechanism
-            //pollPaymentStatus(paymentResult.merchantOrderId, orderResult.id, token, 0);
+            await showMessage.alert('Payment is being processed. We will notify you once completed.');
         }
 
     } catch (error) {
-        console.error('Payment verification error:', error);
-        //hidePaymentVerificationLoader();
-        alert('Failed to verify payment. Please contact support with order ID: ');
+        await showMessage.alert('Failed to verify payment.');
     }
 }
 
@@ -331,15 +321,16 @@ async function verifyAndCompleteOrder(orderId, merchantOrderId, paymentStatus) {
         console.log(paymentStatus.paymentDetails);
 
         if (!verifyResponse.ok) {
-            throw new Error('Payment verification failed');
+            showMessage.error('Payment verification failed');
         }
 
         const verifyResult = await verifyResponse.json();
 
-        //hidePaymentVerificationLoader();
-
         // Show success message
-        alert(verifyResult.message || 'Payment successful! Your order has been placed.');
+        await showMessage.alert('Payment successful! Your order has been placed.',{
+            title: 'success',
+            type: 'success'
+        });
 
         // Clear cart
         /*if (typeof cartList !== 'undefined') {
@@ -359,12 +350,10 @@ async function verifyAndCompleteOrder(orderId, merchantOrderId, paymentStatus) {
         // window.location.href = `/order-success?orderId=${orderId}`;
 
         // Or reload the page to show updated cart
-        // window.location.reload();
+        window.location.href = '/installment-payment.html';
 
     } catch (error) {
-        console.error('Order verification error:', error);
-        //hidePaymentVerificationLoader();
-        alert('Payment completed but verification failed. Please contact support.');
+        await showMessage.alert('Payment completed but verification failed. Please contact support.');
     }
 }
 

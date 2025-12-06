@@ -1,3 +1,4 @@
+
 // showMessage.js - Universal Message Notification System with Dialogs
 
 /**
@@ -160,6 +161,90 @@ showMessage.confirm = function(message, options = {}) {
       } else if (e.key === 'Enter') {
         document.removeEventListener('keydown', handleKeyPress);
         close(true);
+      }
+    };
+    document.addEventListener('keydown', handleKeyPress);
+
+    // Focus confirm button
+    confirmBtn.focus();
+  });
+};
+
+/**
+ * Show an alert dialog
+ * @param {string} message - The message to display
+ * @param {Object} options - Dialog options
+ * @returns {Promise<void>} - Resolves when user clicks OK
+ */
+showMessage.alert = function(message, options = {}) {
+  return new Promise((resolve) => {
+    injectStyles();
+
+    const config = {
+      title: options.title || 'Alert',
+      confirmText: options.confirmText || 'OK',
+      type: options.type || 'info', // success, error, warning, info
+      ...options
+    };
+
+    // Create overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'message-overlay';
+
+    // Create dialog
+    const dialog = document.createElement('div');
+    dialog.className = 'message-dialog message-dialog-alert';
+
+    const iconSvgs = {
+      success: '<svg width="48" height="48" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>',
+      error: '<svg width="48" height="48" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>',
+      warning: '<svg width="48" height="48" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>',
+      info: '<svg width="48" height="48" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>'
+    };
+
+    dialog.innerHTML = `
+      <div class="message-dialog-icon message-dialog-icon-${config.type}">
+        ${iconSvgs[config.type]}
+      </div>
+      <div class="message-dialog-title">${config.title}</div>
+      <div class="message-dialog-content">${message}</div>
+      <div class="message-dialog-buttons">
+        <button class="message-btn message-btn-confirm">${config.confirmText}</button>
+      </div>
+    `;
+
+    overlay.appendChild(dialog);
+    document.body.appendChild(overlay);
+
+    // Trigger animation
+    setTimeout(() => {
+      overlay.classList.add('show');
+      dialog.classList.add('show');
+    }, 10);
+
+    const close = () => {
+      overlay.classList.remove('show');
+      dialog.classList.remove('show');
+      setTimeout(() => {
+        document.body.removeChild(overlay);
+        resolve();
+      }, 300);
+    };
+
+    // Button handler
+    const confirmBtn = dialog.querySelector('.message-btn-confirm');
+    confirmBtn.addEventListener('click', close);
+
+    // Click overlay to close
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) close();
+    });
+
+    // Keyboard support
+    const handleKeyPress = (e) => {
+      if (e.key === 'Escape' || e.key === 'Enter') {
+        document.removeEventListener('keydown', handleKeyPress);
+        close();
       }
     };
     document.addEventListener('keydown', handleKeyPress);
@@ -635,6 +720,42 @@ if (typeof window !== 'undefined') {
 /*
 USAGE EXAMPLES:
 
+// ========== ALERT DIALOG ==========
+// Basic alert
+await showMessage.alert('Welcome to our website!');
+
+// Success alert
+await showMessage.alert('Your profile has been updated successfully!', {
+  title: 'Success',
+  type: 'success'
+});
+
+// Error alert
+await showMessage.alert('An error occurred while processing your request.', {
+  title: 'Error',
+  type: 'error'
+});
+
+// Warning alert
+await showMessage.alert('Your session will expire in 5 minutes.', {
+  title: 'Warning',
+  type: 'warning'
+});
+
+// Custom button text
+await showMessage.alert('Please read the terms and conditions.', {
+  title: 'Important',
+  confirmText: 'I Understand',
+  type: 'info'
+});
+
+// Alert then do something
+showMessage.alert('Data saved successfully!', { type: 'success' })
+  .then(() => {
+    console.log('User clicked OK');
+    window.location.href = '/dashboard';
+  });
+
 // ========== NOTIFICATIONS ==========
 // Basic usage
 showMessage('Operation completed successfully!', 'success');
@@ -750,7 +871,47 @@ const password = await showMessage.prompt(
 
 // ========== REAL-WORLD EXAMPLES ==========
 
+// Show alert after form submission
+document.getElementById('contactForm').onsubmit = async function(e) {
+  e.preventDefault();
+
+  // Submit form logic here...
+
+  await showMessage.alert('Thank you! Your message has been sent.', {
+    title: 'Message Sent',
+    type: 'success'
+  });
+
+  // Redirect after user clicks OK
+  window.location.href = '/';
+};
+
+// Error handling with alert
+try {
+  const response = await fetch('/api/data');
+  if (!response.ok) throw new Error('Failed to load');
+} catch (error) {
+  await showMessage.alert('Could not connect to server. Please try again later.', {
+    title: 'Connection Error',
+    type: 'error'
+  });
+}
+
+// Show terms before proceeding
+async function showTerms() {
+  await showMessage.alert(
+    'By continuing, you agree to our Terms of Service and Privacy Policy.',
+    {
+      title: 'Terms & Conditions',
+      confirmText: 'I Agree',
+      type: 'info'
+    }
+  );
+  // Continue with registration...
+}
+
 // Delete confirmation
+
 document.getElementById('deleteBtn').onclick = async () => {
   const confirmed = await showMessage.confirm(
     'Are you sure you want to delete this item? This cannot be undone.',

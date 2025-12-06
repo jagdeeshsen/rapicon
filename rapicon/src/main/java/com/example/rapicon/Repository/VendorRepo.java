@@ -10,6 +10,6 @@ public interface VendorRepo extends JpaRepository<Vendor, Long> {
     Vendor findByUsername(String username);
     Vendor findByEmail(String email);
 
-    //boolean existsBYUsername(String username);
-    //boolean existsByEmail(String email);
+    boolean existsByUsername(String username);
+    boolean existsByEmail(String email);
 }

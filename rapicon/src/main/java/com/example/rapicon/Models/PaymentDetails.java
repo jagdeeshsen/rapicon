@@ -19,18 +19,20 @@ public class PaymentDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
+    private Long orderId;
+
     @Column(name = "oder_id", unique = true)
     private String phonePeOrderId;
 
     @Column(unique = true)
     private String transactionId;
 
-    //@Column(nullable = false)
     private String paymentMode;
 
     private Timestamp createdAt;
 
-    //@Column(nullable = false)
+    @Column(nullable = false)
     private BigDecimal amount;
 
     private BigDecimal payableAmount;

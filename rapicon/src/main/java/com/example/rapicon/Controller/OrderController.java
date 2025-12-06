@@ -2,7 +2,6 @@ package com.example.rapicon.Controller;
 
 import com.example.rapicon.DTO.*;
 import com.example.rapicon.Models.*;
-import com.example.rapicon.Repository.CartItemRepo;
 import com.example.rapicon.Service.*;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,15 +25,6 @@ public class OrderController {
     private OrderService orderService;
 
     @Autowired
-    private CartItemRepo cartItemRepo;
-
-    @Autowired
-    private OrderItemService orderItemService;
-
-    @Autowired
-    private DesignService designService;
-
-    @Autowired
     private UserService userService;
 
     @Autowired
@@ -43,8 +33,7 @@ public class OrderController {
     @PostMapping("/create-order")
     public ResponseEntity<Map<String, Object>> createOrder(@RequestBody OrderRequestDTO requestData) {
         try {
-            // generate order and merchantOrder ids
-            //String orderId= "ORD-" + System.currentTimeMillis() + "-" + (int)(Math.random()*10000);
+            // generate merchantOrder id
             String merchantOrderId = "ORD" + (int)(Math.random() * 900000);
 
             BigDecimal amount;
@@ -83,7 +72,7 @@ public class OrderController {
                 inst.setInstallmentNumber(i);
                 inst.setUnlocked(i == 1);
                 inst.setUnlockedAt(LocalDateTime.now());
-                inst.setDueDate(LocalDateTime.now().plusMonths(i));
+                inst.setDueDate(LocalDateTime.now().plusMonths(i-1));
                 inst.setInstallmentStatus(Installments.InstallmentStatus.PENDING);
                 inst.setCreatedAt(LocalDateTime.now());
                 inst.setUpdatedAt(LocalDateTime.now());
@@ -140,7 +129,7 @@ public class OrderController {
         ObjectMapper mapper= new ObjectMapper();
 
         try {
-            String Id = paymentData.get("orderId").toString();
+            Long Id = Long.parseLong(paymentData.get("orderId").toString());
             String merchantOrderId = (String) paymentData.get("merchantOrderId");
             String phonePeOrderId = (String) paymentData.get("phonePeOrderId");
             String paymentState = (String) paymentData.get("paymentState");
@@ -150,9 +139,8 @@ public class OrderController {
                     mapper.convertValue(paymentData.get("paymentDetails"),
                             new TypeReference<List<PaymentDetailDTO>>() {});
 
-            // TODO: Verify payment in your database
             // 1. Check if order exists
-            Order order = orderService.getOrderById(Long.parseLong(Id));
+            Order order = orderService.getOrderById(Id);
 
             // 2. Verify amount matches
             BigDecimal savedAmount;
@@ -178,6 +166,7 @@ public class OrderController {
             PaymentDetailDTO details= paymentDetailList.get(0);
 
             PaymentDetails pd= new PaymentDetails();
+            pd.setOrderId(Id);
             pd.setPhonePeOrderId(phonePeOrderId);
             pd.setAmount(details.getAmount().divide(new BigDecimal(100)));
             pd.setPaymentMode(details.getPaymentMode());
@@ -238,7 +227,6 @@ public class OrderController {
         try {
             String status = statusData.get("status");
 
-            // TODO: Update order status in database
             // Order order = orderService.findById(orderId);
             // order.setStatus(status);
             // orderService.save(order);
@@ -263,26 +251,18 @@ public class OrderController {
      * Get Order Details
      * Fetch order details by ID
      */
-    @GetMapping("/{orderId}")
-    public ResponseEntity<Map<String, Object>> getOrderDetails(@PathVariable String orderId) {
-        log.info("Fetching order details: {}", orderId);
+    @GetMapping("/{userId}")
+    public ResponseEntity<List<Order>> getOrderDetails(@PathVariable String userId) {
+        log.info("Fetching order details: {}", userId);
 
         try {
-            // TODO: Fetch from database
-            // Order order = orderService.findById(orderId);
+            List<Order> orders = orderService.getOrderByUser(Long.parseLong(userId));
 
-            Map<String, Object> response = new HashMap<>();
-            response.put("id", orderId);
-            response.put("status", "COMPLETED");
-            response.put("amount", 100000L);
-
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(orders);
 
         } catch (Exception e) {
             log.error("Failed to fetch order", e);
-            return ResponseEntity.badRequest().body(
-                    Map.of("error", e.getMessage())
-            );
+            return ResponseEntity.badRequest().body(null);
         }
     }
 }

@@ -151,7 +151,6 @@ async function registerUser(formData) {
         };
 
     } catch (error) {
-        console.error('Registration error:', error);
         return {
             success: false,
             error: error.message || 'Network error. Please check your connection and try again.'
