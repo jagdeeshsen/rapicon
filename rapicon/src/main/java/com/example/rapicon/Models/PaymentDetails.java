@@ -22,7 +22,7 @@ public class PaymentDetails {
     @Column(nullable = false)
     private Long orderId;
 
-    @Column(name = "oder_id", unique = true)
+    @Column(unique = true)
     private String phonePeOrderId;
 
     @Column(unique = true)

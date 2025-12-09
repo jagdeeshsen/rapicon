@@ -24,7 +24,7 @@
       document.getElementById('builtArea').textContent = design.builtUpArea || '1200 sq.ft';
       document.getElementById('floors').textContent = design.floors ? design.floors.length : 2;
 
-      if(design.type == "Commercial"){
+      if(design.type.trim().toLowerCase() === "commercial"){
         document.getElementById('bedrooms').textContent = design.businessUnits + ' Business Units';
       }else{
         document.getElementById('bedrooms').textContent = design.bedrooms + ' Bedrooms';

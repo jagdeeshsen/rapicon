@@ -94,3 +94,27 @@ body {
                 grid-template-columns: 1fr;
             }
         }
+
+        .pay-now-btn {
+            background: #007BFF;             /* Blue */
+            color: #fff;
+            padding: 6px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 2px 6px rgba(0, 123, 255, 0.3);
+        }
+
+        .pay-now-btn:hover {
+            background: #0056d2;             /* Darker blue on hover */
+            box-shadow: 0 3px 8px rgba(0, 86, 210, 0.4);
+            transform: translateY(-2px);     /* Slight lift effect */
+        }
+
+        .pay-now-btn:active {
+            transform: translateY(0);        /* Remove lift on click */
+            background: #004bb3;
+        }

@@ -10,13 +10,13 @@ const builtUpArea= sessionStorage.getItem('builtUpArea');
         id: '1',
         name: 'Basic',
         price: 5,  // ← Edit this price
-        description: 'A budget package with no compromise on quality that includes all construction essentials',
+        description: 'A budget-friendly package that delivers all essential construction drawings and quality design without any compromise.',
         highlights: [
-          'Trusted brand steel & cement',
-          'Standard floor tiles upto ₹50/sqft',
-          'Standard flush doors and window finish',
-          'Tractor Emulsion finish',
-          'Essential kitchen & bathroom fittings'
+          'Complete 2D Architectural Floor Plan',
+          'Full Structural, Electrical & Plumbing Drawings',
+          'Furniture Layout & Interior Planning',
+          'Realistic Front Elevation + VR Walkthrough Video',
+          'Door & Window Schedule Drawings'
         ],
         isPopular: false
       },
@@ -24,41 +24,43 @@ const builtUpArea= sessionStorage.getItem('builtUpArea');
         id: '2',
         name: 'Classic',
         price: 25,  // ← Edit this price
-        description: 'Our best seller package with upgraded brands like Jindal Steels, Hindware etc at a considerable price',
+        description: 'A classic package with 2D + 3D designs, unlimited customizations, and VR walkthrough for a complete planning experience.',
         highlights: [
-          'Superior brand steel & cement',
-          'Refined floor tiles upto ₹100/sqft',
-          'Elegant teak doors and window finish',
-          'Tractor Shyne Emulsion finish',
-          'Stylish kitchen & bathroom fittings'
+          'Complete 2D+3D Architectural Floor Plan',
+          'Full Structural, Electrical & Plumbing Drawings',
+          'Full 3D Interior Working Drawings',
+          'Unlimited Customization and Virtual Reality Visits',
+          'Detailed Door & Window Schedule Drawings'
         ],
         isPopular: true  // This package shows "POPULAR" badge
       },
       {
         id: '3',
         name: 'Premium',
-        price: 1499,  // ← Edit this price
+        price: 1830,  // ← Edit this price
         description: 'An elegant package crafted for modern living with extra provisions like solar heater setup, puja room door etc',
         highlights: [
           'Superior Brand steel & cement',
           'Premium floor tiles upto ₹140/sqft',
           'Designer teak doors and window finish',
           'Apcolite Premium finish',
-          'Quality kitchen & bathroom fittings'
+          'Quality kitchen & bathroom fittings',
+          'Unlimited Customization and Virtual Reality Visits'
         ],
         isPopular: false
       },
       {
         id: '4',
         name: 'Royale',
-        price: 2199,  // ← Edit this price
+        price: 2100,  // ← Edit this price
         description: 'An ultimate plan with high-end finishes with amenities like EV charging, copper gas connection etc',
         highlights: [
           'Superior brand steel & cement',
-          'Lavish floor tiles upto ₹160/sqft',
+          'Lavish floor tiles upto ₹140/sqft',
           'Designer teak doors and window finish',
           'Apex Ultima Exterior finish',
-          'Lavish Fittings for kitchen & bathroom'
+          'Lavish Fittings for kitchen & bathroom',
+          'Unlimited Customization and Virtual Reality Visits'
         ],
         isPopular: false
       }

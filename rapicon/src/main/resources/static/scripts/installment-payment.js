@@ -1,10 +1,10 @@
 document.addEventListener("DOMContentLoaded", fetchOrder);
 let orders=[];
 
+const userId= localStorage.getItem('user_id');
+const token= localStorage.getItem('user_token');
+let orderObj;
  async function fetchOrder(){
-    const userId= localStorage.getItem('user_id');
-    const token= localStorage.getItem('user_token');
-
     try{
         const response= await fetch(`/api/orders/${userId}`,{
             method: 'GET',
@@ -14,15 +14,14 @@ let orders=[];
         });
 
         if(!response.ok){
-            throw new Error("Failed to fetch orders");
+            showMessage.error("Failed to fetch orders");
         }else{
             const data= await response.json();
             orders= data;
-            console.log("orders: "+ orders);
             render();
         }
     }catch(error){
-        console.log("Error", error);
+        showMessage.error(error);
     }
  }
 
@@ -66,6 +65,8 @@ let orders=[];
      for (var i = 0; i < orders.length; i++) {
          var order = orders[i];
          var paidCount = 0;
+
+         orderObj= order;
 
          // formate date and time
          const date= order.createdAt.split("T")[0];
@@ -119,13 +120,24 @@ let orders=[];
 
          html += '<div id="inst-' + order.id + '" class="installments">';
          for (var m = 0; m < order.installmentsList.length; m++) {
-             var inst = order.installmentsList[m];
-             var badgeClass = inst.installmentStatus === "PAID" ? "badge-green" : "badge-yellow";
-             html += '<div class="installment-item">';
-             html += '<div><span>' + (m+1) + '</span> <span style="margin-left: 10px;">Due: ' + formatDateTime(inst.dueDate).date + '</span></div>';
-             html += '<div><span style="margin-right: 10px;">' + formatMoney(inst.installmentAmount) + '</span>';
-             html += '<span class="badge ' + badgeClass + '">' + inst.installmentStatus + '</span></div>';
-             html += '</div>';
+              var inst = order.installmentsList[m];
+
+              var isPending= inst.installmentStatus === "PENDING";
+              var isUnlocked= inst.unlocked === true;
+              var badgeClass = inst.installmentStatus === "PAID" ? "badge-green" : "badge-yellow";
+              html += '<div class="installment-item">';
+              html += '<div><span>' + (m+1) + '</span> <span style="margin-left: 10px;">Due: ' + formatDateTime(inst.dueDate).date + '</span></div>';
+              html += '<div><span style="margin-right: 10px;">' + formatMoney(inst.installmentAmount) + '</span>';
+              // 🔥 Condition: show Pay Now
+              if (isUnlocked && isPending) {
+                  html += '<button class="pay-now-btn" onclick="payInstallment(' + inst.id + ', ' + inst.installmentAmount + ')">Pay Now</button>';
+              } else {
+                  // Otherwise show status
+                  html += '<span class="badge ' + badgeClass + '">' + inst.installmentStatus + '</span>';
+              }
+
+              html += '</div>';
+              html += '</div>';
          }
          html += '</div>';
 
@@ -134,3 +146,167 @@ let orders=[];
 
      container.innerHTML = html;
  }
+
+
+//=================== pay installment =======================
+
+let merchantOrderId;
+let orderId;
+async function payInstallment(installmentId, amount){
+
+    // set merchant and order id's
+    merchantOrderId= orderObj.merchantOrderId;
+    orderId= orderObj.id;
+
+    try{
+        const paymentData = {
+            merchantOrderId: orderObj.merchantOrderId || `ORD${Date.now()}`,
+            amount: amount*100, // Amount in paisa
+            metaInfo: {
+                udf1: orderObj.userId || orderData.userId || '',
+                udf2: orderObj.customerName || '',
+                udf3: orderObj.customerEmail || '',
+                udf4: orderObj.customerPhone || '',
+                udf5: JSON.stringify({ orderId: orderObj.id })
+            }
+        };
+
+        const response= await fetch('/api/payment/phonePe/initiate',{
+            method: 'POST',
+            headers:{
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(paymentData)
+        });
+
+        if(!response.ok){
+            showMessage.error("Failed to initiate payment");
+        }
+
+        const paymentResult = await response.json();
+
+        if (!paymentResult.redirectUrl) {
+            throw new Error(paymentResult.message || 'Payment initiation failed');
+        }
+
+        // open phonepe UI
+        window.PhonePeCheckout.transact(
+        {
+            tokenUrl: paymentResult.redirectUrl, callback, type: "IFRAME"
+        });
+    }catch(e){
+        showMessage.error("Failed to process payment: " + e.message);
+    }
+}
+
+// callback function
+function callback (response) {
+  if (response === 'USER_CANCEL') {
+    showMessage.error("Payment is cancelled by user");
+
+    // wait 2 sec before redirect
+    setTimeout(() => {
+        window.location.href='/addtocard.html'
+    }, 2000);
+
+    return;
+  } else if (response === 'CONCLUDED') {
+    showMessage.success("Payment successfully!");
+    checkOrderStatus();
+    return;
+  }
+}
+
+async function checkOrderStatus(){
+
+    // Wait a bit for PhonePe to process
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    try {
+        // Verify payment status from backend
+        const statusResponse = await fetch(`/api/payment/phonePe/status/${merchantOrderId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!statusResponse.ok) {
+            showMessage.error('Failed to verify payment status');
+        }
+
+        const statusResult = await statusResponse.json();
+
+        // Check payment state
+        if (statusResult.state === 'COMPLETED') {
+            // Payment successful - verify with your backend
+            await verifyAndCompleteOrder(
+                orderId,
+                merchantOrderId,
+                statusResult
+            );
+            console.log('payment completed');
+
+        } else if (statusResult.state === 'FAILED') {
+            showMessage.error('Payment failed. Please try again.');
+        } else if (statusResult.state === 'PENDING') {
+            await showMessage.alert('Payment is being processed. We will notify you once completed.');
+        }
+
+    } catch (error) {
+        await showMessage.alert('Failed to verify payment.');
+    }
+}
+
+// Verify and Complete Order
+async function verifyAndCompleteOrder(orderId, merchantOrderId, paymentStatus) {
+    try {
+        const verifyResponse = await fetch('/api/orders/verify-installment-payment', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${userToken}`
+            },
+            body: JSON.stringify({
+                orderId: orderId,
+                merchantOrderId: merchantOrderId,
+                phonePeOrderId: paymentStatus.orderId,
+                paymentState: paymentStatus.state,
+                amount: paymentStatus.amount,
+                paymentDetails: paymentStatus.paymentDetails
+            })
+        });
+        console.log(paymentStatus.paymentDetails);
+
+        if (!verifyResponse.ok) {
+            showMessage.error('Payment verification failed');
+        }
+
+        const verifyResult = await verifyResponse.json();
+
+        // Show success message
+        await showMessage.alert('Payment successful! Your order has been placed.',{
+            title: 'success',
+            type: 'success'
+        });
+
+        // Store order data in sessionStorage for further processing
+        sessionStorage.setItem('completedOrder', JSON.stringify({
+            orderId: orderId,
+            merchantOrderId: merchantOrderId,
+            amount: paymentStatus.amount,
+            timestamp: new Date().toISOString()
+        }));
+
+        // Redirect to success page or order details
+        // window.location.href = `/order-success?orderId=${orderId}`;
+
+        // Or reload the page to show updated cart
+        window.location.reload();
+
+    } catch (error) {
+        await showMessage.alert('Payment completed but verification failed. Please contact support.');
+    }
+}

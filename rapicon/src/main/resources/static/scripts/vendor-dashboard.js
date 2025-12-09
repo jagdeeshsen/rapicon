@@ -159,6 +159,78 @@ async function fetchVendorDesigns() {
 // ========== NAVIGATION ==========
 
 function navigateTo(page, sourceEvent = null) {
+  const pages = ['upload', 'view', 'manage', 'profile', 'transactions'];
+  const titles = {
+    upload: 'Upload New Design',
+    view: 'My Designs',
+    manage: 'Manage Designs',
+    profile: 'Vendor Profile',
+    transactions: 'Transaction History'
+  };
+
+  pages.forEach(p => {
+    const pageElement = document.getElementById(p + 'Page');
+    if (pageElement) {
+      pageElement.classList.remove('active');
+    }
+  });
+
+  const targetPage = document.getElementById(page + 'Page');
+  if (targetPage) {
+    targetPage.classList.add('active');
+  }
+
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.classList.remove('active');
+  });
+
+  // Only try to update nav item if sourceEvent exists
+  if (sourceEvent && sourceEvent.target) {
+    const navItem = sourceEvent.target.closest('.nav-item');
+    if (navItem) {
+      navItem.classList.add('active');
+    }
+  } else {
+    // If no event, find and activate the nav item by page name
+    const navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach(item => {
+      const itemText = item.textContent.trim().toLowerCase();
+      if (
+        (page === 'upload' && itemText.includes('upload')) ||
+        (page === 'view' && itemText.includes('view')) ||
+        (page === 'manage' && itemText.includes('manage')) ||
+        (page === 'profile' && itemText.includes('profile')) ||
+        (page === 'transactions' && itemText.includes('transaction'))
+      ) {
+        item.classList.add('active');
+      }
+    });
+  }
+
+  const pageTitle = document.getElementById('pageTitle');
+  if (pageTitle) {
+    pageTitle.textContent = titles[page];
+  }
+
+  // Reset form when navigating away from upload page (except when editing)
+  if (page !== 'upload') {
+    const uploadForm = document.getElementById('uploadForm');
+    if (uploadForm && uploadForm.dataset.editingId) {
+      // Clear editing mode when navigating away
+      delete uploadForm.dataset.editingId;
+      const submitBtn = document.querySelector('.btn-primary');
+      if (submitBtn) {
+        submitBtn.textContent = 'Upload Design';
+      }
+    }
+  }
+
+  if (page === 'view') renderDesignsGrid();
+  if (page === 'manage') renderDesignsTable();
+  if (page === 'transactions') initializeTransactions();
+}
+
+/*function navigateTo(page, sourceEvent = null) {
   const pages = ['upload', 'view', 'manage', 'profile'];
   const titles = {
     upload: 'Upload New Design',
@@ -215,7 +287,7 @@ function navigateTo(page, sourceEvent = null) {
 
   if (page === 'view') renderDesignsGrid();
   if (page === 'manage') renderDesignsTable();
-}
+}*/
 
 // ========== DESIGN TYPE SELECTION ==========
 
@@ -986,7 +1058,75 @@ window.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
+  // Initialize transaction filters (only set up listeners once)
+  const statusFilter = document.getElementById('statusFilter');
+  const typeFilter = document.getElementById('typeFilter');
+  const periodFilter = document.getElementById('periodFilter');
+
+  if (statusFilter) {
+    statusFilter.addEventListener('change', filterTransactions);
+  }
+  if (typeFilter) {
+    typeFilter.addEventListener('change', filterTransactions);
+  }
+  if (periodFilter) {
+    periodFilter.addEventListener('change', filterTransactions);
+  }
+
+  // Initialize pagination buttons
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  if (prevBtn) {
+    prevBtn.addEventListener('click', () => {
+      console.log('Previous page');
+      // Add your pagination logic here
+    });
+  }
+  if (nextBtn) {
+    nextBtn.addEventListener('click', () => {
+      console.log('Next page');
+      // Add your pagination logic here
+    });
+  }
+
+  // Initialize transaction data
+  initializeTransactionData();
+
 });
+
+/*window.addEventListener('DOMContentLoaded', async () => {
+
+  // Check session first
+  const isAuthenticated = await checkSession();
+  if (!isAuthenticated) {
+    return; // Will redirect to login
+  }
+
+  // Fetch vendor data
+  await fetchVendorData();
+
+  // Fetch designs
+  await fetchVendorDesigns();
+
+  // Setup form submission
+  const uploadForm = document.getElementById('uploadForm');
+  if (uploadForm) {
+    uploadForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      // Check if we're editing or creating new
+      const editingId = document.getElementById('uploadForm').dataset.editingId;
+
+      if (editingId) {
+        updateDesignForm(); // Call update function
+      } else {
+        submitDesignForm(); // Call upload function
+      }
+    });
+  }
+
+});*/
 
 
 //===================== logout vendor ====================
@@ -1150,15 +1290,6 @@ async function updateDesignForm() {
     }
   }
 
-  /*// Log FormData contents (for debugging)
-  for (let pair of formData.entries()) {
-    if (pair[1] instanceof File) {
-      console.log(`  ${pair[0]}: [File] ${pair[1].name}`);
-    } else {
-      console.log(`  ${pair[0]}: ${pair[1]}`);
-    }
-  }*/
-
   try {
     // Show loading state
     const submitBtn = document.querySelector('.btn-primary');
@@ -1277,4 +1408,87 @@ function removeExistingImage(type, url) {
   }
 
   console.log(`Removed ${type} image:`, url);
+}
+
+//===================== transaction page=======================
+
+// Store transaction data globally
+function initializeTransactionData() {
+  if (!window.allTransactions) {
+    window.allTransactions = [
+      /*{ id: '#TXN-2024-1234', date: 'Dec 08, 2024', customer: 'Rajesh Kumar', type: 'Sale', amount: 2450, status: 'completed' },
+      { id: '#TXN-2024-1233', date: 'Dec 07, 2024', customer: 'Priya Sharma', type: 'Sale', amount: 1890, status: 'completed' },
+      { id: '#TXN-2024-1232', date: 'Dec 06, 2024', customer: 'Amit Patel', type: 'Sale', amount: 3200, status: 'pending' },
+      { id: '#TXN-2024-1231', date: 'Dec 05, 2024', customer: 'Sneha Gupta', type: 'Sale', amount: 1650, status: 'completed' },
+      { id: '#TXN-2024-1230', date: 'Dec 04, 2024', customer: 'Vikram Singh', type: 'Refund', amount: -850, status: 'completed' },
+      { id: '#TXN-2024-1229', date: 'Dec 03, 2024', customer: 'Meera Reddy', type: 'Sale', amount: 2100, status: 'completed' },
+      { id: '#TXN-2024-1228', date: 'Dec 02, 2024', customer: 'Arjun Mehta', type: 'Sale', amount: 1450, status: 'pending' },
+      { id: '#TXN-2024-1227', date: 'Dec 01, 2024', customer: 'Kavita Joshi', type: 'Withdrawal', amount: -15000, status: 'completed' },
+      { id: '#TXN-2024-1226', date: 'Nov 30, 2024', customer: 'Rahul Verma', type: 'Sale', amount: 2850, status: 'failed' },
+      { id: '#TXN-2024-1225', date: 'Nov 29, 2024', customer: 'Pooja Nair', type: 'Sale', amount: 1780, status: 'completed' }*/
+    ];
+  }
+}
+
+// Called when navigating to transactions page
+function initializeTransactions() {
+  // Render the current transactions
+  renderTransactions(window.allTransactions || []);
+}
+
+function filterTransactions() {
+  const statusFilter = document.getElementById('statusFilter');
+  const typeFilter = document.getElementById('typeFilter');
+
+  if (!window.allTransactions) return;
+
+  let filtered = window.allTransactions;
+
+  if (statusFilter && statusFilter.value !== 'all') {
+    filtered = filtered.filter(t => t.status === statusFilter.value);
+  }
+
+  if (typeFilter && typeFilter.value !== 'all') {
+    filtered = filtered.filter(t => t.type.toLowerCase() === typeFilter.value);
+  }
+
+  renderTransactions(filtered);
+}
+
+function renderTransactions(transactions) {
+  const tbody = document.getElementById('transactionTableBody');
+
+  if (!tbody) return;
+
+  if (transactions.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="6" style="text-align: center; padding: 60px 20px; color: #999;">
+          <svg style="width: 80px; height: 80px; margin-bottom: 16px; opacity: 0.5;" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+            <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
+          </svg>
+          <p>No transactions found</p>
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  tbody.innerHTML = transactions.map(t => {
+    const statusClass = `status-${t.status}`;
+    const amountClass = t.amount >= 0 ? 'amount-positive' : 'amount-negative';
+    const amountSign = t.amount >= 0 ? '+' : '';
+
+    return `
+      <tr>
+        <td>${t.id}</td>
+        <td>${t.date}</td>
+        <td>${t.customer}</td>
+        <td>${t.type}</td>
+        <td class="${amountClass}">${amountSign}₹${Math.abs(t.amount).toLocaleString()}</td>
+        <td><span class="status-badge ${statusClass}">${t.status.charAt(0).toUpperCase() + t.status.slice(1)}</span></td>
+      </tr>
+    `;
+  }).join('');
 }
