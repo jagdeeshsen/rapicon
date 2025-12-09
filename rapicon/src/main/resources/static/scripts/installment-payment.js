@@ -155,12 +155,16 @@ let orderId;
 async function payInstallment(installmentId, amount){
 
     // set merchant and order id's
-    merchantOrderId= orderObj.merchantOrderId;
+    merchantOrderId= `TXN_${orderObj.id}_${installmentId}_${Date.now()}`;
+
+    // set merchant id in local storage
+    localStorage.setItem("merchantOrderId", merchantOrderId);
+
     orderId= orderObj.id;
 
     try{
         const paymentData = {
-            merchantOrderId: `TXN_${orderObj.id}_${installmentId}_${Date.now()}` || `ORD${Date.now()}`, // TXN_ORDER-ID_INSTALLMENT-ID_DATE-NOW;
+            merchantOrderId: merchantOrderId || `ORD${Date.now()}`,
             amount: amount*100, // Amount in paisa
             metaInfo: {
                 udf1: orderObj.userId || orderData.userId || '',
@@ -268,7 +272,7 @@ async function verifyAndCompleteOrder(orderId, merchantOrderId, paymentStatus) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${userToken}`
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({
                 orderId: orderId,
