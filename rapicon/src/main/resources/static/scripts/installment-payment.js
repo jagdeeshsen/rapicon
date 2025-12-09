@@ -160,14 +160,15 @@ async function payInstallment(installmentId, amount){
 
     try{
         const paymentData = {
-            merchantOrderId: orderObj.merchantOrderId || `ORD${Date.now()}`,
+            merchantOrderId: `TXN_${orderObj.id}_${installmentId}_${Date.now()}` || `ORD${Date.now()}`, // TXN_ORDER-ID_INSTALLMENT-ID_DATE-NOW;
             amount: amount*100, // Amount in paisa
             metaInfo: {
                 udf1: orderObj.userId || orderData.userId || '',
                 udf2: orderObj.customerName || '',
                 udf3: orderObj.customerEmail || '',
                 udf4: orderObj.customerPhone || '',
-                udf5: JSON.stringify({ orderId: orderObj.id })
+                udf5: installmentId || '',
+                udf6: JSON.stringify({ orderId: orderObj.id })
             }
         };
 
