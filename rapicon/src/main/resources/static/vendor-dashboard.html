@@ -280,6 +280,162 @@
                     <div class="profile-info">
                         <h2>Vendor Designer</h2>
                         <p>vendor@example.com</p>
+                        <p class="member-since" style="font-size: 13px; margin-top: 4px;">Member since Jan 2024</p>
+                    </div>
+                </div>
+
+                <form id="profileForm">
+                    <!-- User Information Section -->
+                    <div class="section">
+                        <h3 class="section-title">User Information</h3>
+
+                        <div class="form-group">
+                            <label class="form-label">Full Name <span class="locked">🔒</span></label>
+                            <input type="text" id="profileFullName" class="form-input" readonly>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Username <span class="locked">🔒</span></label>
+                            <input type="text" id="profileUserName" class="form-input" readonly>
+                        </div>
+
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label class="form-label">Email <span class="locked">🔒</span></label>
+                                <input type="email" id="profileEmail" class="form-input" readonly>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Phone</label>
+                                <input type="tel" id="profilePhone" class="form-input editable-field" placeholder="(+91) 12345 67890" readonly>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Qualification Section -->
+                    <div class="section">
+                        <h3 class="section-title">Qualification</h3>
+
+                        <div class="form-group">
+                            <label class="form-label">Company Name</label>
+                            <input type="text" id="profileCompanyName" class="form-input editable-field" readonly>
+                        </div>
+
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label class="form-label">Degree of Education <span class="locked">🔒</span></label>
+                                <input type="text" id="profileDegree" class="form-input" readonly>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Experience (Years) <span class="locked">🔒</span></label>
+                                <input type="text" id="profileExperience" class="form-input" readonly>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Details Section -->
+                    <div class="section">
+                        <h3 class="section-title">Account Details for Receiving Payment</h3>
+
+                        <div class="form-group">
+                            <label class="form-label">Account Number</label>
+                            <input type="text" id="profileAccountNumber" class="form-input editable-field" readonly>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">IFSC Code</label>
+                            <input type="text" id="profileIfscCode" class="form-input editable-field" readonly>
+                        </div>
+
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label class="form-label">Bank Name</label>
+                                <input type="text" id="profileBankName" class="form-input editable-field" readonly>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Branch Name</label>
+                                <input type="text" id="profileBranchName" class="form-input editable-field" readonly>
+                            </div>
+                        </div>
+
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label class="form-label">PAN Card Number</label>
+                                <input type="text" id="profilePanNumber" class="form-input editable-field" readonly>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">GST Number</label>
+                                <input type="text" id="profileGstNumber" class="form-input editable-field" readonly>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Address Section -->
+                    <div class="section">
+                        <h3 class="section-title">Address</h3>
+
+                        <div class="form-group">
+                            <label class="form-label">Street Address</label>
+                            <input type="text" id="profileStreet" class="form-input editable-field" readonly>
+                        </div>
+
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label class="form-label">City</label>
+                                <input type="text" id="profileCity" class="form-input editable-field" readonly>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">State</label>
+                                <input type="text" id="profileState" class="form-input editable-field" readonly>
+                            </div>
+                        </div>
+
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label class="form-label">ZIP Code</label>
+                                <input type="text" id="profileZip" class="form-input editable-field" maxlength="10" readonly>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Country</label>
+                                <select id="profileCountry" class="form-input editable-field" disabled>
+                                    <option value="">Select Country</option>
+                                    <option value="India">India</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button type="button" id="editBtn" class="btn btn-primary" onclick="enableEdit()">
+                            <span>✏️</span> Edit Profile
+                        </button>
+                        <button type="submit" id="saveBtn" class="btn btn-success" style="display: none;" onclick="editProfile()">
+                            <span>💾</span> Save Changes
+                        </button>
+                        <button type="button" id="cancelBtn" class="btn btn-secondary" style="display: none;" onclick="cancelEdit()">
+                            <span>❌</span> Cancel
+                        </button>
+                        <button type="button" class="btn btn-danger" onclick="deleteAccount()">
+                            <span>🗑️</span> Delete Account
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- Profile Page -->
+        <!--<div id="profilePage" class="page-content">
+            <div class="content-card">
+                <div class="profile-header">
+                    <div class="profile-avatar">VD</div>
+                    <div class="profile-info">
+                        <h2>Vendor Designer</h2>
+                        <p>vendor@example.com</p>
                         <p style="font-size: 13px; margin-top: 4px;">Member since Jan 2024</p>
                     </div>
                 </div>
@@ -327,7 +483,7 @@
                     </div>
                 </form>
             </div>
-        </div>
+        </div>-->
 
         <!-- Transaction History Page -->
         <div id="transactionsPage" class="page-content">

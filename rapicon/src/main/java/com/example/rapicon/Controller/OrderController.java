@@ -323,16 +323,23 @@ public class OrderController {
 
             // update installment
             List<Installments> installmentsList= order.getInstallmentsList();
+            installmentsList.sort(
+                    Comparator.comparingInt(Installments::getInstallmentNumber)
+            );
+
 
             for(Installments installments: installmentsList){
                 if(installments.isUnlocked() && installments.getInstallmentStatus() != Installments.InstallmentStatus.PAID){
                     installments.setInstallmentStatus(Installments.InstallmentStatus.PAID);
                     installments.setPaidDate(LocalDateTime.now());
+                    installments.setUpdatedAt(LocalDateTime.now());
                     continue;
                 }
 
                 if(!installments.isUnlocked() && installments.getInstallmentStatus()== Installments.InstallmentStatus.PENDING){
                     installments.setUnlocked(true);
+                    installments.setUnlockedAt(LocalDateTime.now());
+                    installments.setUpdatedAt(LocalDateTime.now());
                     break;
                 }
             }

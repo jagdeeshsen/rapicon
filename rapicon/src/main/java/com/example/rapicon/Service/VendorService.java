@@ -45,4 +45,8 @@ public class VendorService {
     public boolean vendorExistsByUsername(String username){
         return vendorRepo.existsByUsername(username);
     }
+
+    public Vendor updateVendor(Vendor vendor){
+        return vendorRepo.save(vendor);
+    }
 }

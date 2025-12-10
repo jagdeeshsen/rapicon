@@ -119,6 +119,10 @@ let orderObj;
          html += '</button>';
 
          html += '<div id="inst-' + order.id + '" class="installments">';
+
+         // First sort the list
+         order.installmentsList.sort((a, b) => a.installmentNumber - b.installmentNumber);
+
          for (var m = 0; m < order.installmentsList.length; m++) {
               var inst = order.installmentsList[m];
 
@@ -212,7 +216,7 @@ function callback (response) {
 
     // wait 2 sec before redirect
     setTimeout(() => {
-        window.location.href='/addtocard.html'
+        window.location.reload();
     }, 2000);
 
     return;

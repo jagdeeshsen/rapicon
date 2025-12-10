@@ -35,7 +35,7 @@ function redirectToLogin() {
   window.location.href = '/login.html';
 }
 
-// ========== FETCH VENDOR DATA ==========
+// ========== FETCH AND DISPLAY VENDOR DATA ==========
 
 async function fetchVendorData() {
   const id= localStorage.getItem('vendor_id');
@@ -65,9 +65,11 @@ async function fetchVendorData() {
   }
 }
 
-// Update UI with vendor information
+// update vendor data
 function updateVendorUI(data) {
-  // Update header
+  if (!data) return;
+
+  // Update header section
   const userName = document.querySelector('.user-name');
   const userEmail = document.querySelector('.user-email');
   const userAvatar = document.querySelector('.user-avatar');
@@ -81,9 +83,10 @@ function updateVendorUI(data) {
     userAvatar.textContent = initials;
   }
 
-  // Update profile page
+  // Update profile page header
   const profileName = document.querySelector('.profile-info h2');
   const profileEmail = document.querySelector('.profile-info p');
+  const memberSince = document.querySelector('.member-since');
   const profileAvatar = document.querySelector('.profile-avatar');
 
   if (profileName) profileName.textContent = data.fullName || 'Vendor';
@@ -93,28 +96,242 @@ function updateVendorUI(data) {
     profileAvatar.textContent = initials;
   }
 
-  // Update profile form fields
-  if (data.fullName) {
-    const nameParts = data.fullName.split(' ');
-    const firstNameInput = document.querySelector('input[value="Vendor"]');
-    const lastNameInput = document.querySelector('input[value="Designer"]');
+  // Format date
+    if (data.createdAt) {
+      const date = new Date(data.createdAt);
+      const formattedDate = date.toLocaleString('en-US', {
+          month: 'short',
+          year: 'numeric'
+      });
+      memberSince.textContent = `Member since ${formattedDate}`;
+    }
 
-    if (firstNameInput) firstNameInput.value = nameParts[0] || '';
-    if (lastNameInput) lastNameInput.value = nameParts.slice(1).join(' ') || '';
+  // Update User Information fields (LOCKED: fullName, userName, email)
+  const fullNameInput = document.querySelector('#profileFullName');
+  const userNameInput = document.querySelector('#profileUserName');
+  const emailInput = document.querySelector('#profileEmail');
+  const phoneInput = document.querySelector('#profilePhone'); // EDITABLE
+
+  if (fullNameInput) fullNameInput.value = data.fullName || '';
+  if (userNameInput) userNameInput.value = data.username || '';
+  if (emailInput) emailInput.value = data.email || '';
+  if (phoneInput) phoneInput.value = data.phone || '';
+
+  // Update Qualification fields (LOCKED: degree, experience | EDITABLE: companyName)
+  const companyNameInput = document.querySelector('#profileCompanyName');
+  const degreeInput = document.querySelector('#profileDegree');
+  const experienceInput = document.querySelector('#profileExperience');
+
+  if (companyNameInput) companyNameInput.value = data.companyName || '';
+  if (degreeInput) degreeInput.value = data.degree || '';
+  if (experienceInput) experienceInput.value = data.experience || '';
+
+  // Update Payment Details fields (ALL EDITABLE)
+  const accountNumberInput = document.querySelector('#profileAccountNumber');
+  const ifscCodeInput = document.querySelector('#profileIfscCode');
+  const bankNameInput = document.querySelector('#profileBankName');
+  const branchNameInput = document.querySelector('#profileBranchName');
+  const panNumberInput = document.querySelector('#profilePanNumber');
+  const gstNumberInput = document.querySelector('#profileGstNumber');
+
+  if (accountNumberInput) accountNumberInput.value = data.accountNumber || '';
+  if (ifscCodeInput) ifscCodeInput.value = data.ifscCode || '';
+  if (bankNameInput) bankNameInput.value = data.bankName || '';
+  if (branchNameInput) branchNameInput.value = data.branchName || '';
+  if (panNumberInput) panNumberInput.value = data.panNumber || '';
+  if (gstNumberInput) gstNumberInput.value = data.gstNumber || '';
+
+  // Update Address fields (ALL EDITABLE)
+  const streetInput = document.querySelector('#profileStreet');
+  const cityInput = document.querySelector('#profileCity');
+  const stateInput = document.querySelector('#profileState');
+  const zipInput = document.querySelector('#profileZip');
+  const countrySelect = document.querySelector('#profileCountry');
+
+  if (streetInput) streetInput.value = data.streetAddress || '';
+  if (cityInput) cityInput.value = data.city || '';
+  if (stateInput) stateInput.value = data.state || '';
+  if (zipInput) zipInput.value = data.zipCode || '';
+  if (countrySelect) countrySelect.value = data.country || '';
+}
+
+// Enable edit mode for non-locked fields
+function enableEdit() {
+  const editableFields = document.querySelectorAll('.editable-field');
+  editableFields.forEach(field => {
+    if (field.tagName === 'SELECT') {
+      field.removeAttribute('disabled');
+    } else {
+      field.removeAttribute('readonly');
+    }
+    field.style.backgroundColor = 'white';
+  });
+
+  // Show/hide buttons
+  document.getElementById('editBtn').style.display = 'none';
+  document.getElementById('saveBtn').style.display = 'inline-flex';
+  document.getElementById('cancelBtn').style.display = 'inline-flex';
+
+
+}
+
+// Cancel edit function
+async function cancelEdit() {
+  const result= await showMessage.confirm('Are you sure you want to cancel? Any unsaved changes will be lost.');
+  if (result) {
+    // Reload the profile data
+    initializeProfile();
+
+    // Make fields readonly again
+    const editableFields = document.querySelectorAll('.editable-field');
+    editableFields.forEach(field => {
+      if (field.tagName === 'SELECT') {
+        field.setAttribute('disabled', true);
+      } else {
+        field.setAttribute('readonly', true);
+      }
+      field.style.backgroundColor = '#f8f9fa';
+    });
+
+    // Show/hide buttons
+    document.getElementById('editBtn').style.display = 'inline-flex';
+    document.getElementById('saveBtn').style.display = 'none';
+    document.getElementById('cancelBtn').style.display = 'none';
+  }
+}
+
+// Delete account function
+function deleteAccount() {
+  //const confirmation = confirm('⚠️ WARNING: This will permanently delete your account and all associated data. This action cannot be undone.\n\nAre you absolutely sure you want to delete your account?');
+  showMessage.alert("Delete Feature coming soon!");
+  /*if (confirmation) {
+    const finalConfirmation = prompt('Type "DELETE" to confirm account deletion:');
+
+    if (finalConfirmation === 'DELETE') {
+      // Remove vendor data from localStorage
+      //localStorage.removeItem('vendorData');
+
+      alert('Your account has been successfully deleted.');
+
+      // Redirect to registration or login page
+      window.location.href = 'register-now.html'; // Change to your registration page
+    } else if (finalConfirmation !== null) {
+      alert('Account deletion cancelled. Text did not match.');
+    }
+  }*/
+}
+
+// Edit profile function - only updates editable (non-required) fields
+async function editProfile() {
+  // Get existing data first
+  const existingData = vendorData;
+
+  const formData = {
+    // LOCKED fields (keep from existing data, cannot be edited)
+    fullName: existingData.fullName || '',
+    username: existingData.userName || '',
+    email: existingData.email || '',
+    password: existingData.password || '', // Keep password unchanged
+    degree: existingData.degree || '',
+    experience: existingData.experience || '',
+
+    // EDITABLE fields (can be updated)
+    phone: document.querySelector('#profilePhone')?.value || existingData.phone,
+    companyName: document.querySelector('#profileCompanyName')?.value || existingData.companyName,
+    accountNumber: document.querySelector('#profileAccountNumber')?.value || existingData.accountNumber,
+    ifscCode: document.querySelector('#profileIfscCode')?.value || existingData.ifscCode,
+    bankName: document.querySelector('#profileBankName')?.value || existingData.bankName,
+    branchName: document.querySelector('#profileBranchName')?.value || existingData.branchName,
+    panNumber: document.querySelector('#profilePanNumber')?.value || existingData.panNumber,
+    gstNumber: document.querySelector('#profileGstNumber')?.value || existingData.gstNumber,
+
+    // EDITABLE Address fields
+    streetAddress: document.querySelector('#profileStreet')?.value || existingData.streetAddress,
+    city: document.querySelector('#profileCity')?.value || existingData.city,
+    state: document.querySelector('#profileState')?.value || existingData.state,
+    zipCode: document.querySelector('#profileZip')?.value || existingData.zipCode,
+    country: document.querySelector('#profileCountry')?.value || existingData.country
+  };
+
+  // Validate phone format if provided
+  if (formData.phone) {
+    const phoneRegex = /^[\d\s\+\-\(\)]+$/;
+    if (!phoneRegex.test(formData.phone)) {
+      alert('Please enter a valid phone number');
+      return false;
+    }
   }
 
-  // Update other profile fields
-  const emailInput = document.querySelector('input[type="email"]');
-  const phoneInput = document.querySelector('input[type="tel"]');
-  const companyInput = document.querySelector('input[value="Design Studio Pro"]');
-  const addressTextarea = document.querySelector('.form-textarea');
-  const bioTextarea = document.querySelectorAll('.form-textarea')[1];
+  // Save updated profile data to localStorage
+  try {
+    const vendorId= localStorage.getItem('vendor_id');
+    const token = localStorage.getItem('vendor_token');
 
-  if (emailInput && data.email) emailInput.value = data.email;
-  if (phoneInput && data.phone) phoneInput.value = data.phone;
-  if (companyInput && data.companyName) companyInput.value = data.companyName;
-  if (addressTextarea && data.streetAddress) addressTextarea.value = data.streetAddress;
-  if (bioTextarea && data.bio) bioTextarea.value = data.bio || '';
+    const response = await fetch(`/api/vendor/update-vendor/${vendorId}`, {
+        method: 'PUT',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+    });
+
+    if(!response.ok){
+        showMessage.error("Failed to update profile");
+    }
+
+    const responseResult= await response.json();
+    vendorData= responseResult.vendor;
+
+    showMessage.success("Profile updated successfully");
+
+    // update the vendor profile
+    //await fetchVendorData();
+    updateVendorUI(responseResult.vendor);
+
+    // Make fields readonly again
+    const editableFields = document.querySelectorAll('.editable-field');
+    editableFields.forEach(field => {
+      if (field.tagName === 'SELECT') {
+        field.setAttribute('disabled', true);
+      } else {
+        field.setAttribute('readonly', true);
+      }
+      field.style.backgroundColor = '#f8f9fa';
+    });
+
+    // Show/hide buttons
+    document.getElementById('editBtn').style.display = 'inline-flex';
+    document.getElementById('saveBtn').style.display = 'none';
+    document.getElementById('cancelBtn').style.display = 'none';
+
+    return true;
+  } catch (error) {
+    console.error('Error saving profile:', error);
+    alert('Failed to update profile. Please try again.');
+    return false;
+  }
+}
+
+// Initialize profile on page load
+function initializeProfile() {
+
+  if (vendorData) {
+    try {
+      updateVendorUI(vendorData);
+    } catch (error) {
+      showMessage.error('Error loading profile data:', error);
+    }
+  }
+
+  // Ensure buttons are in correct state
+  const editBtn = document.getElementById('editBtn');
+  const saveBtn = document.getElementById('saveBtn');
+  const cancelBtn = document.getElementById('cancelBtn');
+
+  if (editBtn) editBtn.style.display = 'inline-flex';
+  if (saveBtn) saveBtn.style.display = 'none';
+  if (cancelBtn) cancelBtn.style.display = 'none';
 }
 
 // ========== FETCH VENDOR DESIGNS ==========
@@ -229,65 +446,6 @@ function navigateTo(page, sourceEvent = null) {
   if (page === 'manage') renderDesignsTable();
   if (page === 'transactions') initializeTransactions();
 }
-
-/*function navigateTo(page, sourceEvent = null) {
-  const pages = ['upload', 'view', 'manage', 'profile'];
-  const titles = {
-    upload: 'Upload New Design',
-    view: 'My Designs',
-    manage: 'Manage Designs',
-    profile: 'Vendor Profile'
-  };
-
-  pages.forEach(p => {
-    document.getElementById(p + 'Page').classList.remove('active');
-  });
-  document.getElementById(page + 'Page').classList.add('active');
-
-  document.querySelectorAll('.nav-item').forEach(item => {
-    item.classList.remove('active');
-  });
-
-  // Only try to update nav item if sourceEvent exists
-  if (sourceEvent && sourceEvent.target) {
-    const navItem = sourceEvent.target.closest('.nav-item');
-    if (navItem) {
-      navItem.classList.add('active');
-    }
-  } else {
-    // If no event, find and activate the nav item by page name
-    const navItems = document.querySelectorAll('.nav-item');
-    navItems.forEach(item => {
-      const itemText = item.textContent.trim().toLowerCase();
-      if (
-        (page === 'upload' && itemText.includes('upload')) ||
-        (page === 'view' && itemText.includes('view')) ||
-        (page === 'manage' && itemText.includes('manage')) ||
-        (page === 'profile' && itemText.includes('profile'))
-      ) {
-        item.classList.add('active');
-      }
-    });
-  }
-
-  document.getElementById('pageTitle').textContent = titles[page];
-
-  // Reset form when navigating away from upload page (except when editing)
-  if (page !== 'upload') {
-    const uploadForm = document.getElementById('uploadForm');
-    if (uploadForm && uploadForm.dataset.editingId) {
-      // Clear editing mode when navigating away
-      delete uploadForm.dataset.editingId;
-      const submitBtn = document.querySelector('.btn-primary');
-      if (submitBtn) {
-        submitBtn.textContent = 'Upload Design';
-      }
-    }
-  }
-
-  if (page === 'view') renderDesignsGrid();
-  if (page === 'manage') renderDesignsTable();
-}*/
 
 // ========== DESIGN TYPE SELECTION ==========
 
@@ -1094,39 +1252,6 @@ window.addEventListener('DOMContentLoaded', async () => {
   initializeTransactionData();
 
 });
-
-/*window.addEventListener('DOMContentLoaded', async () => {
-
-  // Check session first
-  const isAuthenticated = await checkSession();
-  if (!isAuthenticated) {
-    return; // Will redirect to login
-  }
-
-  // Fetch vendor data
-  await fetchVendorData();
-
-  // Fetch designs
-  await fetchVendorDesigns();
-
-  // Setup form submission
-  const uploadForm = document.getElementById('uploadForm');
-  if (uploadForm) {
-    uploadForm.addEventListener('submit', function (e) {
-      e.preventDefault();
-
-      // Check if we're editing or creating new
-      const editingId = document.getElementById('uploadForm').dataset.editingId;
-
-      if (editingId) {
-        updateDesignForm(); // Call update function
-      } else {
-        submitDesignForm(); // Call upload function
-      }
-    });
-  }
-
-});*/
 
 
 //===================== logout vendor ====================
