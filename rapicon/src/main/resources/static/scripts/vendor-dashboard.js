@@ -1617,3 +1617,17 @@ function renderTransactions(transactions) {
     `;
   }).join('');
 }
+
+// ========= menu btn for sidebar ============
+function toggleSidebar() {
+  document.getElementById("sidebar").classList.toggle("open");
+}
+
+/* Auto-close sidebar when menu item clicked (mobile only) */
+document.querySelectorAll(".nav-item").forEach(item => {
+  item.addEventListener("click", () => {
+    if (window.innerWidth <= 1023) {
+      document.getElementById("sidebar").classList.remove("open");
+    }
+  });
+});

@@ -12,7 +12,7 @@
 <body>
 <div class="dashboard-container">
     <!-- Sidebar -->
-    <aside class="sidebar">
+    <aside class="sidebar" id="sidebar">
         <div class="logo">
             <div class="logo-content">
                 <div class="logo-icon">V</div>
@@ -78,6 +78,9 @@
     <main class="main-content">
         <!-- Header -->
         <header class="header">
+            <!-- menu btn -->
+            <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+
             <h1 class="page-title" id="pageTitle">Upload New Design</h1>
             <div class="user-info">
                 <div class="user-details">
@@ -428,62 +431,6 @@
                 </form>
             </div>
         </div>
-        <!-- Profile Page -->
-        <!--<div id="profilePage" class="page-content">
-            <div class="content-card">
-                <div class="profile-header">
-                    <div class="profile-avatar">VD</div>
-                    <div class="profile-info">
-                        <h2>Vendor Designer</h2>
-                        <p>vendor@example.com</p>
-                        <p style="font-size: 13px; margin-top: 4px;">Member since Jan 2024</p>
-                    </div>
-                </div>
-
-                <form>
-                    <div class="grid-2">
-                        <div class="form-group">
-                            <label class="form-label">First Name</label>
-                            <input type="text" class="form-input" value="Vendor">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Last Name</label>
-                            <input type="text" class="form-input" value="Designer">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Email</label>
-                        <input type="email" class="form-input" value="vendor@example.com">
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Phone</label>
-                        <input type="tel" class="form-input" value="+91 98765 43210">
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Company Name</label>
-                        <input type="text" class="form-input" value="Design Studio Pro">
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Address</label>
-                        <textarea class="form-textarea">123 Design Street, Jabalpur, Madhya Pradesh</textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Bio</label>
-                        <textarea class="form-textarea">Experienced architectural designer specializing in residential and commercial projects.</textarea>
-                    </div>
-
-                    <div class="btn-group">
-                        <button type="submit" class="btn btn-primary">Save Changes</button>
-                        <button type="button" class="btn btn-secondary">Cancel</button>
-                    </div>
-                </form>
-            </div>
-        </div>-->
 
         <!-- Transaction History Page -->
         <div id="transactionsPage" class="page-content">

@@ -22,12 +22,25 @@
           backdrop-filter: blur(10px);
           box-shadow: 4px 0 24px rgba(0, 0, 0, 0.1);
           position: fixed;
+          top: 0;
+          left: 0;
+          height: 100%;
+          z-index: 1000;
+          overflow-y: auto;
+          transition: transform 0.3s ease;
+        }
+        /*.sidebar {
+          width: 280px;
+          background: rgba(255, 255, 255, 0.95);
+          backdrop-filter: blur(10px);
+          box-shadow: 4px 0 24px rgba(0, 0, 0, 0.1);
+          position: fixed;
           height: 100vh;
           left: 0;
           top: 0;
           z-index: 100;
           overflow-y: auto;
-        }
+        }*/
 
         .logo {
           padding: 32px 24px;
@@ -883,26 +896,28 @@
 
         /* contact info */
         .contact-info {
-          position: fixed;
-          bottom: 20px;
-          right: 20px;
+          /*position: fixed;*/
+          position: static;
+          margin: 16px auto;
+          bottom: 10px;
+          right: 10px;
           background: white;
-          padding: 12px 20px;
-          border-radius: 50px;
-          box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+          padding: 8px 10px;
+          border-radius: 30px;
+          box-shadow: 0 5px 10px rgba(0,0,0,0.2);
           display: flex;
           align-items: center;
-          gap: 10px;
+          gap: 5px;
           z-index: 1000;
         }
 
         .contact-info::before {
           content: "📞";
-          font-size: 1.2em;
+          font-size: 1.0em;
         }
 
         .contact-info span {
-          font-weight: 600;
+          font-weight: 400;
           color: #667eea;
         }
 
@@ -1101,4 +1116,38 @@
             .filter-select {
                 width: 100%;
             }
+        }
+
+        /* ===== Mobile Menu Button ===== */
+        .menu-btn {
+          display: none;
+          background: #667eea;
+          color: white;
+          border: none;
+          border-radius: 10px;
+          padding: 10px 14px;
+          font-size: 20px;
+          cursor: pointer;
+        }
+
+        /* ===== Mobile Sidebar Behaviour ===== */
+        @media (max-width: 1023px) {
+          .menu-btn {
+            display: block;
+          }
+
+          .sidebar {
+            transform: translateX(-100%);
+            width: 260px;
+          }
+
+          .sidebar.open {
+            transform: translateX(0);
+          }
+
+          .main-content {
+            margin-left: 0;
+            width: 100%;
+            padding: 16px;
+          }
         }
