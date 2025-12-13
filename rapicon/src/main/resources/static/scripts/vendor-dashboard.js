@@ -70,9 +70,9 @@ function updateVendorUI(data) {
   if (!data) return;
 
   // Update header section
-  const userName = document.querySelector('.user-name');
+  const userName = document.querySelector('.logo-text');
   const userEmail = document.querySelector('.user-email');
-  const userAvatar = document.querySelector('.user-avatar');
+  const userAvatar = document.querySelector('.logo-icon');
 
   if (userName) userName.textContent = data.fullName || 'Vendor';
   if (userEmail) userEmail.textContent = data.email || '';
