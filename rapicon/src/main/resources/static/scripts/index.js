@@ -109,9 +109,25 @@
     statsObserver.observe(document.querySelector('.stats'));
 
 
+    /* Mobile toggle menu */
     function toggleMobileMenu() {
-        document.querySelector('.nav-buttons').classList.toggle('active');
+        const navButtons = document.querySelector('.nav-buttons');
+        const mobileToggle = document.querySelector('.mobile-toggle');
+
+        navButtons.classList.toggle('active');
+        mobileToggle.classList.toggle('active');
     }
+
+    // Close menu when clicking outside
+    document.addEventListener('click', function(e) {
+        const navButtons = document.querySelector('.nav-buttons');
+        const mobileToggle = document.querySelector('.mobile-toggle');
+
+        if (!mobileToggle.contains(e.target) && !navButtons.contains(e.target)) {
+            navButtons.classList.remove('active');
+            mobileToggle.classList.remove('active');
+        }
+    });
 
     // Check if user is already logged in and update navigation
     window.addEventListener('load', function() {
