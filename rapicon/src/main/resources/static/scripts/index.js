@@ -109,46 +109,9 @@
     statsObserver.observe(document.querySelector('.stats'));
 
 
-    // Mobile menu toggle
     function toggleMobileMenu() {
-        const navMenu = document.querySelector('.nav-menu');
-        const mobileToggle = document.querySelector('.mobile-toggle');
-
-        navMenu.classList.toggle('active');
-        mobileToggle.classList.toggle('active');
+        document.querySelector('.nav-buttons').classList.toggle('active');
     }
-
-    // Add mobile menu styles dynamically
-    const style = document.createElement('style');
-    style.textContent = `
-        @media (max-width: 768px) {
-            .nav-menu.active {
-                display: flex;
-                position: fixed;
-                top: 70px;
-                left: 0;
-                right: 0;
-                background: white;
-                flex-direction: column;
-                padding: 20px;
-                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-                z-index: 999;
-            }
-
-            .mobile-toggle.active span:nth-child(1) {
-                transform: rotate(45deg) translate(5px, 5px);
-            }
-
-            .mobile-toggle.active span:nth-child(2) {
-                opacity: 0;
-            }
-
-            .mobile-toggle.active span:nth-child(3) {
-                transform: rotate(-45deg) translate(7px, -6px);
-            }
-        }
-    `;
-    document.head.appendChild(style);
 
     // Check if user is already logged in and update navigation
     window.addEventListener('load', function() {
