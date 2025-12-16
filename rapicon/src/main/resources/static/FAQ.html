@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rapicon - Frequently Asked Questions</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+        }
+
+        h1 {
+            font-size: 2.8em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .subtitle {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .faq-container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .faq-item {
+            border-bottom: 1px solid #e9ecef;
+            padding: 20px 0;
+        }
+
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+
+        .faq-question {
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            transition: all 0.3s;
+        }
+
+        .faq-question:hover .question-text {
+            color: #667eea;
+        }
+
+        .question-text {
+            font-size: 1.15em;
+            font-weight: 600;
+            color: #333;
+            flex: 1;
+            padding-right: 20px;
+            transition: color 0.3s;
+        }
+
+        .icon {
+            width: 32px;
+            height: 32px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6em;
+            font-weight: 300;
+            transition: transform 0.3s, background 0.3s;
+            flex-shrink: 0;
+        }
+
+        .faq-question:hover .icon {
+            background: #764ba2;
+        }
+
+        .icon.active {
+            transform: rotate(45deg);
+            background: #764ba2;
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+        }
+
+        .faq-answer.active {
+            max-height: 800px;
+        }
+
+        .answer-content {
+            padding: 15px 0 5px 0;
+            color: #555;
+            line-height: 1.7;
+            font-size: 1em;
+        }
+
+        .answer-content ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+
+        .answer-content li {
+            margin: 5px 0;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2em;
+            }
+
+            .subtitle {
+                font-size: 1em;
+            }
+
+            .faq-container {
+                padding: 20px;
+            }
+
+            .question-text {
+                font-size: 1.05em;
+            }
+
+            .faq-item {
+                padding: 15px 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .container {
+                padding: 0 10px;
+            }
+
+            .faq-container {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Rapicon FAQs</h1>
+        <p class="subtitle">Everything you need to know about joining and earning</p>
+    </div>
+
+    <div class="faq-container" id="faqContainer">
+        <!-- FAQs will be dynamically inserted here -->
+    </div>
+</div>
+
+<script>
+    const faqs = [
+        {
+            question: "What exactly is Rapicon?",
+            answer: "Rapicon is a digital marketplace where architects, interior designers, and students can upload their design work and earn money every time someone buys it. No client chasing. No freelancing stress. Just passive income from your existing designs."
+        },
+        {
+            question: "Who can join Rapicon?",
+            answer: "Anyone who has original architectural or interior design work, including practicing architects, interior designers, freelancers, and final-year students. If you can create real, usable designs — you're welcome. Experience level is not a barrier—design quality matters most."
+        },
+        {
+            question: "Is registration free?",
+            answer: "Yes. Registration on Rapicon is completely free. There are no joining fees or monthly charges."
+        },
+        {
+            question: "Do I need years of experience to earn?",
+            answer: "Not at all. Design quality matters more than experience. Many buyers look for simple, practical, ready-to-use designs, not fancy portfolios."
+        },
+        {
+            question: "How do I earn money on Rapicon?",
+            answer: "It's simple:<ul><li>Upload your designs</li><li>Your design gets listed on Rapicon</li><li>Every time someone buys it, you earn from that sale</li></ul>Your designs can sell multiple times, so you earn again and again."
+        },
+        {
+            question: "How much can I earn?",
+            answer: "Your earnings depend on the number of designs you upload, demand for your design category, and design quality. Some creators earn occasionally, some earn regularly — the more valuable designs you upload, the higher your earning potential."
+        },
+        {
+            question: "Do I get full ownership of my designs?",
+            answer: "Yes. You retain full ownership of your work. Rapicon only acts as a platform to sell your designs — nothing else. Rapicon does not claim ownership."
+        },
+        {
+            question: "Does Rapicon take any commission?",
+            answer: "No hidden cuts. You earn 100% of the selling price (as per current platform policy). Full transparency. No surprises."
+        },
+        {
+            question: "What types of designs can I upload?",
+            answer: "You can upload floor plans, 3D elevations, interior layouts, working drawings, and residential, commercial, or semi-commercial designs. Detailed upload guidelines are provided before listing."
+        },
+        {
+            question: "How to Register on Rapicon?",
+            answer: "<ol><li>Click on Join as Creator</li><li>Enter your basic details</li><li>Verify your email or mobile number</li><li>Complete your creator profile</li></ol>Once completed, you can access your creator dashboard and start uploading designs."
+        },
+        {
+            question: "How to Upload Designs?",
+            answer: "<ol><li>Log in to your creator dashboard</li><li>Click on Upload Design</li><li>Fill in project and design details</li><li>Upload the required files</li><li>Submit the design for review</li></ol>"
+        },
+        {
+            question: "What files are required?",
+            answer: "Depending on the category, you may be asked to upload floor plans, 3D views, elevations, interior layouts, and supporting documents. Clear instructions are shown during the upload process."
+        },
+        {
+            question: "What file formats are supported?",
+            answer: "Common formats such as PDF, JPG, PNG, and DWG (where applicable) are supported."
+        },
+        {
+            question: "Is there an upload limit?",
+            answer: "There is no fixed limit. Uploading more high-quality designs increases your earning potential."
+        },
+        {
+            question: "How does the review and approval process work?",
+            answer: "After submission, each design goes through a quality review. Once approved, it becomes live on the platform and is available for buyers to purchase."
+        },
+        {
+            question: "What if my design gets rejected?",
+            answer: "Rejections usually happen due to incomplete files, low resolution, missing required views, or copyright issues. You can re-upload after fixing the issues. No penalty."
+        },
+        {
+            question: "How are earnings tracked?",
+            answer: "Your dashboard shows sales history, earnings, and payout status with full transparency."
+        },
+        {
+            question: "How will I receive my payment?",
+            answer: "Your earnings are transferred directly to your bank account through the payout system. Earnings are transferred directly to your registered bank account as per the payout cycle. Clear payout cycles and tracking are available in your dashboard."
+        },
+        {
+            question: "Will Rapicon help market my designs?",
+            answer: "Yes. Rapicon handles platform visibility, buyer reach, and marketing, so your designs get discovered without you doing promotions. Rapicon handles platform-level marketing to help buyers discover listed designs."
+        },
+        {
+            question: "Can students really earn from Rapicon?",
+            answer: "Absolutely. Many buyers look for budget-friendly, functional designs, making student work highly relevant."
+        },
+        {
+            question: "Is this a freelance job?",
+            answer: "No. Rapicon is not a freelance platform. There's no client interaction, no deadlines, and no revisions. You upload once and earn whenever it sells."
+        },
+        {
+            question: "Why should I choose Rapicon over freelancing?",
+            answer: "On Rapicon, your work sells multiple times, you don't chase clients, and you earn even when you're offline. Freelancing trades time for money. Rapicon builds design assets that keep earning."
+        },
+        {
+            question: "How long does it take to get my first sale?",
+            answer: "There's no fixed timeline. Creators who upload clear, practical, well-presented designs tend to sell faster."
+        },
+        {
+            question: "Is my data and work safe?",
+            answer: "Yes. Rapicon follows strict data protection and copyright policies to protect creators and ensure creator safety."
+        },
+        {
+            question: "Who should NOT join Rapicon?",
+            answer: "People uploading copied or plagiarized designs, low-quality or incomplete work, or those looking for instant overnight income. Rapicon is for creators who value long-term earning."
+        },
+        {
+            question: "How do I get started?",
+            answer: "Just click 'Join as Creator', complete your profile, upload your designs, and you're live."
+        },
+        {
+            question: "Still have questions?",
+            answer: "Reach out to us via WhatsApp or email — our team is happy to help you get started. If you need assistance, you can contact Rapicon support via WhatsApp or email. The support team will guide you through registration, uploads, and payouts."
+        }
+    ];
+
+    function renderFAQs() {
+        const container = document.getElementById('faqContainer');
+
+        faqs.forEach((faq, index) => {
+            const faqItem = document.createElement('div');
+            faqItem.className = 'faq-item';
+
+            faqItem.innerHTML = `
+                <div class="faq-question" data-index="${index}">
+                    <span class="question-text">${faq.question}</span>
+                    <div class="icon">+</div>
+                </div>
+                <div class="faq-answer">
+                    <div class="answer-content">${faq.answer}</div>
+                </div>
+            `;
+
+            container.appendChild(faqItem);
+        });
+
+        addEventListeners();
+    }
+
+    function addEventListeners() {
+        const questions = document.querySelectorAll('.faq-question');
+
+        questions.forEach(question => {
+            question.addEventListener('click', () => {
+                const answer = question.nextElementSibling;
+                const icon = question.querySelector('.icon');
+
+                answer.classList.toggle('active');
+                icon.classList.toggle('active');
+            });
+        });
+    }
+
+    renderFAQs();
+</script>
+</body>
+</html>
