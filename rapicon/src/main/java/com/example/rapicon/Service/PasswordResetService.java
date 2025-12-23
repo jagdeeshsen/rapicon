@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -33,13 +34,16 @@ public class PasswordResetService {
     @Transactional
     public void initiatePasswordReset(String email) {
         // Find vendor by email
-        Vendor vendor = vendorRepository.findByEmail(email);
+        Optional<Vendor> optionalVendor = vendorRepository.findByEmail(email.trim().toLowerCase());
 
         // Don't reveal if email exists (security best practice)
-        if (vendor == null) {
+        log.info(optionalVendor.toString());
+        if (optionalVendor.isEmpty()) {
             log.warn("Password reset requested for non-existent email: {}", email);
             return; // Still return success to user
         }
+
+        Vendor vendor= optionalVendor.get();
 
         // Generate reset token
         String token = UUID.randomUUID().toString();

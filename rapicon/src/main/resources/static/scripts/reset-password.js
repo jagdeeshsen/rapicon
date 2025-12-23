@@ -14,7 +14,7 @@ const confirmPasswordInput = document.getElementById('confirmPassword');
 const submitBtn = document.getElementById('submitBtn');
 
 // API Base URL - Update this to your backend URL
-const API_BASE_URL = 'http://localhost:5000'; // Change for production
+const API_BASE_URL = 'https://rapiconinfra.com'; // Spring Boot default port
 
 // Password strength indicators
 const strengthBar = document.getElementById('strengthBar');
@@ -42,25 +42,35 @@ async function validateToken() {
     loadingSpinner.style.display = 'block';
 
     try {
-        const response = await fetch("/api/auth/validate-reset-token?token=${resetToken}", {
+        const response = await fetch(`${API_BASE_URL}/api/auth/validate-reset-token?token=${resetToken}`, {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
             }
         });
 
+        // Check content type
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            showInvalidToken();
+            return;
+        }
+
+        // Parse JSON response
         const data = await response.json();
 
-        if (response.ok && data.success) {
+        // Check if response is ok AND success is true
+        if (response.ok && data.success === true) {
             // Token is valid, show form
             loadingSpinner.style.display = 'none';
             resetPasswordForm.style.display = 'block';
         } else {
-            // Token is invalid
+            // Token is invalid or expired
             showInvalidToken();
         }
     } catch (error) {
-        console.error('Token validation error:', error);
+        showMessage.error('Invalid token');
         showInvalidToken();
     }
 }
@@ -173,13 +183,13 @@ resetPasswordForm.addEventListener('submit', async function(e) {
 
     // Validate passwords match
     if (newPassword !== confirmPassword) {
-        showError('Passwords do not match!');
+        showMessage.error('Passwords do not match!');
         return;
     }
 
     // Validate password strength
     if (!validatePassword(newPassword)) {
-        showError('Password does not meet the requirements!');
+        showMessage.error('Password does not meet the requirements!');
         return;
     }
 
@@ -203,7 +213,8 @@ async function resetPassword(newPassword) {
         const response = await fetch(`${API_BASE_URL}/api/auth/reset-password`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
             },
             body: JSON.stringify({
                 token: resetToken,
@@ -211,11 +222,18 @@ async function resetPassword(newPassword) {
             })
         });
 
+        // Check content type
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            showMessage.error('Server returned non-JSON response');
+        }
+
         const data = await response.json();
 
-        if (response.ok && data.success) {
+        if (response.ok && data.success === true) {
             // Show success message
-            successText.textContent = 'Password reset successful! Redirecting to login...';
+            showMessage.success('Password reset successful! Redirecting to login...');
+            successText.textContent = data.message || 'Password reset successful! Redirecting to login...';
             successMessage.style.display = 'block';
             resetPasswordForm.style.display = 'none';
 
@@ -224,23 +242,13 @@ async function resetPassword(newPassword) {
                 window.location.href = 'login.html';
             }, 3000);
         } else {
-            showError(data.message || 'Failed to reset password. Please try again.');
+            showMessage.error(data.message || 'Failed to reset password. Please try again.');
             submitBtn.disabled = false;
             submitBtn.textContent = 'Reset Password';
         }
     } catch (error) {
-        console.error('Reset password error:', error);
-        showError('Network error. Please check your connection and try again.');
+        showMessage.error('Network error. Please check your connection and try again.');
         submitBtn.disabled = false;
         submitBtn.textContent = 'Reset Password';
     }
-}
-
-function showError(message) {
-    errorMessage.textContent = message;
-    errorMessage.style.display = 'block';
-
-    setTimeout(() => {
-        errorMessage.style.display = 'none';
-    }, 5000);
 }

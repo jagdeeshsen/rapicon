@@ -1,3 +1,4 @@
+
 // Login form handling
 document.getElementById('loginForm').addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -70,8 +71,7 @@ if (forgotPasswordLink) {
     forgotPasswordLink.addEventListener('click', async function(e) {
         e.preventDefault();
 
-        const email= await showMessage.prompt('Please enter you email address:');
-        console.log("email"+ email);
+        const email= await showMessage.prompt('Please enter you registered email:');
         if (email) {
             handleForgotPassword(email);
         }

@@ -1,7 +1,5 @@
 package com.example.rapicon.Controller;
 
-import com.example.rapicon.DTO.ApiResponse;
-import com.example.rapicon.DTO.ForgotPasswordRequest;
 import com.example.rapicon.DTO.ResetPasswordRequest;
 import com.example.rapicon.Models.User;
 import com.example.rapicon.Models.Vendor;
@@ -250,21 +248,16 @@ public class authController {
      * Forgot Password Endpoint
      */
     @PostMapping("/forgot-password")
-    public ResponseEntity<ApiResponse> forgotPassword(@RequestBody ForgotPasswordRequest request) {
+    public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> request) {
         try {
-            passwordResetService.initiatePasswordReset(request.getEmail());
+            passwordResetService.initiatePasswordReset(request.get("email"));
 
             // Always return success (don't reveal if email exists)
-            return ResponseEntity.ok(new ApiResponse(
-                    true,
-                    "If an account exists with this email, a password reset link has been sent."
-            ));
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(Map.of("message","Password reset link sent successfully to the registered email"));
         } catch (Exception e) {
-            log.error("Error in forgot password", e);
-            return ResponseEntity.ok(new ApiResponse(
-                    true,
-                    "If an account exists with this email, a password reset link has been sent."
-            ));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message","Failed to sent password reset link!"));
         }
     }
 
@@ -272,15 +265,15 @@ public class authController {
      * Validate Reset Token Endpoint
      */
     @GetMapping("/validate-reset-token")
-    public ResponseEntity<ApiResponse> validateResetToken(@RequestParam String token) {
+    public ResponseEntity<?> validateResetToken(@RequestParam String token) {
         boolean isValid = passwordResetService.validateResetToken(token);
 
         if (isValid) {
-            return ResponseEntity.ok(new ApiResponse(true, "Token is valid"));
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(Map.of("success",true, "message", "Token is valid"));
         } else {
-            return ResponseEntity.badRequest().body(
-                    new ApiResponse(false, "Invalid or expired reset token")
-            );
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success",false, "message", "Invalid or expired reset token."));
         }
     }
 
@@ -288,24 +281,20 @@ public class authController {
      * Reset Password Endpoint
      */
     @PostMapping("/reset-password")
-    public ResponseEntity<ApiResponse> resetPassword(@RequestBody ResetPasswordRequest request) {
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request) {
         try {
             passwordResetService.resetPassword(request.getToken(), request.getNewPassword());
 
-            return ResponseEntity.ok(new ApiResponse(
-                    true,
-                    "Password has been reset successfully. You can now login with your new password."
-            ));
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(Map.of("success", true, "message", "Password has been reset successfully. You can now login with your new password."));
         } catch (RuntimeException e) {
             log.error("Error resetting password", e);
-            return ResponseEntity.badRequest().body(
-                    new ApiResponse(false, e.getMessage())
-            );
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success", false, "message", e.getMessage()));
         } catch (Exception e) {
             log.error("Unexpected error resetting password", e);
-            return ResponseEntity.status(500).body(
-                    new ApiResponse(false, "An error occurred. Please try again.")
-            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("success", false, "message","An error occurred. Please try again"));
         }
     }
 
