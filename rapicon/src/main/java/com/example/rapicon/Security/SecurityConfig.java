@@ -59,6 +59,7 @@ public class SecurityConfig {
                                 "/reset-password.html",
                                 "/reset-password.html",
                                 "/FAQ.html",
+                                "/vendor-landing.html",
                                 "/package-page.html",
                                 "/vendor-dashboard.html",
                                 "/reset-password.html/**",

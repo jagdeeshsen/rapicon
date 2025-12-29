@@ -58,7 +58,32 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-// Check if user is already logged in
-if (localStorage.getItem('user_token')) {
-    window.location.href = 'user.html';
+// check is token expired
+function isTokenExpired(token) {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const expiry = payload.exp * 1000; // seconds → ms
+    return Date.now() > expiry;
+  } catch (e) {
+    return true; // invalid token = expired
+  }
 }
+
+
+// Check if user is already logged in
+(function checkLoginState() {
+  const token = localStorage.getItem('user_token');
+
+  if (!token) return;
+
+  if (isTokenExpired(token)) {
+    // ❌ expired → clear everything
+    localStorage.clear();
+    sessionStorage.clear();
+    console.log("Expired token cleared");
+  } else {
+    // ✅ valid → redirect
+    window.location.replace('user.html');
+  }
+})();
+

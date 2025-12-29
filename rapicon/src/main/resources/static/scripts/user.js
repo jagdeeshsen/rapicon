@@ -12,56 +12,86 @@ let designsGrid;
 let modal;
 let closeModal;
 let purchaseForm;
-let userIcon;
+let loginHeading;
+let accountHeading;
+let accountMenu;
+let accountToggle;
+let logoutBtn;
 
 // Initialize dashboard
-document.addEventListener('DOMContentLoaded', function() {
-    // NOW initialize all DOM elements after page loads
-    searchInput = document.getElementById('searchInput');
-    typeFilter = document.getElementById('typeFilter');
-    priceFilter = document.getElementById('priceFilter');
-    plotSizeFilter = document.getElementById('plotSizeFilter');
-    floorFilter = document.getElementById('floorFilter');
-    designsGrid = document.getElementById('designsGrid');
-    modal = document.getElementById('purchaseModal');
-    closeModal = document.querySelector('.close');
-    purchaseForm = document.getElementById('purchaseForm');
-    userIcon = document.getElementById("userIconBtn");
+document.addEventListener('DOMContentLoaded', function () {
 
-    // Setup user icon click handler
-    if (userIcon) {
-        userIcon.addEventListener("click", function() {
-            // Redirect to profile page
-            const token = localStorage.getItem('user_token');
+  //   INIT DOM ELEMENTS
 
-            if (!token || isTokenExpired(token)) {
-                localStorage.clear();
-                showMassage.warning('Session expired, please login again to view profile', 'error');
-                setTimeout(() => {
-                    window.location.href = "/otp-login.html";
-                }, 1500);
-                return;
-            }
-            window.location.href = "/userprofile.html";
-        });
+  searchInput = document.getElementById('searchInput');
+  typeFilter = document.getElementById('typeFilter');
+  priceFilter = document.getElementById('priceFilter');
+  plotSizeFilter = document.getElementById('plotSizeFilter');
+  floorFilter = document.getElementById('floorFilter');
+  designsGrid = document.getElementById('designsGrid');
+  modal = document.getElementById('purchaseModal');
+  closeModal = document.querySelector('.close');
+  purchaseForm = document.getElementById('purchaseForm');
+  userIcon = document.getElementById("userIconBtn");
+
+  loginHeading = document.getElementById("loginHeading");
+  accountHeading = document.getElementById("accountHeading");
+  accountMenu = document.getElementById("accountMenu");
+  accountToggle = document.getElementById("accountToggle");
+  logoutBtn = document.getElementById("logoutBtn");
+
+
+  // AUTH UI
+  updateAuthUI();
+
+  //   ACCOUNT DROPDOWN
+
+  if (accountToggle && accountMenu) {
+    accountToggle.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const isOpen = accountMenu.style.display === "block";
+      accountMenu.style.display = isOpen ? "none" : "block";
+      accountToggle.classList.toggle("open", !isOpen);
+    });
+
+    accountMenu.addEventListener("click", (e) => e.stopPropagation());
+  }
+
+  document.addEventListener("click", () => {
+    if (accountMenu) accountMenu.style.display = "none";
+  });
+
+  openLogout(logoutBtn);
+
+  //   LOGIN MODAL LOGIC (MERGED)
+
+  if (!localStorage.getItem('user_token')) {
+    requestAnimationFrame(() => {
+      openLoginModal();
+    });
+  }
+
+
+  const loginCloseBtn = document.querySelector('#loginModal .close');
+  if (loginCloseBtn) {
+    loginCloseBtn.addEventListener('click', closeLoginModal);
+  }
+
+  window.addEventListener("click", (e) => {
+    const loginModal = document.getElementById("loginModal");
+    if (e.target === loginModal) {
+      closeLoginModal();
     }
+  });
 
-    // Check if user is logged in
-    const token = localStorage.getItem('user_token');
-    const fullName = localStorage.getItem('user_fullName');
+  //   PAGE DATA + EVENTS
 
-    // Update welcome message
-    const welcomeUser = document.getElementById("welcomeUser");
-    if (welcomeUser) {
-        welcomeUser.textContent = fullName ? `Welcome, ${fullName}` : "Welcome, Guest";
-    }
+  renderDesigns();
+  setupEventListeners();
 
-    // Fetch designs from server
-    renderDesigns();
-
-    // Setup event listeners
-    setupEventListeners();
 });
+
+
 
 function setupEventListeners() {
     if (searchInput) searchInput.addEventListener('input', applyFilters);
@@ -452,4 +482,69 @@ function isTokenExpired(token) {
         console.error("Invalid token:", e);
         return true; // treat invalid as expired
     }
+}
+
+function openLoginModal() {
+  const modal = document.getElementById("loginModal");
+  if (!modal) return;
+  modal.style.display = "block";
+  modal.style.pointerEvents = "auto";
+}
+
+function closeLoginModal() {
+  const modal = document.getElementById("loginModal");
+  if (!modal) return;
+  modal.style.display = "none";
+  modal.style.pointerEvents = "none";
+}
+
+
+document.getElementById("goLogin").addEventListener("click", () => {
+  window.location.href = "/otp-login.html";
+});
+
+async function openLogout(logoutBtn) {
+  if (!logoutBtn) return;
+
+  logoutBtn.addEventListener("click", async (e) => {
+    e.preventDefault();
+
+    const result = await showMessage.confirm(
+      'Are you sure you want to logout?'
+    );
+
+    if (!result) return;
+
+    const token = localStorage.getItem('user_token');
+
+    try {
+      await fetch('/api/auth/logout-user', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+    } catch (err) {
+      console.warn('Logout API failed:', err);
+    }
+
+    localStorage.clear();
+    sessionStorage.clear();
+
+    window.location.href = "/";
+  });
+}
+
+
+function updateAuthUI() {
+  const token = localStorage.getItem('user_token');
+
+  if (token && !isTokenExpired(token)) {
+    loginHeading.style.display = "none";
+    accountHeading.style.display = "block";
+  } else {
+    loginHeading.style.display = "block";
+    accountHeading.style.display = "none";
+  }
 }

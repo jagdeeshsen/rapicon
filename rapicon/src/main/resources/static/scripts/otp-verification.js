@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 showMessage.success("Login successfully!");
                 // Wait 2 seconds before redirect
                 setTimeout(() => {
-                    window.location.href = "user.html";
+                    window.location.replace("user.html");
                 }, 2000);
             } else {
                 const err = await response.json();

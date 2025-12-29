@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendor Dashboard - Start Selling Your Designs</title>
+    <link rel="stylesheet" href="css/vendor-landing.css">
+</head>
+<body>
+<!-- Header -->
+<header>
+    <nav>
+        <div class="main-content">
+            <img src="favicon.ico" alt="">
+            <h1>Rapicon</h1>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#how-it-works">How It Works</a></li>
+            <li><a href="#sell">How to Sell</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="login.html" class="nav-cta-btn">Login</a></li>
+            <li><a href="register-now.html" class="nav-cta">Get Started</a></li>
+        </ul>
+        <div class="mobile-menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+</header>
+
+<!-- Hero Slider -->
+<div class="hero-slider" id="home">
+    <div class="slide active slide1">
+        <div class="slide-bg"></div>
+        <div class="slide-content">
+            <h1>Turn Your Designs Into Revenue</h1>
+            <p>Join thousands of creators selling their designs on our platform</p>
+            <a href="#" class="slide-cta">Start Selling Today</a>
+        </div>
+    </div>
+
+    <div class="slide slide2">
+        <div class="slide-bg"></div>
+        <div class="slide-content">
+            <h1>Reach Millions of Buyers</h1>
+            <p>Your creative work deserves a global audience</p>
+            <a href="#" class="slide-cta">Join Our Community</a>
+        </div>
+    </div>
+
+    <div class="slide slide3">
+        <div class="slide-bg"></div>
+        <div class="slide-content">
+            <h1>Earn While You Create</h1>
+            <p>Simple setup, instant payments, unlimited potential</p>
+            <a href="#" class="slide-cta">Create Your Account</a>
+        </div>
+    </div>
+
+    <button class="slider-arrow prev" onclick="changeSlide(-1)">‹</button>
+    <button class="slider-arrow next" onclick="changeSlide(1)">›</button>
+
+    <div class="slider-nav">
+        <span class="slider-dot active" onclick="goToSlide(0)"></span>
+        <span class="slider-dot" onclick="goToSlide(1)"></span>
+        <span class="slider-dot" onclick="goToSlide(2)"></span>
+    </div>
+</div>
+
+<!-- How It Works Section -->
+<div class="section" id="how-it-works">
+    <div class="container">
+        <h2 class="section-title">How It Works</h2>
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h3>Create Your Account</h3>
+                <p>Sign up in minutes and set up your vendor profile. Add your portfolio, bio, and payment details to get started.</p>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <h3>Upload Your Designs</h3>
+                <p>Upload your creative work with detailed descriptions, tags, and pricing. Our platform supports multiple file formats and unlimited uploads.</p>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <h3>Reach Your Audience</h3>
+                <p>Your designs are showcased to thousands of potential buyers. We handle marketing, search optimization, and customer discovery.</p>
+            </div>
+            <div class="step">
+                <div class="step-number">4</div>
+                <h3>Get Paid Instantly</h3>
+                <p>Receive payments directly to your account as soon as sales are made. Track earnings in real-time through your dashboard.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- How to Sell Section -->
+<div class="section alt-section" id="sell">
+    <div class="container">
+        <h2 class="section-title">How to Sell Your Designs</h2>
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">🎨</div>
+                <h3>Quality First</h3>
+                <p>Ensure your designs are high-resolution, well-organized, and properly formatted. Quality attracts buyers and builds your reputation.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📝</div>
+                <h3>Optimize Listings</h3>
+                <p>Write compelling titles and descriptions. Use relevant tags and keywords so customers can easily discover your work.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">💰</div>
+                <h3>Price Competitively</h3>
+                <p>Research similar designs and price accordingly. Start competitive and adjust based on market feedback and demand.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📊</div>
+                <h3>Track Performance</h3>
+                <p>Use analytics to understand what sells. Monitor views, favorites, and conversions to refine your strategy.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">⭐</div>
+                <h3>Build Your Brand</h3>
+                <p>Create a consistent style and maintain professionalism. Engage with customers and respond to feedback promptly.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🚀</div>
+                <h3>Stay Active</h3>
+                <p>Regular uploads keep you visible. Update your portfolio frequently and participate in seasonal promotions and trends.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Final CTA Section -->
+<div class="section">
+    <div class="container" style="text-align: center; padding: 3rem 0;">
+        <h2 class="section-title">Ready to Start Selling?</h2>
+        <p style="font-size: 1.2rem; color: #4a5568; margin: 2rem 0 2.5rem;">Join our creative community and start earning from your designs today.</p>
+        <a href="register-now.html" class="slide-cta">Create Your Vendor Account</a>
+    </div>
+</div>
+
+<script src="scripts/vendor-landing.js"></script>
+<!--Start of Tawk.to Script-->
+<script type="text/javascript">
+    var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+    (function(){
+    var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+    s1.async=true;
+    s1.src='https://embed.tawk.to/693fc8ec0fb01c197d24c6fa/1jcgihnff';
+    s1.charset='UTF-8';
+    s1.setAttribute('crossorigin','*');
+    s0.parentNode.insertBefore(s1,s0);
+    })();
+</script>
+<!--End of Tawk.to Script-->
+</body>
+</html>

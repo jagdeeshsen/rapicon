@@ -8,49 +8,83 @@
   <script src="scripts/showMessage.js"></script>
 </head>
 <body>
-<div class="dashboard-container">
+<!-- Header -->
+<div class="header">
+  <div class="header-container">
+    <div class="main-content">
+      <img src="favicon.ico" alt="">
+      <h1>Rapicon</h1>
+    </div>
 
-  <!-- Header -->
-  <div class="header">
-    <div class="header-container">
-      <div class="user-info">
-        <h3>
-                <span class="user-icon-svg" id="userIconBtn" title="Go to Profile">
-                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                    </svg>
-                </span>
-          <span id="welcomeUser">John Doe</span>
-        </h3>
-      </div>
+    <div class="search-box-main">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input type="text" id="search-input" placeholder="Search here...">
 
-      <button onclick="window.location.href='addtocard.html'" class="view-cart-btn">
-        🛒 View Cart
-        <span id="cartCount" class="cart-badge">0</span>
-      </button>
+    </div>
+
+    <div class ="menu-items">
+      <h1 id="loginHeading">
+        <a href="/otp-login.html" style="text-decoration:none; color:inherit;">
+          Login
+        </a>
+      </h1>
+
+      <h1 id="accountHeading" style="display:none; position:relative;">
+        <span id="accountToggle" class="account-toggle">
+          Account
+          <svg class="dropdown-icon" width="14" height="14" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </span>
+
+
+        <div id="accountMenu" class="account-menu">
+          <a href="userprofile.html">My Profile</a>
+          <a href="installment-payment.html">Orders</a>
+          <a href="#">Settings</a>
+          <hr />
+          <a href="#" id="logoutBtn">Logout</a>
+        </div>
+      </h1>
+
+      <!--<h1 onclick="/otp-login.html">Login</h1>-->
+      <button onclick="window.location.href='/vendor-landing.html'">Start-Selling</button>
+      <img src="images/cart-icon.png" alt="Cart"
+           style="cursor:pointer;"
+           onclick="window.location.href='/addtocard.html'">
+
     </div>
   </div>
-  <!--<div class="header">
-    <div class="header-container">
-      &lt;!&ndash; Left Side - User Info &ndash;&gt;
-      <div class="user-info">
-        <h3 id="welcomeUser">👋 Welcome, John Doe</h3>
-        <p class="header-subtitle">🏗️ Design Marketplace - Premium Architectural Designs</p>
-      </div>
+</div>
 
-      &lt;!&ndash; Right Side - View Cart Button &ndash;&gt;
-      <button onclick="window.location.href='addtocard.html'" class="view-cart-btn">
-        🛒 View Cart
-        <span id="cartCount" class="cart-badge">0</span>
-      </button>
+<div class="dashboard-container">
+
+  <!-- Image slider -->
+  <div class="image-slider">
+    <div class="slider-track" id="imageSliderTrack">
+      <div class="slide">
+        <img src="images/slider-img.png" alt="Slide 1">
+      </div>
+      <div class="slide">
+        <img src="images/slider-img.png" alt="Slide 2">
+      </div>
+      <div class="slide">
+        <img src="images/slider-img.png" alt="Slide 3">
+      </div>
     </div>
-  </div>-->
+  </div>
+
 
   <!-- Filters Section -->
   <div class="filters-section">
     <div class="filter-row">
       <div class="search-box">
-        <input type="text" id="searchInput" placeholder="Search designs by name, location, or features...">
+        <input type="text" id="searchInput" placeholder="Search here...">
         <span class="search-icon">🔍</span>
       </div>
     </div>
@@ -98,25 +132,6 @@
           <option value="4">4+ Floors</option>
         </select>
       </div>
-      <!--<div class="filter-group">
-        <label>Bedrooms:</label>
-        <select id="bedroomFilter">
-          <option value="">Any</option>
-          <option value="1">1 BHK</option>
-          <option value="2">2 BHK</option>
-          <option value="3">3 BHK</option>
-          <option value="4">4+ BHK</option>
-        </select>
-      </div>
-      <div class="filter-group">
-        <label>Sort By:</label>
-        <select id="sortFilter">
-          <option value="newest">Newest First</option>
-          <option value="price-low">Price: Low to High</option>
-          <option value="price-high">Price: High to Low</option>
-          <option value="rating">Highest Rated</option>
-        </select>
-      </div>-->
     </div>
   </div>
 
@@ -173,6 +188,71 @@
     </form>
   </div>
 </div>
+
+<!-- Footer -->
+<footer id="contact" class="footer">
+  <div class="container">
+    <div class="footer-content">
+
+      <div class="footer-section">
+        <h3>Office Contact</h3>
+        <p>📌<strong>Address:</strong> <a >29, Bhagwandeen Nagar, Behind Sapna Sangeeta, Indore, M.P. PIN-452001</a></p>
+        <p>📞 <strong>Phone:</strong> <a >+91 73143 42979</a></p>
+        <p>✉️ <strong>Email:</strong> <a >rapiconinfra@gmail.com</a></p>
+        <div class="footer-social">
+          <a href="#"><i class="fab fa-twitter"></i></a>
+          <a href="#"><i class="fab fa-facebook-f"></i></a>
+          <a href="#"><i class="fab fa-youtube"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+          <a href="#"><i class="fab fa-linkedin-in"></i></a>
+        </div>
+      </div>
+
+      <div class="footer-section">
+        <h3>Quick Links</h3>
+        <ul>
+          <li><a href="user.html">Browse Designs</a></li>
+          <li><a href="vendor-landing.html">Start-Selling</a></li>
+          <li><a href="FAQ.html">FAQ's</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h3>Support</h3>
+        <ul>
+          <li><a href="contact.html">Contact Us</a></li>
+          <li><a href="terms-privacy.html">Terms & Conditions</a></li>
+          <li><a href="privacy-policy.html">Privacy Policy</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      <p>
+        &copy; 2025 Rapicon Infrastructure LLP. All rights reserved.
+      </p>
+    </div>
+  </div>
+</footer>
+
+<!-- Login Modal -->
+<div id="loginModal" class="modal">
+  <div class="modal-content login-popup">
+    <span class="close">&times;</span>
+
+    <h2>Login Required</h2>
+    <p>Please login to continue to your dashboard</p>
+
+    <button id="goLogin" class="login-action-btn">
+      Login
+    </button>
+  </div>
+</div>
+
+
+
+
 
 <script src="scripts/user.js"></script>
 <!--Start of Tawk.to Script-->
