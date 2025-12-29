@@ -536,6 +536,20 @@ async function openLogout(logoutBtn) {
   });
 }
 
+function openCart() {
+    const token = localStorage.getItem('user_token');
+
+    // No token or expired token
+    if (!token || isTokenExpired(token)) {
+        localStorage.clear(); // optional but recommended
+        showMessage.alert("Session expired. Please login first.");
+        return;
+    }
+
+    // Token valid
+    window.location.href = "addtocard.html";
+}
+
 
 function updateAuthUI() {
   const token = localStorage.getItem('user_token');
