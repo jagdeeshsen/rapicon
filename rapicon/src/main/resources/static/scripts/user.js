@@ -332,6 +332,51 @@ function createDesignCard(design) {
         </div>
     `;
 
+    // ===============================
+    //  AUTO IMAGE SCROLL ON HOVER
+    // ===============================
+    const imageContainer = card.querySelector('.design-image');
+    const imgElement = card.querySelector('.design-thumbnail');
+
+    if (imgElement && design.elevationUrls && design.elevationUrls.length > 1) {
+        let currentIndex = 0;
+        let hoverInterval = null;
+
+        function changeImage(index) {
+            // preload image first
+            const tempImg = new Image();
+            tempImg.src = design.elevationUrls[index];
+
+            tempImg.onload = () => {
+                imgElement.style.opacity = 0;
+
+                requestAnimationFrame(() => {
+                    imgElement.src = tempImg.src;
+                    imgElement.style.opacity = 1;
+                });
+            };
+        }
+
+        function startHoverScroll() {
+            if (hoverInterval) return; // prevent multiple intervals
+            hoverInterval = setInterval(() => {
+                currentIndex = (currentIndex + 1) % design.elevationUrls.length;
+                changeImage(currentIndex);
+            }, 1500);
+        }
+
+        function stopHoverScroll() {
+            clearInterval(hoverInterval);
+            hoverInterval = null;
+            currentIndex = 0;
+            changeImage(0); // reset to first image
+        }
+
+        imageContainer.addEventListener('mouseenter', startHoverScroll);
+        imageContainer.addEventListener('mouseleave', stopHoverScroll);
+    }
+
+
     // Add event listener to the purchase button
     const purchaseBtn = card.querySelector('.purchase-btn');
     purchaseBtn.addEventListener('click', () => openPurchaseModal(design.id));

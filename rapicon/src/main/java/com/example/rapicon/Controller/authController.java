@@ -53,8 +53,18 @@ public class authController {
     public ResponseEntity<Map<String, String>> register(@RequestBody Map<String, String> request) {
 
         try{
+            String phone = request.get("phone");
+            String email = request.get("email");
+
+            // Validate input
+            if (phone == null || phone.isBlank() || email == null || email.isBlank()) {
+                return ResponseEntity.badRequest().body(Map.of(
+                        "message", "Phone number and email are required"
+                ));
+            }
+
             // check if user already exists
-            Optional<User> optionalUser= userService.findUserByPhone(request.get("phone"));
+            Optional<User> optionalUser= userService.findUserByPhone(phone);
 
             if(optionalUser.isPresent()){
                 return ResponseEntity.status(HttpStatus.CONFLICT)
@@ -62,12 +72,16 @@ public class authController {
             }
 
             User user= new User();
-            user.setPhone(request.get("phone"));
-            user.setEmail(request.get("email"));
+            user.setPhone(phone);
+            user.setEmail(email);
+
             userService.registerUser(user);
+
             Map<String, String> response= new HashMap<>();
+
             response.put("message", "User registered successfully");
             return ResponseEntity.ok(response);
+
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -174,6 +188,11 @@ public class authController {
             } else if (usernameExits) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
                         .body(Map.of("message", "Username already exists try with another username"));
+            }
+
+            if (vendor.getPhone() == null || !vendor.getPhone().matches("\\d{10}")) {
+                return ResponseEntity.badRequest()
+                        .body(Map.of("message", "Invalid phone number. Must be 10 digits."));
             }
 
             vendorService.registerVendor(vendor);

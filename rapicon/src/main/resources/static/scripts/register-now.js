@@ -21,22 +21,10 @@ document.getElementById('gstNumber').addEventListener('input', function(e) {
     e.target.value = e.target.value.toUpperCase();
 });
 
-// Format phone number
-document.getElementById('phone').addEventListener('input', function(e) {
-    let value = e.target.value.replace(/\D/g, '');
-    if (value.length > 0) {
-        if (value.length <= 2) {
-            value = '(+' + value;
-        } else if (value.length <= 4) {
-            value = '(+' + value.slice(0, 2) + ') ' + value.slice(2);
-        } else if (value.length <= 9) {
-            value = '(+' + value.slice(0, 2) + ') ' + value.slice(2, 7) + ' ' + value.slice(7);
-        } else {
-            value = '(+' + value.slice(0, 2) + ') ' + value.slice(2, 7) + ' ' + value.slice(7, 12);
-        }
-    }
-    e.target.value = value;
-});
+// Phone: allow ONLY numbers (no +, no country code)
+ document.getElementById('phone').addEventListener('input', function (e) {
+     e.target.value = e.target.value.replace(/\D/g, '');
+ });
 
 // Validation functions
 function validateEmail(email) {
@@ -44,8 +32,7 @@ function validateEmail(email) {
 }
 
 function validatePhone(phone) {
-    const cleaned = phone.replace(/\D/g, '');
-    return cleaned.length >= 10 && cleaned.length <= 15;
+    return /^\d{10}$/.test(phone);
 }
 
 function validateAccountNumber(accountNumber) {

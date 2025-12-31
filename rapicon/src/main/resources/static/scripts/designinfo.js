@@ -40,7 +40,7 @@
                    'Beautiful architectural design with modern amenities and spacious rooms.';
 
       // ✅ Main Image
-      document.addEventListener('DOMContentLoaded', () => {
+      /*document.addEventListener('DOMContentLoaded', () => {
           const mainImg = document.getElementById('mainImage');
           const leftBtn = document.getElementById('leftBtn');
           const rightBtn = document.getElementById('rightBtn');
@@ -71,16 +71,78 @@
           // ✅ Event listeners
           leftBtn.addEventListener('click', () => scrollGallery(-1));
           rightBtn.addEventListener('click', () => scrollGallery(1));
-      });
+      });*/
 
-      // ✅ Rating
+      // Main Image Auto Scroll
+      const mainImg = document.getElementById('mainImage');
+      const leftBtn = document.getElementById('leftBtn');
+      const rightBtn = document.getElementById('rightBtn');
+
+      let currentIndex = 0;
+      let autoScrollInterval;
+
+      // Initialize first image
+      if (design.elevationUrls && design.elevationUrls.length > 0) {
+        mainImg.src = design.elevationUrls[0];
+      }
+
+      // Change Image Function
+      function changeImage(index) {
+        const tempImg = new Image();
+        tempImg.src = design.elevationUrls[index];
+
+        tempImg.onload = () => {
+          mainImg.style.opacity = 0;
+
+          requestAnimationFrame(() => {
+            mainImg.src = tempImg.src;
+            mainImg.style.opacity = 1;
+          });
+        };
+      }
+
+      // Scroll Function
+      function scrollGallery(direction) {
+        const total = design.elevationUrls.length;
+
+        currentIndex += direction;
+        if (currentIndex < 0) currentIndex = total - 1;
+        if (currentIndex >= total) currentIndex = 0;
+
+        changeImage(currentIndex);
+        restartAutoScroll(); // pause + restart auto scroll
+      }
+
+      // Auto Scroll
+      function startAutoScroll() {
+        autoScrollInterval = setInterval(() => {
+          currentIndex = (currentIndex + 1) % design.elevationUrls.length;
+          changeImage(currentIndex);
+        }, 3000); //  3 seconds
+      }
+
+      // Restart Auto Scroll on manual action
+      function restartAutoScroll() {
+        clearInterval(autoScrollInterval);
+        startAutoScroll();
+      }
+
+      // Button Events
+      leftBtn.addEventListener('click', () => scrollGallery(-1));
+      rightBtn.addEventListener('click', () => scrollGallery(1));
+
+      // Start auto scroll initially
+      startAutoScroll();
+
+
+      // Rating
       const rating = design.rating || 4.5;
       const stars = '★'.repeat(Math.floor(rating)) + '☆'.repeat(5 - Math.floor(rating));
       document.getElementById('designRating').textContent = stars;
       document.getElementById('reviewCount').textContent = `(${design.reviews || 0} reviews)`;
 
     } else {
-      // ❌ No design found
+      // No design found
       document.getElementById('designTitle').textContent = 'Design Not Found';
       document.getElementById('designDescription').textContent = 'Please go back and select a design.';
     }

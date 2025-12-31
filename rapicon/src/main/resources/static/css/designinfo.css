@@ -264,3 +264,8 @@ body {
     height: 300px;
   }
 }
+
+#mainImage {
+  background: #fff;
+  transition: opacity 0.4s ease-in-out;
+}

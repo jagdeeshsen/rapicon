@@ -214,8 +214,17 @@
       justify-content: center;
       overflow: hidden;
       position: relative;
-      background: linear-gradient(45deg, #f093fb 0%, #f5576c 50%, #4facfe 100%);
+      background: #fff;
   }
+
+  .design-image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.35s ease-in-out;
+  }
+
 
    .design-image::before {
        content: '';

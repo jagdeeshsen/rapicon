@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
         successMsg.style.display = 'none';
     }
 
-    async function apiCall(url,body) {
+    async function apiCall(url, body) {
         try {
             const response = await fetch(url, {
                 method: 'POST',
@@ -29,16 +29,77 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const data = await response.json();
 
-            if (!response.ok) throw new Error(data.message || 'Request failed');
-            return { success: true, data };
+            return {
+                success: response.ok,
+                message: data.message || 'Request completed',
+                data
+            };
+
         } catch (err) {
-            showError(err.message || 'Something went wrong');
             console.error('API Error:', err);
-            return { success: false };
+            return {
+                success: false,
+                message: 'Network error. Please try again.'
+            };
         }
     }
 
     // Step 1: Register user
+    /*form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById('email').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+
+      // Empty check
+      if (!email || !phone) {
+        showError('Please enter both email and phone number.');
+        return;
+      }
+
+      // Email validation
+      if (!isValidEmail(email)) {
+        showError('Please enter a valid email address.');
+        return;
+      }
+
+      // Phone validation
+      if (!isValidPhone(phone)) {
+        showError('Please enter a valid 10-digit mobile number.');
+        return;
+      }
+
+      registerBtn.disabled = true;
+      showSuccess('Registering...');
+
+      try {
+        const registerResult = await apiCall('/api/auth/register-user', { email, phone });
+
+        if (!registerResult.success) {
+          showError(registerResult.message || 'Registration failed.');
+          registerBtn.disabled = false;
+          return;
+        }
+
+        showSuccess('Account created successfully. Sending OTP...');
+        localStorage.setItem('pendingPhone', phone);
+
+        const otpResult = await apiCall('/api/auth/send-otp', { phone });
+
+        if (otpResult.success) {
+          showSuccess('OTP sent! Please verify to complete registration.');
+          window.location.href = '/otp-verification.html';
+        } else {
+          showError(otpResult.message || 'Failed to send OTP.');
+        }
+
+      } catch (err) {
+        showError('Something went wrong. Please try again.');
+      }
+
+      registerBtn.disabled = false;
+    });*/
+
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
@@ -50,24 +111,48 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        if (!isValidEmail(email)) {
+            showError('Please enter a valid email address.');
+            return;
+        }
+
+        if (!isValidPhone(phone)) {
+            showError('Please enter a valid 10-digit mobile number.');
+            return;
+        }
+
         registerBtn.disabled = true;
         showSuccess('Registering...');
 
         const registerResult = await apiCall('/api/auth/register-user', { email, phone });
 
-        if (registerResult.success) {
-            showSuccess('Account created successfully. Sending OTP...');
-            localStorage.setItem('pendingPhone',phone);
-            const otpResult = await apiCall('/api/auth/send-otp', { phone });
-
-            if (otpResult.success) {
-                showSuccess('OTP sent! Please verify to complete registration.');
-                //otpDiv.style.display = 'block';
-                window.location.href = '/otp-verification.html';
-                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-            }
+        if (!registerResult.success) {
+            showError(registerResult.message); // ✅ REAL backend message
+            registerBtn.disabled = false;
+            return;
         }
 
-        registerBtn.disabled = false;
+        showSuccess(registerResult.message);
+        localStorage.setItem('pendingPhone', phone);
+
+        const otpResult = await apiCall('/api/auth/send-otp', { phone });
+
+        if (!otpResult.success) {
+            showError(otpResult.message);
+            registerBtn.disabled = false;
+            return;
+        }
+
+        showSuccess('OTP sent! Please verify to complete registration.');
+        window.location.href = '/otp-verification.html';
     });
 });
+
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function isValidPhone(phone) {
+  // Indian mobile numbers (10 digits, starts with 6–9)
+  return /^[6-9]\d{9}$/.test(phone);
+}
