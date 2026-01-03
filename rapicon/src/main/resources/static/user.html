@@ -26,6 +26,10 @@
 
     </div>
 
+    <div class="hamburger" id="hamburgerBtn">
+      ☰
+    </div>
+
     <div class ="menu-items">
       <h1 id="loginHeading">
         <a href="/otp-login.html" style="text-decoration:none; color:inherit;">
@@ -57,10 +61,29 @@
       <img src="images/cart-icon.png" alt="Cart"
            style="cursor:pointer;"
            onclick="openCart()">
-
     </div>
+
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="mobile-menu">
+      <a id="mobileLoginLink" href="/otp-login.html">Login</a>
+
+      <div id="mobileAccountSection" style="display:none;">
+        <div id="mobileAccountToggle">Account <span class="arrow">▼</span></div>
+        <div id="mobileAccountMenu" class="mobile-account-menu">
+          <a href="userprofile.html">My Profile</a>
+          <a href="installment-payment.html">Orders</a>
+          <a href="#">Settings</a>
+          <a href="#" id="mobileLogoutBtn">Logout</a>
+        </div>
+      </div>
+
+      <a href="/vendor-landing.html">Start Selling</a>
+      <a href="#" onclick="openCart()">Cart</a>
+    </div>
+
   </div>
 </div>
+
 
 <div class="dashboard-container">
 

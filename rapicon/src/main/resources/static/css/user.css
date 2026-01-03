@@ -51,7 +51,7 @@
         font-size: 30px;
         font-weight: 500;
         cursor: pointer;
-        margin: 0
+        margin-right: 5px;
     }
 
     .menu-items{
@@ -853,5 +853,63 @@
   object-fit: cover;
 }
 
+/* mobile menu style */
+
+
+/* Hamburger */
+.hamburger {
+  display: none;
+  font-size: 26px;
+  cursor: pointer;
+  margin-left: 5px;
+}
+
+/* Mobile menu */
+.mobile-menu {
+  display: none;
+  position: absolute;
+  top: 60px;
+  right: 10px;
+  width: 220px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  z-index: 999;
+}
+
+.mobile-menu a,
+#mobileAccountToggle {
+  display: block;
+  padding: 12px;
+  text-decoration: none;
+  color: #000;
+  cursor: pointer;
+}
+
+/* Mobile account dropdown */
+.mobile-account-menu {
+  display: none;
+  padding-left: 10px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .menu-items {
+    display: none;
+  }
+
+  .hamburger {
+    display: block;
+  }
+
+  .mobile-menu.show {
+    display: block;
+  }
+}
+
+.arrow {
+  font-size: 10px;
+  margin-left: 4px;
+}
 
 

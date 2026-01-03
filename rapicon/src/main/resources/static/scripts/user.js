@@ -18,6 +18,16 @@ let accountMenu;
 let accountToggle;
 let logoutBtn;
 
+// mobile menu
+let hamburgerBtn;
+let mobileMenu;
+let mobileLoginLink;
+let mobileAccountSection;
+let mobileAccountToggle;
+let mobileAccountMenu;
+let mobileLogoutBtn;
+
+
 // Initialize dashboard
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -40,6 +50,48 @@ document.addEventListener('DOMContentLoaded', function () {
   accountToggle = document.getElementById("accountToggle");
   logoutBtn = document.getElementById("logoutBtn");
 
+  hamburgerBtn = document.getElementById("hamburgerBtn");
+  mobileMenu = document.getElementById("mobileMenu");
+  mobileLoginLink = document.getElementById("mobileLoginLink");
+  mobileAccountSection = document.getElementById("mobileAccountSection");
+  mobileAccountToggle = document.getElementById("mobileAccountToggle");
+  mobileAccountMenu = document.getElementById("mobileAccountMenu");
+  mobileLogoutBtn = document.getElementById("mobileLogoutBtn");
+
+  mobileMenu?.addEventListener("click", (e) => {
+    e.stopPropagation();
+  });
+
+
+  /* Hamburger toggle */
+  hamburgerBtn?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    mobileMenu.classList.toggle("show");
+  });
+
+  /* Mobile account dropdown */
+  mobileAccountToggle?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    mobileAccountMenu.style.display =
+      mobileAccountMenu.style.display === "block" ? "none" : "block";
+  });
+
+  /* Close menu on outside click */
+  document.addEventListener("click", () => {
+    // Close desktop account dropdown
+      if (accountMenu) accountMenu.style.display = "none";
+
+      // Close mobile menu
+      if (mobileMenu) mobileMenu.classList.remove("show");
+
+      // Close mobile account dropdown
+      if (mobileAccountMenu) mobileAccountMenu.style.display = "none";
+  });
+
+  /* Reuse existing logout logic */
+  openLogout(mobileLogoutBtn);
+
+
 
   // AUTH UI
   updateAuthUI();
@@ -57,9 +109,9 @@ document.addEventListener('DOMContentLoaded', function () {
     accountMenu.addEventListener("click", (e) => e.stopPropagation());
   }
 
-  document.addEventListener("click", () => {
+  /*document.addEventListener("click", () => {
     if (accountMenu) accountMenu.style.display = "none";
-  });
+  });*/
 
   openLogout(logoutBtn);
 
@@ -596,7 +648,7 @@ function openCart() {
 }
 
 
-function updateAuthUI() {
+/*function updateAuthUI() {
   const token = localStorage.getItem('user_token');
 
   if (token && !isTokenExpired(token)) {
@@ -606,4 +658,20 @@ function updateAuthUI() {
     loginHeading.style.display = "block";
     accountHeading.style.display = "none";
   }
+}*/
+
+function updateAuthUI() {
+  const token = localStorage.getItem('user_token');
+  const loggedIn = token && !isTokenExpired(token);
+
+  // Desktop
+  loginHeading.style.display = loggedIn ? "none" : "block";
+  accountHeading.style.display = loggedIn ? "block" : "none";
+
+  // Mobile
+  if (mobileLoginLink && mobileAccountSection) {
+    mobileLoginLink.style.display = loggedIn ? "none" : "block";
+    mobileAccountSection.style.display = loggedIn ? "block" : "none";
+  }
 }
+
