@@ -11,6 +11,7 @@ import com.example.rapicon.Service.UserService;
 import com.example.rapicon.Service.VendorService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -45,6 +46,12 @@ public class authController {
         this.userService = userService;
         this.jwtUtil = jwtUtil;
     }
+
+    @Value("${app.test-login.enabled:false}")
+    private boolean testLoginEnabled;
+
+    @Value("${app.test-login.phone:}")
+    private String testLoginPhone;
 
 
     //--------------------------User Authentication Logic---------------------------------------------//
@@ -126,6 +133,14 @@ public class authController {
             return ResponseEntity.badRequest().body(Map.of("message", "Phone number is required"));
         }
 
+        // ✅ GOOGLE REVIEW TEST LOGIN (NO OTP)
+        if (testLoginEnabled && phone.equals(testLoginPhone)) {
+            return ResponseEntity.ok(Map.of(
+                    "message", "Test login enabled. OTP not required.",
+                    "bypassOtp", true
+            ));
+        }
+
         Optional<User> userOpt = userService.findUserByPhone(phone);
         if (userOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -143,11 +158,10 @@ public class authController {
     public ResponseEntity<?> verifyOtp(@RequestBody Map<String, String> request) {
         String phone = request.get("phone");
         String otp = request.get("otp");
-        System.out.println(phone+" "+ otp);
 
-        if (!otpService.verifyOtp(phone, otp)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("message", "Invalid or expired OTP"));
+        if (phone == null || phone.isEmpty()) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("message", "Phone number is required"));
         }
 
         Optional<User> userOpt= userService.findUserByPhone(phone);
@@ -157,6 +171,35 @@ public class authController {
         }
 
         User user = userOpt.get();
+
+        // ✅ TEST LOGIN (NO OTP REQUIRED)
+        if (testLoginEnabled && phone.equals(testLoginPhone)) {
+
+            UserDetailsImpl userDetails = UserDetailsImpl.build(user);
+            String token = jwtUtil.generateToken(userDetails);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("token", token);
+            response.put("role", "USER"); // or "USER"
+            response.put("id", String.valueOf(user.getId()));
+            response.put("fullName", user.getFullName());
+            response.put("testLogin", true);
+
+            return ResponseEntity.ok(response);
+        }
+
+        if (!otpService.verifyOtp(phone, otp)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Invalid or expired OTP"));
+        }
+
+        /*Optional<User> userOpt= userService.findUserByPhone(phone);
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", "User not found"));
+        }*/
+
+        /*User user = userOpt.get();*/
         // Build UserDetailsImpl from your User entity
         UserDetailsImpl userDetails = UserDetailsImpl.build(user);
 

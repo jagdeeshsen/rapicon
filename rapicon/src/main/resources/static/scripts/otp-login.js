@@ -23,7 +23,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 body: JSON.stringify({ phone })
             });
 
-            if (response.ok) {
+            if(response.bypassOtp){
+                window.location.href = "otp-verification.html?mode=login";
+            }else if (response.ok) {
                 const data = await response.json();
 
                 localStorage.setItem('pendingPhone', phone);
