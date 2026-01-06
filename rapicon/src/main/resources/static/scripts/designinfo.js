@@ -136,9 +136,9 @@
 
 
       // Rating
-      const rating = design.rating || 4.5;
+      /*const rating = design.rating || 4.5;
       const stars = '★'.repeat(Math.floor(rating)) + '☆'.repeat(5 - Math.floor(rating));
-      document.getElementById('designRating').textContent = stars;
+      document.getElementById('designRating').textContent = stars;*/
       document.getElementById('reviewCount').textContent = `(${design.reviews || 0} reviews)`;
 
     } else {

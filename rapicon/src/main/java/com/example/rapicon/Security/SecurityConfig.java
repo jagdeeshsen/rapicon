@@ -14,6 +14,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -79,7 +84,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll() // ✅ your custom login/register
                         .requestMatchers("/api/user/approved").permitAll()
                         .requestMatchers("/api/vendor/**").permitAll()
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/admin/**").permitAll()
                         .requestMatchers("/api/designs/**").hasRole("VENDOR")
                         .requestMatchers("/api/cart/**").permitAll()
                         .requestMatchers("/api/customer-query/**").permitAll()
@@ -102,5 +107,49 @@ public class SecurityConfig {
     @Bean
     public JwtFilter jwtFilter() {
         return new JwtFilter(jwtUtil);
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        // Allow your React dev server and production URLs
+        configuration.setAllowedOrigins(Arrays.asList(
+                "http://localhost:5173",           // React dev server (Vite)
+                "http://localhost:3000",           // Alternative React dev server
+                "https://rapiconinfra.com",        // Your production frontend
+                "https://www.rapiconinfra.com"     // With www subdomain
+        ));
+
+        // Allow all HTTP methods
+        configuration.setAllowedMethods(Arrays.asList(
+                "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"
+        ));
+
+        // Allow all headers
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+
+        // Allow credentials (cookies, authorization headers, etc.)
+        configuration.setAllowCredentials(true);
+
+        // How long the browser can cache preflight response (1 hour)
+        configuration.setMaxAge(3600L);
+
+        // Expose headers to the browser
+        configuration.setExposedHeaders(Arrays.asList(
+                "Authorization",
+                "Content-Type",
+                "X-Requested-With",
+                "Accept",
+                "Origin",
+                "Access-Control-Request-Method",
+                "Access-Control-Request-Headers"
+        ));
+
+        // Apply CORS configuration to all paths
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+
+        return source;
     }
 }

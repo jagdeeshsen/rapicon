@@ -85,17 +85,17 @@ public class AdminController {
         return ResponseEntity.ok(designs);
     }
 
-    //----------------------------- Vendor Endpoints --------------------------------//
+    //----------------------------- User Endpoints --------------------------------//
 
-    /*@GetMapping("/users")
-    public ResponseEntity<List<User>> getAllUserByRole(@RequestParam("role")String role){
-        List<User> vendors= userService.getAllUser(role);
-        if(vendors.isEmpty()){
+    @GetMapping("/users/get/all")
+    public ResponseEntity<List<User>> getAllUser(){
+        List<User> users= userService.getAllUser();
+        if(users.isEmpty()){
             return ResponseEntity.noContent().build();
         }else {
-            return ResponseEntity.ok(vendors);
+            return ResponseEntity.ok(users);
         }
-    }*/
+    }
 
     //----------------------- Order Endpoints -----------------------------------//
     @GetMapping("/orders")
