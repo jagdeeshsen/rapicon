@@ -4,6 +4,7 @@ import com.example.rapicon.Models.*;
 import com.example.rapicon.Service.DesignService;
 import com.example.rapicon.Service.OrderService;
 import com.example.rapicon.Service.UserService;
+import com.example.rapicon.Service.VendorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,9 @@ public class AdminController {
 
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private VendorService vendorService;
 
 
     // -------------------------- Design Endpoints--------------------------------//
@@ -74,10 +78,8 @@ public class AdminController {
 
     }*/
 
-    @GetMapping("/all")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<Design>> getDesignsByAdmin(){
-
+    @GetMapping("/designs/get/all")
+    public ResponseEntity<List<Design>> getAllDesigns(){
         List<Design> designs= designService.getAllDesigns();
         if(designs.isEmpty()){
             return ResponseEntity.noContent().build();
@@ -97,8 +99,21 @@ public class AdminController {
         }
     }
 
+
+    //----------------------------- Vendor Endpoints --------------------------------//
+
+    @GetMapping("/vendors/get/all")
+    public ResponseEntity<List<Vendor>> getAllVendors(){
+        List<Vendor> vendors= vendorService.getAllVendors();
+        if(vendors.isEmpty()){
+            return ResponseEntity.noContent().build();
+        }else {
+            return ResponseEntity.ok(vendors);
+        }
+    }
+
     //----------------------- Order Endpoints -----------------------------------//
-    @GetMapping("/orders")
+    @GetMapping("/orders/get/all")
     public ResponseEntity<List<Order>> getAllOrders(){
         List<Order> orders= orderService.getAllOrders();
         if(orders.isEmpty()){
