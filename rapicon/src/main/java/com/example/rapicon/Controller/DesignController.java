@@ -361,17 +361,4 @@ public class DesignController {
         }
 
     }
-
-    @GetMapping("/fetch/{id}")
-    public ResponseEntity<Design> getDesignById(@PathVariable Long id){
-        try{
-            Design design= designService.getDesignById(id);
-            if(design == null){
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-            }
-            return ResponseEntity.status(HttpStatus.OK).body(design);
-        }catch (RuntimeException e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
-    }
 }
