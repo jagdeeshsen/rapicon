@@ -3,12 +3,15 @@ document.addEventListener('DOMContentLoaded', async function () {
     const errorMessage = document.getElementById('errorMessage');
     const resendOtpLink = document.getElementById('resendOtp');
 
+
     const phone = localStorage.getItem('pendingPhone');
     if (!phone) {
         await showMessage.alert("Session expired. Please login again.");
         window.location.href = "otp-login.html";
         return;
     }
+
+    startResendCooldown();
 
     verifyForm.addEventListener('submit', async function (e) {
         e.preventDefault();
@@ -56,7 +59,11 @@ document.addEventListener('DOMContentLoaded', async function () {
     // Resend OTP
     resendOtpLink.addEventListener('click', async function (e) {
         e.preventDefault();
+
+        if (resendOtpLink.style.pointerEvents === "none") return;
+
         errorMessage.textContent = "";
+
 
         try {
             const response = await fetch('/api/auth/send-otp', {
@@ -66,15 +73,39 @@ document.addEventListener('DOMContentLoaded', async function () {
             });
 
             if (response.ok) {
-                await showMessage.alert("OTP resent successfully!",{
+                await showMessage.alert("OTP resent successfully!", {
                     title: 'success',
                     type: 'success'
                 });
-            } else {
+
+                startResendCooldown(); // 🔥 disable for 60s
+            }else {
                 errorMessage.textContent = "Failed to resend OTP. Try again.";
             }
         } catch (error) {
             errorMessage.textContent = "Error resending OTP. Try again.";
         }
     });
+
+    // resend timer
+    function startResendCooldown() {
+        let seconds = 60;
+
+        resendOtpLink.style.pointerEvents = "none";
+        resendOtpLink.style.opacity = "0.5";
+
+        const timer = setInterval(() => {
+            resendOtpLink.textContent = `Resend OTP (${seconds}s)`;
+            seconds--;
+
+            if (seconds < 0) {
+                clearInterval(timer);
+                resendOtpLink.textContent = "Resend OTP";
+                resendOtpLink.style.pointerEvents = "auto";
+                resendOtpLink.style.opacity = "1";
+            }
+        }, 1000);
+    }
+
 });
+

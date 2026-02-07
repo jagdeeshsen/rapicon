@@ -1,18 +1,28 @@
 document.addEventListener('DOMContentLoaded', function () {
     const loginForm = document.getElementById('loginForm');
     const errorMessage = document.getElementById('errorMessage');
+    const sendOtpBtn = document.querySelector('.login-btn');
+
 
     loginForm.addEventListener('submit', async function (e) {
         e.preventDefault();
+
+        if (sendOtpBtn.disabled) return;
+
         errorMessage.textContent = "";
         errorMessage.style.display = 'none';
 
-        const phone = document.getElementById('username').value.trim();
+        const phone = document.getElementById('phone').value.trim();
         if (!phone) {
             errorMessage.textContent = "Please enter your mobile number.";
             errorMessage.style.display = 'block';
             return;
         }
+
+         // 🔥 Disable button immediately
+        sendOtpBtn.disabled = true;
+        sendOtpBtn.textContent = "Sending OTP...";
+        sendOtpBtn.classList.add('disabled');
 
         try {
             const response = await fetch('/api/auth/send-otp', {
@@ -28,6 +38,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }else if (response.ok) {
                 const data = await response.json();
 
+                sendOtpBtn.textContent = "OTP Sent";
                 localStorage.setItem('pendingPhone', phone);
                 await showMessage.alert("OTP sent successfully!", {
                     title: "success",
@@ -35,6 +46,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
                 window.location.href = "otp-verification.html?mode=login";
             } else {
+                // API error → re-enable button
+                sendOtpBtn.disabled = false;
+                sendOtpBtn.textContent = "Send OTP";
+                sendOtpBtn.classList.remove('disabled');
+
                 // Handle error responses
                 const contentType = response.headers.get("content-type");
 
@@ -54,6 +70,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
             }
         } catch (error) {
+            // network error → re-enable
+            sendOtpBtn.disabled = false;
+            sendOtpBtn.textContent = "Send OTP";
+            sendOtpBtn.classList.remove('disabled');
+
             errorMessage.textContent = "Network error. Please check your connection and try again.";
             errorMessage.style.display = 'block';
         }

@@ -51,7 +51,7 @@
        document.getElementById('pincode').textContent = userData.zipCode || 'N/A';
        const createdAt = userData.createdAt ? new Date(userData.createdAt).toISOString().split('T')[0] : 'N/A';
        document.getElementById('memberSince').textContent = createdAt || 'N/A';
-       document.getElementById('country').textContent = userData.country || 'India';
+       document.getElementById('country').value = userData.country || 'Other';
 
        const initials = userData.fullName?.charAt(0).toUpperCase() || 'NA';
        document.getElementById('avatarInitial').textContent = initials;
@@ -68,8 +68,7 @@
            { id: 'address', type: 'text' },
            { id: 'city', type: 'text' },
            { id: 'state', type: 'text' },
-           { id: 'pincode', type: 'text' },
-           { id: 'country', type: 'text' }
+           { id: 'pincode', type: 'text' }
        ];
 
        editableFields.forEach(field => {
@@ -87,6 +86,7 @@
            element.parentNode.replaceChild(input, element);
        });
 
+
        // Update button states
        document.getElementById('editProfileBtn').style.display = 'none';
        document.getElementById('changePasswordBtn').textContent = 'Save';
@@ -94,6 +94,12 @@
        document.getElementById('changePasswordBtn').classList.add('btn-success');
 
        await showMessage.alert('Edit mode enabled. Make your changes and click Save.', 'info');
+
+       // Enable country (same edit flow)
+              const country = document.getElementById('country');
+              if (country) {
+                  country.disabled = false;
+              }
    }
 
    // Convert input fields back to text and save
@@ -170,7 +176,7 @@
    function disableEditMode(data) {
        isEditMode = false;
 
-       const fields = ['fullName', 'phone', 'address', 'city', 'state', 'pincode', 'country'];
+       const fields = ['fullName', 'phone', 'address', 'city', 'state', 'pincode'];
 
        fields.forEach(fieldId => {
            const input = document.getElementById(fieldId);
@@ -189,6 +195,13 @@
        document.getElementById('changePasswordBtn').textContent = 'Change Password';
        document.getElementById('changePasswordBtn').classList.remove('btn-success');
        document.getElementById('changePasswordBtn').classList.add('btn-secondary');
+
+       // Disable country after save
+       const country = document.getElementById('country');
+       if (country) {
+           country.disabled = true;
+       }
+
    }
 
    // Show alert message

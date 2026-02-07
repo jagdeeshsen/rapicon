@@ -105,11 +105,19 @@
             margin-bottom: 5px;
         }
 
-        .info-value {
+        /*.info-value {
             font-size: 16px;
             color: #333;
             font-weight: 500;
+        }*/
+        .info-value {
+            width: 100%;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 14px;
         }
+
 
         .action-buttons {
             display: flex;
@@ -162,7 +170,7 @@
             box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
         }
 
-        .stats-container {
+        /*.stats-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 20px;
@@ -175,9 +183,39 @@
             border-radius: 12px;
             color: white;
             text-align: center;
+        }*/
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* smaller cards */
+            gap: 12px; /* tighter spacing */
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 14px 10px;          /* reduced padding */
+            border-radius: 10px;
+            color: white;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .stat-card:active {
+            transform: scale(0.97);     /* app-like tap effect */
         }
 
         .stat-number {
+            font-size: 20px;            /* smaller number */
+            font-weight: 600;
+        }
+
+        .stat-label {
+            font-size: 13px;            /* compact label */
+            opacity: 0.9;
+        }
+
+        /*.stat-number {
             font-size: 32px;
             font-weight: 700;
             margin-bottom: 5px;
@@ -186,7 +224,7 @@
         .stat-label {
             font-size: 14px;
             opacity: 0.9;
-        }
+        }*/
 
         .alert {
             padding: 15px 20px;

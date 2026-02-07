@@ -20,16 +20,8 @@
 
         <div class="stats-container">
             <div class="stat-card" onclick="window.location.href='/installment-payment.html' ">
-                <div class="stat-number">24</div>
+                <div class="stat-number">0</div>
                 <div class="stat-label">Orders</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">12</div>
-                <div class="stat-label">Reviews</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">156</div>
-                <div class="stat-label">Points</div>
             </div>
         </div>
 
@@ -74,10 +66,45 @@
                     <div class="info-label">Pin Code</div>
                     <div class="info-value" id="pincode">462001</div>
                 </div>
-                <div class="info-item">
+                <!--<div class="info-item">
                     <div class="info-label">Country</div>
                     <div class="info-value" id="country">India</div>
+                </div>-->
+                <div class="info-item">
+                    <div class="info-label">Country</div>
+                    <input
+                            list="countryList"
+                            id="country"
+                            class="info-value"
+                            placeholder="Select country"
+                            disabled
+                    />
+
+                    <datalist id="countryList">
+                        <option value="India">
+                        <option value="United States">
+                        <option value="United Kingdom">
+                        <option value="Canada">
+                        <option value="Australia">
+                        <option value="Germany">
+                        <option value="France">
+                        <option value="Japan">
+                        <option value="China">
+                        <option value="Brazil">
+                        <option value="South Africa">
+                        <option value="Singapore">
+                        <option value="UAE">
+                        <option value="Saudi Arabia">
+                        <option value="New Zealand">
+                        <option value="Sri Lanka">
+                        <option value="Bangladesh">
+                        <option value="Nepal">
+                        <option value="Bhutan">
+                        <option value="Other">
+                            <!-- add more anytime -->
+                    </datalist>
                 </div>
+
             </div>
         </div>
 
