@@ -251,8 +251,8 @@ public class authController {
 
     @PostMapping("/login-vendor")
     public ResponseEntity<Map<String, String>> loggingVendor(@RequestBody Map<String, String> loginData) {
-        String username = loginData.get("username");
-        String password = loginData.get("password");
+        String username = loginData.get("username").trim();
+        String password = loginData.get("password").trim();
 
         Vendor vendor = vendorService.getVendorByUsername(username);
         if(vendor==null){
