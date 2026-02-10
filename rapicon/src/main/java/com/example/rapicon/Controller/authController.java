@@ -60,17 +60,19 @@ public class authController {
     public ResponseEntity<Map<String, String>> register(@RequestBody Map<String, String> request) {
 
         try{
-            String phone = request.get("phone");
-            String email = request.get("email");
+            String phone = request.get("phone").trim();
+            String email = request.get("email").trim();
+
+            String fullName= request.getOrDefault("person", "Guest").trim();
 
             // Validate input
-            if (phone == null || phone.isBlank() || email == null || email.isBlank()) {
+            if (phone.isEmpty() || phone.isBlank() || email.isEmpty() || email.isBlank()) {
                 return ResponseEntity.badRequest().body(Map.of(
                         "message", "Phone number and email are required"
                 ));
             }
 
-            // check if user already exists
+            // check if user already exists by phone
             Optional<User> optionalUser= userService.findUserByPhone(phone);
 
             if(optionalUser.isPresent()){
@@ -78,9 +80,21 @@ public class authController {
                         .body(Map.of("message", "User with this phone number already exists"));
             }
 
+            // check if user already exists by email
+            Optional<User> optionalUser1= userService.findUserByPhone(phone);
+
+            if(optionalUser1.isPresent()){
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(Map.of("message", "User with this email address already exists"));
+            }
+
             User user= new User();
-            user.setPhone(phone);
-            user.setEmail(email);
+            user.setPhone(phone.trim());
+            user.setEmail(email.trim());
+
+            if(fullName!= null){
+                user.setFullName(fullName);
+            }
 
             userService.registerUser(user);
 

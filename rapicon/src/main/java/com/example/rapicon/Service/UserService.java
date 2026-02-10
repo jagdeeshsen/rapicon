@@ -43,7 +43,6 @@ public class UserService {
         return userRepository.findById(id);
    }
 
-   /// =============================== new code ===================///
 
    public Optional<User> findUserByPhone(String phone){
         return userRepository.findByPhone(phone);
@@ -51,5 +50,9 @@ public class UserService {
 
    public void updateUser(User user){
        userRepository.save(user);
+   }
+
+   public Optional<User> findUserByEmail(String email){
+        return userRepository.findByEmail(email);
    }
 }
