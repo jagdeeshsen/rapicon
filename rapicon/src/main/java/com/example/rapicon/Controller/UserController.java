@@ -37,8 +37,8 @@ public class UserController {
         return ResponseEntity.ok(designs);
     }
 
-    @GetMapping("/get-user")
-    public ResponseEntity<?> getUserById(@RequestParam Long id){
+    @GetMapping("/get-user/{id}")
+    public ResponseEntity<?> getUserById(@PathVariable Long id){
         Optional<User> user= userService.findById(id);
 
         if(user.isPresent()){
