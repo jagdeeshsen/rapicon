@@ -141,9 +141,9 @@ public class authController {
     // ✅ Step 1: Send OTP to user's phone
     @PostMapping("/send-otp")
     public ResponseEntity<?> sendOtp(@RequestBody Map<String, String> request) {
-        String phone = request.get("phone");
+        String phone = request.get("phone").trim();
 
-        if (phone == null || phone.isEmpty()) {
+        if (phone.isEmpty()) {
             return ResponseEntity.badRequest().body(Map.of("message", "Phone number is required"));
         }
 
@@ -170,10 +170,10 @@ public class authController {
     // ✅ Step 2: Verify OTP and Login
     @PostMapping("/verify-otp")
     public ResponseEntity<?> verifyOtp(@RequestBody Map<String, String> request) {
-        String phone = request.get("phone");
-        String otp = request.get("otp");
+        String phone = request.get("phone").trim();
+        String otp = request.get("otp").trim();
 
-        if (phone == null || phone.isEmpty()) {
+        if (phone.isEmpty()) {
             return ResponseEntity.badRequest()
                     .body(Map.of("message", "Phone number is required"));
         }

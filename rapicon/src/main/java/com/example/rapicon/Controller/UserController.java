@@ -38,9 +38,14 @@ public class UserController {
     }
 
     @GetMapping("/get-user")
-    public ResponseEntity<User> getUserById(@RequestParam Long id){
+    public ResponseEntity<?> getUserById(@RequestParam Long id){
         Optional<User> user= userService.findById(id);
-        return ResponseEntity.ok(user.get());
+
+        if(user.isPresent()){
+            return ResponseEntity.status(HttpStatus.OK).body(user.get());
+        }else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "User not found."));
+        }
     }
 
     @PutMapping("/update-user")
