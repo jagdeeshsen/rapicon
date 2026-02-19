@@ -14,7 +14,7 @@
        }
 
        try {
-           const response = await fetch("/api/user/get-user?id=" + id, {
+           const response = await fetch(`api/user/get-user/${id}`, {
                method: 'GET',
                headers: {
                    'Authorization': `Bearer ${token}`,
@@ -64,7 +64,7 @@
        // List of editable fields (excluding email and memberSince)
        const editableFields = [
            { id: 'fullName', type: 'text' },
-           { id: 'phone', type: 'tel' },
+           { id: 'email', type: 'text' },
            { id: 'address', type: 'text' },
            { id: 'city', type: 'text' },
            { id: 'state', type: 'text' },
@@ -118,7 +118,7 @@
 
            id: id,
            fullName: document.getElementById('fullName').value.trim(),
-           phone: document.getElementById('phone').value.trim(),
+           email: document.getElementById('email').value.trim(),
            streetAddress: document.getElementById('address').value.trim(),
            city: document.getElementById('city').value.trim(),
            state: document.getElementById('state').value.trim(),
@@ -132,8 +132,8 @@
            return;
        }
 
-       if (!updatedData.phone) {
-           showAlert('Phone number is required', 'error');
+       if (!updatedData.email) {
+           showAlert('Email address is required', 'error');
            return;
        }
 
@@ -176,7 +176,7 @@
    function disableEditMode(data) {
        isEditMode = false;
 
-       const fields = ['fullName', 'phone', 'address', 'city', 'state', 'pincode'];
+       const fields = ['fullName', 'email', 'address', 'city', 'state', 'pincode'];
 
        fields.forEach(fieldId => {
            const input = document.getElementById(fieldId);
