@@ -59,7 +59,7 @@ public class UserController {
 
         User updatedUser= existUser.get();
         updatedUser.setFullName(request.get("fullName"));
-        updatedUser.setEmail(existUser.get().getEmail());
+        updatedUser.setEmail(request.get("email"));
         //updatedUser.setPhone(request.get("phone"));
         updatedUser.setCity(request.get("city"));
         updatedUser.setState(request.get("state"));
