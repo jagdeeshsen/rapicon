@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -57,5 +58,8 @@ public class Vendor {
     private String zipCode;
     private String country;
     private Timestamp createdAt;
+
+    private boolean deleted= false;
+    private LocalDateTime deletedAt;
 
 }

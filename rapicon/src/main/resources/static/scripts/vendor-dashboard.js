@@ -201,24 +201,59 @@ async function cancelEdit() {
 }
 
 // Delete account function
-function deleteAccount() {
-  //const confirmation = confirm('⚠️ WARNING: This will permanently delete your account and all associated data. This action cannot be undone.\n\nAre you absolutely sure you want to delete your account?');
-  showMessage.alert("Delete Feature coming soon!");
-  /*if (confirmation) {
-    const finalConfirmation = prompt('Type "DELETE" to confirm account deletion:');
+async function deleteAccount() {
+  const token = localStorage.getItem('vendor_token');
+  const id = localStorage.getItem('vendor_id');
 
-    if (finalConfirmation === 'DELETE') {
-      // Remove vendor data from localStorage
-      //localStorage.removeItem('vendorData');
+  if (!token || !id) {
+    await showMessage.alert('Authentication required. Please login again.', 'error');
+    return;
+  }
 
-      alert('Your account has been successfully deleted.');
+  const confirmDelete = await showMessage.confirm(
+      '⚠️ WARNING: This will permanently delete your account and all associated data. This action cannot be undone.\n\nAre you absolutely sure you want to delete your account?'
+  );
 
-      // Redirect to registration or login page
-      window.location.href = 'register-now.html'; // Change to your registration page
-    } else if (finalConfirmation !== null) {
-      alert('Account deletion cancelled. Text did not match.');
-    }
-  }*/
+ if (!confirmDelete) return;
+
+ try {
+
+     // Ask password
+     const password = await showMessage.prompt('Please enter your password:');
+
+     if (!password) {
+         showAlert("Password is required", "error");
+         return;
+     }
+
+     // Delete account
+     const deleteResponse = await fetch("/api/vendor/delete-account", {
+         method: 'DELETE',
+         headers: {
+             'Authorization': `Bearer ${token}`,
+             'Content-Type': 'application/json'
+         },
+         body: JSON.stringify({ password: password })
+     });
+
+     if (!deleteResponse.ok) {
+         const errorData = await deleteResponse.json();
+         throw new Error(errorData.message || 'Failed to delete account');
+     }
+
+     showMessage.success('Account deleted successfully');
+
+     localStorage.clear();
+     sessionStorage.clear();
+
+     setTimeout(() => {
+         window.location.href = '/vendor-landing.html';
+     }, 1500);
+
+ } catch (error) {
+     showAlert(error.message || 'Error deleting account', 'error');
+     console.error(error);
+ }
 }
 
 // Edit profile function - only updates editable (non-required) fields

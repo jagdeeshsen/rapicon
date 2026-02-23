@@ -16,4 +16,6 @@ public interface PasswordResetTokenRepo extends JpaRepository<PasswordResetToken
     );
 
     void deleteByExpiresAtBefore(LocalDateTime now);
+
+    void deleteByVendorId(Long vendorId);
 }

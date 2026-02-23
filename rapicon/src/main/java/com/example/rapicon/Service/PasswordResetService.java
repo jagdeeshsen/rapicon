@@ -132,4 +132,8 @@ public class PasswordResetService {
         tokenRepository.deleteByExpiresAtBefore(LocalDateTime.now());
         log.info("Expired password reset tokens cleaned up");
     }
+
+    public void deleteTokensByVendorId(Long vendorId){
+        tokenRepository.deleteByVendorId(vendorId);
+    }
 }

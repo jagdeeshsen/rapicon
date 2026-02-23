@@ -3,6 +3,7 @@ package com.example.rapicon.Service;
 import com.example.rapicon.Models.Design;
 import com.example.rapicon.Models.Status;
 import com.example.rapicon.Repository.DesignRepo;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -77,5 +78,14 @@ public class DesignService{
 
     public Optional<Design> findDesignById(Long id){
         return designRepository.findById(id);
+    }
+
+    @Transactional
+    public void deactivateVendorDesigns(Long vendorId) {
+
+        designRepository.updateStatusByVendorId(
+                vendorId,
+                Status.DEACTIVATE
+        );
     }
 }

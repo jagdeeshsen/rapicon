@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -23,6 +24,12 @@ public class VendorService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private DesignService designService;
+
+    @Autowired
+    private PasswordResetService passwordResetService;
 
     public void registerVendor(Vendor vendor){
         vendor.setPassword(passwordEncoder.encode(vendor.getPassword()));
@@ -75,14 +82,17 @@ public class VendorService {
             if(!passwordEncoder.matches(password, vendor.get().getPassword())){
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
             }
-            //deleteVendorData(id);
+
+            Vendor deletedVendor= vendor.get();
+            deletedVendor.setDeleted(true);
+            deletedVendor.setDeletedAt(LocalDateTime.now());
+
+            designService.deactivateVendorDesigns(deletedVendor.getId());
+            passwordResetService.deleteTokensByVendorId(deletedVendor.getId());
+
+            vendorRepo.save(deletedVendor);
         }
     }
 
-    /*private void deleteVendorData(Long id){
-        paymentDetailsService.deleteByUserId(id);
-        orderService.deleteByUser(id);
-        cartItemService.deleteItemByUser(id);
-        userRepository.deleteById(id);
-    }*/
+
 }

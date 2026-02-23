@@ -269,7 +269,8 @@ public class authController {
         String password = loginData.get("password").trim();
 
         Vendor vendor = vendorService.getVendorByUsername(username);
-        if(vendor==null){
+
+        if(vendor.isDeleted() || vendor==null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of("message", "No vendor found with this username. Register first to login."));
         }
