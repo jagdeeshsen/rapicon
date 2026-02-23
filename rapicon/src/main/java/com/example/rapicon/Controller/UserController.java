@@ -3,11 +3,15 @@ package com.example.rapicon.Controller;
 import com.example.rapicon.Models.Design;
 import com.example.rapicon.Models.Status;
 import com.example.rapicon.Models.User;
+import com.example.rapicon.Security.UserDetailsImpl;
 import com.example.rapicon.Service.DesignService;
 import com.example.rapicon.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -70,5 +74,17 @@ public class UserController {
         userService.updateUser(updatedUser);
 
         return ResponseEntity.ok(Map.of("message", "Profile Updated Successfully"));
+    }
+
+    @DeleteMapping("/delete-account")
+    //@PreAuthorize("hasRole('USER')")
+    public ResponseEntity<?> deleteUserAccount(@RequestBody Map<String, String> request, Authentication authentication){
+        UserDetailsImpl userDetails= (UserDetailsImpl) authentication.getPrincipal();
+
+        Long userId= userDetails.getId();
+        String role = userDetails.getAuthorities().iterator().next().getAuthority();
+
+        userService.deleteAccountBasedOnRole(userId, role, request);
+        return ResponseEntity.ok(Map.of("message", "Account deleted permanently"));
     }
 }

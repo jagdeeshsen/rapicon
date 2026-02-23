@@ -2,6 +2,7 @@ package com.example.rapicon.Controller;
 
 import com.example.rapicon.Models.Vendor;
 import com.example.rapicon.Security.JwtUtil;
+import com.example.rapicon.Security.UserDetailsImpl;
 import com.example.rapicon.Service.PasswordResetService;
 import com.example.rapicon.Service.VendorService;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -72,5 +74,17 @@ public class VendorController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("message", "Failed to update vendor profile", "error", e.getMessage()));
         }
+    }
+
+    @DeleteMapping("/delete-account")
+    //@PreAuthorize("hasRole('USER')")
+    public ResponseEntity<?> deleteUserAccount(@RequestBody Map<String, String> request, Authentication authentication){
+        UserDetailsImpl userDetails= (UserDetailsImpl) authentication.getPrincipal();
+
+        Long vendorId= userDetails.getId();
+        String role = userDetails.getAuthorities().iterator().next().getAuthority();
+
+        vendorService.deleteAccountBasedOnRole(vendorId, role, request);
+        return ResponseEntity.ok(Map.of("message", "Account deleted permanently"));
     }
 }

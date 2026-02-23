@@ -256,6 +256,79 @@
        }
    });
 
+
+    // Delete functionality
+   document.getElementById('deleteBtn').addEventListener('click', async function () {
+
+       const token = localStorage.getItem('user_token');
+       const id = localStorage.getItem('user_id');
+       const phone = originalUserData.phone;
+
+       if (!token || !id) {
+           await showMessage.alert('Authentication required. Please login again.', 'error');
+           return;
+       }
+
+       const confirmDelete = await showMessage.confirm(
+           'This action is permanent. Are you sure you want to delete your account?'
+       );
+
+       if (!confirmDelete) return;
+
+       try {
+           showAlert('Sending OTP...', 'info');
+
+           // Send OTP
+           const otpResponse = await fetch('/api/auth/send-otp', {
+               method: 'POST',
+               headers: { 'Content-Type': 'application/json' },
+               body: JSON.stringify({ phone: phone })
+           });
+
+           if (!otpResponse.ok) {
+               throw new Error("Failed to send OTP");
+           }
+
+           await showMessage.alert("OTP sent to your registered mobile number", "success");
+
+           // Ask OTP
+           const otp = await showMessage.prompt('Please enter OTP:');
+
+           if (!otp) {
+               showAlert("OTP is required", "error");
+               return;
+           }
+
+           // Delete account
+           const deleteResponse = await fetch("/api/user/delete-account", {
+               method: 'DELETE',
+               headers: {
+                   'Authorization': `Bearer ${token}`,
+                   'Content-Type': 'application/json'
+               },
+               body: JSON.stringify({ otp: otp })
+           });
+
+           if (!deleteResponse.ok) {
+               const errorData = await deleteResponse.json();
+               throw new Error(errorData.message || 'Failed to delete account');
+           }
+
+           showMessage.success('Account deleted successfully');
+
+           localStorage.clear();
+           sessionStorage.clear();
+
+           setTimeout(() => {
+               window.location.href = '/otp-login.html';
+           }, 1500);
+
+       } catch (error) {
+           showAlert(error.message || 'Error deleting account', 'error');
+           console.error(error);
+       }
+   });
+
    // Edit Profile button - Enable edit mode
    document.getElementById('editProfileBtn').addEventListener('click', function() {
        enableEditMode();

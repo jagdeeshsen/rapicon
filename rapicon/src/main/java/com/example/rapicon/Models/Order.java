@@ -62,7 +62,7 @@ public class Order {
     private List<OrderItem> ordertemList= new ArrayList<>();
 
     @OneToMany(mappedBy = "order",cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<Installments> installmentsList= new ArrayList<>();
+    private List<Installments> installmentsList = new ArrayList<>();
 
     public enum OrderStatus{
         PROCESSING,

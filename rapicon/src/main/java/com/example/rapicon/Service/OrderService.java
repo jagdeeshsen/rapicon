@@ -35,4 +35,8 @@ public class OrderService {
         return orderRepo.save(order);
     }
 
+    public void deleteByUser(Long userId){
+        orderRepo.deleteByUserId(userId);
+    }
+
 }

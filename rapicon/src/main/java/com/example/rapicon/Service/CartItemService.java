@@ -4,6 +4,7 @@ import com.example.rapicon.Models.CartItem;
 import com.example.rapicon.Repository.CartItemRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -24,5 +25,10 @@ public class CartItemService {
 
     public void deleteCartItem(Long id){
         cartItemRepo.deleteById(id);
+    }
+
+
+    public void deleteItemByUser(Long userId){
+        cartItemRepo.deleteByUserId(userId);
     }
 }
