@@ -63,6 +63,7 @@ public class SecurityConfig {
                                 "/otp-login.html",
                                 "/loan-form.html",
                                 "/about-us.html",
+                                "/sitemap.xml",
                                 "/privacy-policy.html",
                                 "/register-now.html",
                                 "/otp-verification.html",
