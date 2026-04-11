@@ -95,6 +95,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/designs/**").hasRole("VENDOR")
                         .requestMatchers("/api/cart/**").permitAll()
                         .requestMatchers("/api/customer-query/**").permitAll()
+                        .requestMatchers("/api/payment/phonePe/**").permitAll()
                         .anyRequest().authenticated()
                 )
 
