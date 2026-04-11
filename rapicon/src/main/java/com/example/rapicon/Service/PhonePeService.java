@@ -117,4 +117,55 @@ public class PhonePeService {
         }
     }
 
+    //================================phone-pe sdk ==================================//
+    public PaymentResponse createSDKPayment(PaymentRequest request) {
+        try {
+            String token = oAuthService.getAccessToken();
+
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("merchantOrderId", request.getMerchantOrderId());
+            payload.put("amount", request.getAmount());
+
+            if (request.getExpireAfter() != null)
+                payload.put("expireAfter", request.getExpireAfter());
+
+            // ↓ Only difference from web — SDK_CHECKOUT instead of PG_CHECKOUT
+            Map<String, Object> paymentFlow = new HashMap<>();
+            paymentFlow.put("type", "SDK_CHECKOUT"); // no redirectUrl needed
+            payload.put("paymentFlow", paymentFlow);
+
+            if (request.getMetaInfo() != null)
+                payload.put("metaInfo", request.getMetaInfo());
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.set("Authorization", "O-Bearer " + token);
+            headers.set("Accept", "application/json");
+
+            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(payload, headers);
+
+            String apiUrl = "https://api.phonepe.com/apis/pg/checkout/v2/pay";
+
+            ResponseEntity<Map> resp = restTemplate.exchange(
+                    apiUrl, HttpMethod.POST, entity, Map.class
+            );
+
+            if (resp.getBody() == null)
+                throw new RuntimeException("Empty response from PhonePe");
+
+            Map<String, Object> body = resp.getBody();
+
+            PaymentResponse result = new PaymentResponse();
+            result.setOrderId((String) body.get("orderId")); // PhonePe's orderId for SDK
+            result.setPhonepe_token((String) body.get("token"));
+            result.setState((String) body.get("state"));
+            result.setExpireAt((Long) body.get("expireAt"));
+
+            return result;
+
+        } catch (Exception e) {
+            throw new RuntimeException("SDK Payment creation failed: " + e.getMessage(), e);
+        }
+    }
+
 }

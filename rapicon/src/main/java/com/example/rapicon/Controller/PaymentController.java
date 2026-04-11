@@ -69,4 +69,25 @@ public class PaymentController {
         RefundResponse response = phonePeService.getRefundStatus(merchantRefundId);
         return ResponseEntity.ok(response);
     }*/
+
+    @PostMapping("/initiate-sdk")
+    public ResponseEntity<?> initiateSDKPayment(@Valid @RequestBody PaymentRequest request) {
+
+        log.info("Initiating SDK payment for order: {}", request.getMerchantOrderId());
+
+        PaymentResponse response = phonePeService.createSDKPayment(request);
+
+        if (response != null && response.getOrderId() != null && response.getPhonepe_token() != null) {
+            return ResponseEntity.ok(Map.of(
+                    "orderId", response.getOrderId(),
+                    "token",   response.getPhonepe_token()
+            ));
+        }
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of(
+                        "success", false,
+                        "message", "SDK payment initiation failed"
+                ));
+    }
 }
