@@ -131,7 +131,7 @@ public class PhonePeService {
 
             // ↓ Only difference from web — SDK_CHECKOUT instead of PG_CHECKOUT
             Map<String, Object> paymentFlow = new HashMap<>();
-            paymentFlow.put("type", "SDK_CHECKOUT"); // no redirectUrl needed
+            paymentFlow.put("type", "PG_CHECKOUT"); // no redirectUrl needed
             payload.put("paymentFlow", paymentFlow);
 
             if (request.getMetaInfo() != null)
