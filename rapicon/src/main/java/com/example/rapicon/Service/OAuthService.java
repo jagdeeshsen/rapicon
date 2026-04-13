@@ -52,10 +52,7 @@ public class OAuthService {
             HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(formData, headers);
 
             // 4. URL selection
-            String url = "https://api.phonepe.com/apis/identity-manager/v1/oauth/token"; //https://api-preprod.phonepe.com/apis/pg-sandbox/v1/oauth/token";
-                    /*config.isProduction()
-                    ? "https://api.phonepe.com/apis/identity-manager/v1/oauth/token"
-                    : "https://api-preprod.phonepe.com/apis/pg-sandbox/v1/oauth/token";*/
+            String url = "https://api.phonepe.com/apis/identity-manager/v1/oauth/token";
 
             log.debug("OAuth URL: {}", url);
 

@@ -65,7 +65,7 @@ public class PhonePeService {
 
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(payload, headers);
 
-            String apiUrl =  "https://api.phonepe.com/apis/pg/checkout/v2/pay";       //"https://api-preprod.phonepe.com/apis/pg-sandbox/checkout/v2/pay";
+            String apiUrl =  "https://api.phonepe.com/apis/pg/checkout/v2/pay";
 
             ResponseEntity<Map> resp = restTemplate.exchange(
                     apiUrl,
@@ -144,7 +144,7 @@ public class PhonePeService {
 
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(payload, headers);
 
-            String apiUrl = "https://api.phonepe.com/apis/pg/checkout/v2/pay";
+            String apiUrl = "https://api.phonepe.com/apis/pg/checkout/v2/sdk/order";
 
             ResponseEntity<Map> resp = restTemplate.exchange(
                     apiUrl, HttpMethod.POST, entity, Map.class
