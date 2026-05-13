@@ -1,11 +1,7 @@
-package com.example.rapicon.Security;
+package com.example.rapicon.Config;
 
-import com.phonepe.sdk.pg.Env;
-import com.phonepe.sdk.pg.payments.v2.StandardCheckoutClient;
-import lombok.Data;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration

@@ -1,6 +1,8 @@
-package com.example.rapicon.Security;
+package com.example.rapicon.Config;
 
 
+import com.example.rapicon.Security.JwtFilter;
+import com.example.rapicon.Security.JwtUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -96,6 +98,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/cart/**").permitAll()
                         .requestMatchers("/api/customer-query/**").permitAll()
                         .requestMatchers("/api/payment/phonePe/**").permitAll()
+                        .requestMatchers("/api/**").permitAll()
                         .anyRequest().authenticated()
                 )
 

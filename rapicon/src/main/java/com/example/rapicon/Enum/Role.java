@@ -1,4 +1,4 @@
-package com.example.rapicon.Models;
+package com.example.rapicon.Enum;
 
 public enum Role {
     ADMIN,

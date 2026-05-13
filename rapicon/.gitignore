@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# .gitignore
+rapicon/src/main/resources/firebase-service-account.json

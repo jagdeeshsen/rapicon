@@ -1,13 +1,12 @@
 package com.example.rapicon.Service;
 
 import com.example.rapicon.Models.Design;
-import com.example.rapicon.Models.Status;
+import com.example.rapicon.Enum.Status;
 import com.example.rapicon.Repository.DesignRepo;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
 

@@ -1,6 +1,7 @@
 package com.example.rapicon.Controller;
 
 import com.example.rapicon.DTO.DesignRequestDTO;
+import com.example.rapicon.Enum.Status;
 import com.example.rapicon.Models.*;
 import com.example.rapicon.Security.UserDetailsImpl;
 import com.example.rapicon.Service.DesignService;
@@ -17,10 +18,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.security.PublicKey;
 import java.time.LocalDateTime;
 import java.util.*;
 

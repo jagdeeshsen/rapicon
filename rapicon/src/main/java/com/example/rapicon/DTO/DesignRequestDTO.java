@@ -1,17 +1,11 @@
 package com.example.rapicon.DTO;
 
-import com.example.rapicon.Models.Floor;
-import com.example.rapicon.Models.Status;
-import com.example.rapicon.Models.Vendor;
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 @Data

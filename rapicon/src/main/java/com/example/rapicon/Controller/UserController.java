@@ -1,7 +1,7 @@
 package com.example.rapicon.Controller;
 
 import com.example.rapicon.Models.Design;
-import com.example.rapicon.Models.Status;
+import com.example.rapicon.Enum.Status;
 import com.example.rapicon.Models.User;
 import com.example.rapicon.Security.UserDetailsImpl;
 import com.example.rapicon.Service.DesignService;
@@ -9,9 +9,7 @@ import com.example.rapicon.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

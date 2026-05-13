@@ -52,6 +52,13 @@
 			<scope>runtime</scope>
 		</dependency>
 
+		<!-- Firebase Admin SDK — sends push notifications -->
+		<dependency>
+			<groupId>com.google.firebase</groupId>
+			<artifactId>firebase-admin</artifactId>
+			<version>9.2.0</version>
+		</dependency>
+
 		<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-devtools -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
