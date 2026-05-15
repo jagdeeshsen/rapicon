@@ -28,16 +28,12 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class authController {
 
-    private UserService userService;
-    private VendorService vendorService;
-    private JwtUtil jwtUtil;
-    private PasswordResetService passwordResetService;
-    private OTPService otpService;
 
-    public authController(UserService userService, JwtUtil jwtUtil) {
-        this.userService = userService;
-        this.jwtUtil = jwtUtil;
-    }
+    private final UserService userService;
+    private final VendorService vendorService;
+    private final JwtUtil jwtUtil;
+    private final PasswordResetService passwordResetService;
+    private final OTPService otpService;
 
     @Value("${app.test-login.enabled:false}")
     private boolean testLoginEnabled;
