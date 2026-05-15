@@ -90,7 +90,7 @@ public class SecurityConfig {
                                 "/scripts/**"
                         ).permitAll()
                         .requestMatchers("/api/test/**").permitAll()
-                        .requestMatchers("/api/auth/**").permitAll() // ✅ your custom login/register
+                        .requestMatchers("/api/auth/**").permitAll() // your custom login/register
                         .requestMatchers("/api/user/approved").permitAll()
                         .requestMatchers("/api/vendor/**").permitAll()
                         .requestMatchers("/api/admin/**").permitAll()
@@ -102,14 +102,14 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
 
-                // ✅ disable Spring's default login/logout forms
+                // disable Spring's default login/logout forms
                 .formLogin(form -> form.disable())
                 .logout(logout -> logout.disable())
 
-                // ✅ enable Basic Auth (for testing via Postman/cURL)
+                // enable Basic Auth (for testing via Postman/cURL)
                 //.httpBasic(Customizer.withDefaults())
 
-                // ✅ make it stateless (good if you’ll use JWT later)
+                // make it stateless (good if you’ll use JWT later)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();

@@ -9,8 +9,8 @@ import com.example.rapicon.Service.OTPService;
 import com.example.rapicon.Service.PasswordResetService;
 import com.example.rapicon.Service.UserService;
 import com.example.rapicon.Service.VendorService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,21 +25,13 @@ import java.util.Optional;
 @RequestMapping("/api/auth")
 @Slf4j
 @CrossOrigin(origins = "*")
+@RequiredArgsConstructor
 public class authController {
 
-    @Autowired
     private UserService userService;
-
-    @Autowired
     private VendorService vendorService;
-
-    @Autowired
     private JwtUtil jwtUtil;
-
-    @Autowired
     private PasswordResetService passwordResetService;
-
-    @Autowired
     private OTPService otpService;
 
     public authController(UserService userService, JwtUtil jwtUtil) {
@@ -120,10 +112,6 @@ public class authController {
 
             String token = tokenHeader.replace("Bearer ", "").trim();
 
-            // Optionally invalidate the token
-            // If you have a blacklist service, add it there
-            //jwtUtil.blacklistToken(token); // implement this in your JwtUtil or a separate service
-
             return ResponseEntity.ok(Map.of(
                     "message", "Logout successful",
                     "status", "success"
@@ -138,7 +126,7 @@ public class authController {
 
     // otp verification methods
 
-    // ✅ Step 1: Send OTP to user's phone
+    // Send OTP to user's phone
     @PostMapping("/send-otp")
     public ResponseEntity<?> sendOtp(@RequestBody Map<String, String> request) {
         String phone = request.get("phone").trim();
@@ -147,7 +135,7 @@ public class authController {
             return ResponseEntity.badRequest().body(Map.of("message", "Phone number is required"));
         }
 
-        // ✅ GOOGLE REVIEW TEST LOGIN (NO OTP)
+        // GOOGLE REVIEW TEST LOGIN (NO OTP)
         if (testLoginEnabled && phone.equals(testLoginPhone)) {
             return ResponseEntity.ok(Map.of(
                     "message", "Test login enabled. OTP not required.",
@@ -167,7 +155,7 @@ public class authController {
         return ResponseEntity.ok(Map.of("message", "OTP sent successfully"));
     }
 
-    // ✅ Step 2: Verify OTP and Login
+    // Verify OTP and Login
     @PostMapping("/verify-otp")
     public ResponseEntity<?> verifyOtp(@RequestBody Map<String, String> request) {
         String phone = request.get("phone").trim();
@@ -186,15 +174,17 @@ public class authController {
 
         User user = userOpt.get();
 
-        // ✅ TEST LOGIN (NO OTP REQUIRED)
+        // TEST LOGIN (NO OTP REQUIRED)
         if (testLoginEnabled && phone.equals(testLoginPhone)) {
 
             UserDetailsImpl userDetails = UserDetailsImpl.build(user);
             String token = jwtUtil.generateToken(userDetails);
+            String refreshToken = jwtUtil.generateRefreshToken(userDetails);
 
             Map<String, Object> response = new HashMap<>();
             response.put("token", token);
-            response.put("role", "USER"); // or "USER"
+            response.put("refreshToken", refreshToken);
+            response.put("role", "USER");
             response.put("id", String.valueOf(user.getId()));
             response.put("fullName", user.getFullName());
             response.put("testLogin", true);
@@ -207,21 +197,16 @@ public class authController {
                     .body(Map.of("message", "Invalid or expired OTP"));
         }
 
-        /*Optional<User> userOpt= userService.findUserByPhone(phone);
-        if (userOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("message", "User not found"));
-        }*/
-
-        /*User user = userOpt.get();*/
         // Build UserDetailsImpl from your User entity
         UserDetailsImpl userDetails = UserDetailsImpl.build(user);
 
-        // Generate token with id, email, role, etc.
+        // Generate token and refreshToken with id, email, role, etc.
         String token = jwtUtil.generateToken(userDetails);
+        String refreshToken = jwtUtil.generateRefreshToken(userDetails);
 
         Map<String, Object> response= new HashMap<>();
         response.put("token", token);
+        response.put("refreshToken", refreshToken);
         response.put("role", "USER");
         response.put("id", String.valueOf(user.getId()));
         response.put("fullName", user.getFullName());
@@ -284,11 +269,13 @@ public class authController {
         // Build UserDetailsImpl from your User entity
         UserDetailsImpl vendorDetails = UserDetailsImpl.build(vendor);
 
-        // Generate token with id, email, role, etc.
+        // Generate token and refreshToken with id, email, role, etc.
         String token = jwtUtil.generateToken(vendorDetails);
+        String refreshToken = jwtUtil.generateRefreshToken(vendorDetails);
 
         return ResponseEntity.ok(Map.of(
                 "token", token,
+                "refreshToken", refreshToken,
                 "role", "VENDOR",
                 "id", String.valueOf(vendor.getId()), // optional, just for client convenience
                 "fullName", vendor.getFullName(),
@@ -305,10 +292,6 @@ public class authController {
             }
 
             String token = tokenHeader.replace("Bearer ", "").trim();
-
-            // Optionally invalidate the token
-            // If you have a blacklist service, add it there
-            //jwtUtil.blacklistToken(token); // implement this in your JwtUtil or a separate service
 
             return ResponseEntity.ok(Map.of(
                     "message", "Logout successful",
@@ -373,6 +356,53 @@ public class authController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("success", false, "message","An error occurred. Please try again"));
         }
+    }
+
+    // ------------ refresh token when token is expired ------------------
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refresh(@RequestBody Map<String, String> body) {
+        String refreshToken = body.get("refreshToken");
+
+        // 1. Token missing
+        if (refreshToken == null || refreshToken.isBlank()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("message", "Refresh token is required"));
+        }
+
+        // 2. Token invalid or expired
+        if (!jwtUtil.validateToken(refreshToken)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Refresh token expired. Please log in again."));
+        }
+
+        // 3. Make sure it is actually a refresh token
+        if (!jwtUtil.isRefreshToken(refreshToken)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Invalid token type"));
+        }
+
+        // 4. Load user from the token subject (username)
+        String username = jwtUtil.extractUsername(refreshToken);
+        String role = jwtUtil.extractRole(refreshToken);
+        Long id = jwtUtil.extractUserId(refreshToken);
+
+        UserDetailsImpl userDetails= null;
+        if(role.equals("USER")){
+            Optional<User> user= userService.findById(id);
+            if(user.isPresent() ) userDetails= UserDetailsImpl.build(user.get());
+        }else if(role.equals("VENDOR")){
+            Vendor vendor= vendorService.getVendorByUsername(username);
+            userDetails = UserDetailsImpl.build(vendor);
+        }
+
+        // 5. Issue new token pair
+        String newAccessToken  = jwtUtil.generateToken(userDetails);
+        String newRefreshToken = jwtUtil.generateRefreshToken(userDetails);
+
+        return ResponseEntity.ok(Map.of(
+                "accessToken",  newAccessToken,
+                "refreshToken", newRefreshToken
+        ));
     }
 
 }
