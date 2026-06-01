@@ -77,6 +77,7 @@ public class Order {
     public enum PaymentStatus{
         PENDING,
         COMPLETED,
-        FAILED;
+        FAILED,
+        PARTIALLY_PAID
     }
 }

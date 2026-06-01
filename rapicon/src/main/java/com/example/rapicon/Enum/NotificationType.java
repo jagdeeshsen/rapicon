@@ -10,5 +10,15 @@ public enum NotificationType {
     FOLLOW,
     ALERT,
     REMINDER,
-    SILENT
+    SILENT,
+
+    // ─── ADD these transaction-specific types ──────────────────────
+    PAYMENT_SUCCESS,
+    PAYMENT_FAILED,
+    ORDER_PLACED,
+    ORDER_ACCEPTED,
+    ORDER_REJECTED,
+    ORDER_COMPLETED,
+    REFUND_INITIATED,
+    REFUND_SUCCESS
 }
