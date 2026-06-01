@@ -3,8 +3,8 @@ package com.example.rapicon.Service;
 import com.example.rapicon.DTO.OrderRequestDTO;
 import com.example.rapicon.Models.*;
 import com.example.rapicon.Repository.OrderRepo;
+import com.example.rapicon.Repository.userRepo;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -19,8 +19,7 @@ import java.util.Optional;
 public class OrderService {
 
     private final OrderRepo orderRepo;
-    private final UserService userService;
-    private final TransactionNotificationService transactionNotificationService;
+    private final userRepo userRepo;
 
     public Order createOrder(OrderRequestDTO requestData){
         // generate merchantOrder id
@@ -35,7 +34,7 @@ public class OrderService {
         BigDecimal amountInPaisa= amount.multiply(new BigDecimal(100));
 
         // 2. Build order
-        User user = userService.findById(requestData.getUserId())
+        User user = userRepo.findById(requestData.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Order order = new Order();
@@ -103,8 +102,8 @@ public class OrderService {
         return orderRepo.findByUserId(userId);
     }
 
-    public Order updateOrder(Order order){
-        return orderRepo.save(order);
+    public void updateOrder(Order order){
+        orderRepo.save(order);
     }
 
     public void deleteByUser(Long userId){

@@ -3,32 +3,23 @@ package com.example.rapicon.Controller;
 import com.example.rapicon.DTO.*;
 import com.example.rapicon.Models.*;
 import com.example.rapicon.Service.*;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @RestController
 @RequestMapping("/api/orders")
 @CrossOrigin(origins = "*")
 @Slf4j
+@RequiredArgsConstructor
 public class OrderController {
 
-    @Autowired
-    private OrderService orderService;
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private PaymentDetailsService paymentDetailsService;
+    private final OrderService orderService;
+    private final PaymentDetailsService paymentDetailsService;
 
     @PostMapping("/create-order")
     public ResponseEntity<Map<String, Object>> createOrder(@RequestBody OrderRequestDTO requestData) {

@@ -3,9 +3,8 @@ package com.example.rapicon.Service;
 
 import com.example.rapicon.Models.User;
 import com.example.rapicon.Repository.userRepo;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -16,27 +15,14 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
-    @Autowired
     private final userRepo userRepository;
-    @Autowired
-    private final PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private OTPService otpService;
-
-    @Autowired
-    private CartItemService cartItemService;
-    @Autowired
-    private PaymentDetailsService paymentDetailsService;
-    @Autowired
-    private OrderService orderService;
-
-    public UserService(userRepo userRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
+    private final OTPService otpService;
+    private final CartItemService cartItemService;
+    private final PaymentDetailsService paymentDetailsService;
+    private final OrderService orderService;
 
     public void registerUser(User user) {
         user.setCreatedAt(new Timestamp(System.currentTimeMillis()));

@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.math.BigDecimal;
-import java.util.Base64;
 
 @Service
 public class RazorpayService {

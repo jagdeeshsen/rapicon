@@ -1,9 +1,8 @@
 package com.example.rapicon.Service;
 
-import com.example.rapicon.Models.User;
 import com.example.rapicon.Models.Vendor;
 import com.example.rapicon.Repository.VendorRepo;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,19 +16,13 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class VendorService {
 
-    @Autowired
-    private VendorRepo vendorRepo;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private DesignService designService;
-
-    @Autowired
-    private PasswordResetService passwordResetService;
+    private final VendorRepo vendorRepo;
+    private final PasswordEncoder passwordEncoder;
+    private final DesignService designService;
+    private final PasswordResetService passwordResetService;
 
     public void registerVendor(Vendor vendor){
         vendor.setPassword(passwordEncoder.encode(vendor.getPassword()));

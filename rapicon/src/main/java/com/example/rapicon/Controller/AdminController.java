@@ -6,7 +6,7 @@ import com.example.rapicon.Service.DesignService;
 import com.example.rapicon.Service.OrderService;
 import com.example.rapicon.Service.UserService;
 import com.example.rapicon.Service.VendorService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,19 +16,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/admin")
 @CrossOrigin(origins = "*")
+@RequiredArgsConstructor
 public class AdminController {
 
-    @Autowired
-    private DesignService designService;
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private OrderService orderService;
-
-    @Autowired
-    private VendorService vendorService;
+    private final DesignService designService;
+    private final UserService userService;
+    private final OrderService orderService;
+    private final VendorService vendorService;
 
 
     // -------------------------- Design Endpoints--------------------------------//
@@ -56,27 +50,6 @@ public class AdminController {
         designService.deleteDesign(id);
         return "Design deleted Successfully";
     }
-
-    /*@PutMapping("/update")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Design> updateDesignStatus(@RequestParam("id") Long id,
-                                                     @RequestParam("status") String status){
-
-        // Validate status
-        if (!status.equalsIgnoreCase("approved")
-                && !status.equalsIgnoreCase("pending")
-                && !status.equalsIgnoreCase("rejected")) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        try{
-            Design updateDesign= designService.updateDesignStatus(id, Status.valueOf(status.toUpperCase()));
-            return ResponseEntity.ok(updateDesign);
-        }catch (RuntimeException e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-
-    }*/
 
     @GetMapping("/designs/get/all")
     public ResponseEntity<List<Design>> getAllDesigns(){
