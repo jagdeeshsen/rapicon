@@ -2,7 +2,8 @@ package com.example.rapicon.Controller;
 
 import com.example.rapicon.Models.CustomerQuery;
 import com.example.rapicon.Service.CustomerQueryService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,13 +13,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/customer-query")
 @CrossOrigin(origins = "*")
+@RequiredArgsConstructor
 public class CustomerQueryController {
 
-    @Autowired
-    private CustomerQueryService customerQueryService;
+    private final CustomerQueryService customerQueryService;
 
     @PostMapping("/create-query")
     public ResponseEntity<Map<String,String>> createQuery(@RequestBody Map<String, String> request){
@@ -36,7 +38,7 @@ public class CustomerQueryController {
             response.put("message", message);
             return ResponseEntity.ok(response);
         }catch (Exception e) {
-            e.printStackTrace();
+            log.error("Failed to create query",e);
             response.put("message", "Failed to create query. Please try again.");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }

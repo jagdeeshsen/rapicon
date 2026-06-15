@@ -51,7 +51,7 @@ public class TransactionNotificationService {
         NotificationRequest userReq = new NotificationRequest();
         userReq.setUserId(userId);
         userReq.setTitle("Order placed successfully!");
-        userReq.setBody(String.format("Your order #%s has been placed. Waiting for confirmation.", orderId));
+        userReq.setBody(String.format("Your order #%s has been placed. We will send all materials to your registered email address shortly.", orderId));
         userReq.setType(NotificationType.ORDER_PLACED);
         userReq.setEntityId(orderId);
         userReq.setChannelId("orders");

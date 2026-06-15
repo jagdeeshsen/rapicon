@@ -1,43 +1,24 @@
 package com.example.rapicon.Controller;
 
-import com.example.rapicon.Models.Design;
-import com.example.rapicon.Enum.Status;
 import com.example.rapicon.Models.User;
 import com.example.rapicon.Security.UserDetailsImpl;
-import com.example.rapicon.Service.DesignService;
 import com.example.rapicon.Service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/user")
 @CrossOrigin(origins = "*")
+@RequiredArgsConstructor
 public class UserController {
 
-    @Autowired
-    private DesignService service;
-
-    @Autowired
-    private UserService userService;
-
-    /*@GetMapping("/me")
-    public ResponseEntity<User> getUserDetails(@RequestParam("username") String username){
-        User user= userService.findByUserName(username);
-        return ResponseEntity.ok(user);
-    }*/
-
-    @GetMapping("/approved")
-    public ResponseEntity<List<Design>> getApprovedDesigns(){
-        List<Design> designs= service.findDesignsByStatus(Status.APPROVED);
-        return ResponseEntity.ok(designs);
-    }
+    private final UserService userService;
 
     @GetMapping("/get-user/{id}")
     public ResponseEntity<?> getUserById(@PathVariable Long id){
@@ -62,7 +43,6 @@ public class UserController {
         User updatedUser= existUser.get();
         updatedUser.setFullName(request.get("fullName"));
         updatedUser.setEmail(request.get("email"));
-        //updatedUser.setPhone(request.get("phone"));
         updatedUser.setCity(request.get("city"));
         updatedUser.setState(request.get("state"));
         updatedUser.setCountry(request.get("country"));
@@ -75,7 +55,6 @@ public class UserController {
     }
 
     @DeleteMapping("/delete-account")
-    //@PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> deleteUserAccount(@RequestBody Map<String, String> request, Authentication authentication){
         UserDetailsImpl userDetails= (UserDetailsImpl) authentication.getPrincipal();
 

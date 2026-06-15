@@ -30,7 +30,7 @@ public class OrderController {
             }else {
                 amount= requestData.getTotalAmount();
             }
-            BigDecimal amountInPaisa= amount.multiply(new BigDecimal(100));
+            BigDecimal amountInPaise= amount.multiply(new BigDecimal(100));
 
             // 5. SAVE ONLY ONCE
             Order savedOrder = orderService.createOrder(requestData);
@@ -39,7 +39,7 @@ public class OrderController {
             Map<String, Object> response = new HashMap<>();
             response.put("id", savedOrder.getId());  // Your internal DB order ID
             response.put("merchantOrderId", savedOrder.getMerchantOrderId());     // Order ID for PhonePe
-            response.put("amount", amountInPaisa);
+            response.put("amount", amountInPaise);
             response.put("userId", savedOrder.getUserId());
             response.put("customerName", savedOrder.getCustomerName());
             response.put("customerEmail", savedOrder.getCustomerEmail());
@@ -51,7 +51,7 @@ public class OrderController {
         } catch (Exception e) {
             log.error("Failed to create order", e);
             return ResponseEntity.badRequest().body(
-                    Map.of("error", "Failed to create order: " + e.getMessage())
+                    Map.of("error", "Failed to create order")
             );
         }
     }
@@ -75,7 +75,7 @@ public class OrderController {
         } catch (Exception e) {
             log.error("Payment verification failed", e);
             return ResponseEntity.badRequest().body(
-                    Map.of("success", false, "error", "Payment verification failed: " + e.getMessage())
+                    Map.of("success", false, "error", "Payment verification failed")
             );
         }
     }
@@ -108,7 +108,7 @@ public class OrderController {
         } catch (Exception e) {
             log.error("Failed to update order status", e);
             return ResponseEntity.badRequest().body(
-                    Map.of("success", false, "error", e.getMessage())
+                    Map.of("success", false, "error", "Failed to update order status")
             );
         }
     }
@@ -152,7 +152,7 @@ public class OrderController {
         } catch (Exception e) {
             log.error("Payment verification failed", e);
             return ResponseEntity.badRequest().body(
-                    Map.of("success", false, "error", "Payment verification failed: " + e.getMessage())
+                    Map.of("success", false, "error", "Payment verification failed")
             );
         }
     }

@@ -39,16 +39,16 @@ public class OTPService {
             String apiKey = "614496334e56b";
             String senderId = "RAPICN";
 
-            // ✅ Add country code if missing
+            // Add country code if missing
             if (!phone.startsWith("91")) {
                 phone = "91" + phone;
             }
 
-            // ✅ EXACT template match - replace {#var#} with actual OTP
+            // EXACT template match - replace {#var#} with actual OTP
             String message = "Hello, Your OTP for login on rapiconinfra.com is " + otp +
                     ". please don't share it with other-RAPICON INFRASTRUCTURE";
 
-            // ✅ Get your Template ID from SMSAlert dashboard
+            // Get your Template ID from SMSAlert dashboard
             String templateId = "1707164855052378697";  // Replace with actual template ID
 
             String url = "https://www.smsalert.co.in/api/push.json?"
@@ -57,7 +57,7 @@ public class OTPService {
                     + "&sender=" + URLEncoder.encode(senderId, StandardCharsets.UTF_8)
                     + "&mobileno=" + phone
                     + "&text=" + URLEncoder.encode(message, StandardCharsets.UTF_8)
-                    + "&template_id=" + templateId  // ✅ REQUIRED
+                    + "&template_id=" + templateId  // REQUIRED
                     + "&unicode=0";
 
             HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
@@ -80,14 +80,12 @@ public class OTPService {
                 }
             }
 
-            System.out.println("📬 Response: " + response);
-
             if (responseCode == 200) {
                 JSONObject json = new JSONObject(response.toString());
                 String status = json.optString("status", "error");
 
                 if (status.equalsIgnoreCase("success")) {
-                    System.out.println("✅ OTP sent successfully!");
+                    System.out.println("OTP sent successfully!");
                 } else {
                     String description = json.optString("description", "Unknown error");
                     throw new RuntimeException("SMS failed: " + description);
@@ -97,9 +95,8 @@ public class OTPService {
             }
 
         } catch (Exception e) {
-            System.err.println("❌ Failed to send OTP: " + e.getMessage());
-            e.printStackTrace();
-            throw new RuntimeException("Failed to send OTP", e);
+            System.err.println("Failed to send OTP: " + e.getMessage());
+            throw new RuntimeException("Failed to send OTP");
         }
     }
 

@@ -6,11 +6,11 @@ import com.example.rapicon.Models.*;
 import com.example.rapicon.Security.UserDetailsImpl;
 import com.example.rapicon.Service.DesignService;
 import com.example.rapicon.Service.S3Service;
-import com.example.rapicon.Service.UserService;
 import com.example.rapicon.Service.VendorService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,23 +22,16 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/designs")
 @CrossOrigin(origins = "*")
+@RequiredArgsConstructor
 public class DesignController {
 
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private VendorService vendorService;
-
-    @Autowired
-    private DesignService designService;
-
-
-    @Autowired
-    private S3Service s3Service;
+    private final VendorService vendorService;
+    private final DesignService designService;
+    private final S3Service s3Service;
 
     // List of allowed file extensions
     private final List<String> ALLOWED_EXTENSIONS = Arrays.asList(
@@ -135,10 +128,9 @@ public class DesignController {
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            System.err.println("Error uploading design: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Error uploading design",e);
             response.put("success", false);
-            response.put("message", "Error uploading design: " + e.getMessage());
+            response.put("message", "Error uploading design");
             return ResponseEntity.status(500).body(response);
         }
     }
@@ -229,7 +221,8 @@ public class DesignController {
                     "design", updatedDesign
             ));
         }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating design: "+ e.getMessage());
+            log.error("Failed to update design",e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating design");
         }
     }
 
@@ -244,7 +237,8 @@ public class DesignController {
 
             return ResponseEntity.ok(myDesign);
         }catch (Exception e){
-            throw new RuntimeException("Error to get designs"+ e.getMessage());
+            log.error("Failed to fetch design",e);
+            throw new RuntimeException("Error to get designs");
         }
     }
 

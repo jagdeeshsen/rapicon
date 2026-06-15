@@ -3,7 +3,7 @@ package com.example.rapicon.Controller;
 import com.example.rapicon.DTO.PackageRequestDTO;
 import com.example.rapicon.Models.Package;
 import com.example.rapicon.Service.PackageService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,10 +14,10 @@ import java.util.Map;
 @RestController
 @RequestMapping("/package")
 @CrossOrigin(origins = "*")
+@RequiredArgsConstructor
 public class PackageController {
 
-    @Autowired
-    private PackageService packageService;
+    private final PackageService packageService;
 
     @PostMapping("/create-package")
     public ResponseEntity<?> createPackage(PackageRequestDTO request){
@@ -27,7 +27,7 @@ public class PackageController {
         pkg.setDescription(request.getDescription());
         pkg.setHighlights(request.getHighlights());
         pkg.setNoOfInstallments(request.getNoOfInstallments());
-        Package savedPkg= packageService.createPackage(pkg);
+        packageService.createPackage(pkg);
 
         return ResponseEntity.ok(Map.of("message", "Package created successfully"));
     }

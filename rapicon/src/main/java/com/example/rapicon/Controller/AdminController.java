@@ -7,12 +7,14 @@ import com.example.rapicon.Service.OrderService;
 import com.example.rapicon.Service.UserService;
 import com.example.rapicon.Service.VendorService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/admin")
 @CrossOrigin(origins = "*")
@@ -69,6 +71,7 @@ public class AdminController {
             }
             return ResponseEntity.status(HttpStatus.OK).body(design);
         }catch (RuntimeException e){
+            log.error("Failed to fetch design by id",e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }

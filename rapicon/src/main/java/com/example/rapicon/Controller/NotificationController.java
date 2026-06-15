@@ -46,7 +46,6 @@ public class NotificationController {
 
     // ─── Send notification endpoints (internal / admin use) ──────────
 
-    // POST /api/notifications/send
     // Send to a single user — triggered by order/payment/chat events
     @PostMapping("/notifications/send")
     public ResponseEntity<?> sendNotification(
@@ -56,7 +55,6 @@ public class NotificationController {
         return ResponseEntity.ok(Map.of("message", "Notification sent"));
     }
 
-    // POST /api/notifications/send/topic
     // Broadcast to all subscribers of a topic
     @PostMapping("/notifications/send/topic")
     public ResponseEntity<?> sendToTopic(
@@ -67,7 +65,6 @@ public class NotificationController {
         return ResponseEntity.ok(Map.of("message", "Topic notification sent"));
     }
 
-    // POST /api/notifications/send/multicast
     // Send to a list of users (e.g. city-based promo)
     @PostMapping("/notifications/send/multicast")
     public ResponseEntity<?> sendMulticast(

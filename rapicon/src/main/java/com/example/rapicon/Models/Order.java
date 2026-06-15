@@ -71,7 +71,7 @@ public class Order {
         CREATED,
         FAILED,
         REFUNDED,
-        EXPIRED;
+        EXPIRED
     }
 
     public enum PaymentStatus{

@@ -1,6 +1,7 @@
 package com.example.rapicon.Repository;
 
 import com.example.rapicon.Models.Notification;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,4 +24,8 @@ public interface NotificationRepo extends JpaRepository<Notification, Long> {
     @Modifying
     @Query("UPDATE Notification n SET n.isRead = true WHERE n.userId = :userId")
     void markAllAsRead(Long userId);
+
+    @Modifying
+    @Transactional
+    void deleteByUserId(Long userId);
 }

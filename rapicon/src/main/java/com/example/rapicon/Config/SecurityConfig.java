@@ -49,69 +49,52 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable()) // disable CSRF for APIs
+        http
+                .csrf(csrf -> csrf.disable())
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
 
-                        // Option allow
+                        // 1. Preflight requests
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                        // 2. Static/public frontend pages
                         .requestMatchers(
-                                "/",
-                                "/index.html",
-                                "/designinfo.html",
-                                "/payment.html",
-                                "/addtocard.html",
-                                "/userprofile.html",
-                                "/otp-login.html",
-                                "/loan-form.html",
-                                "/about-us.html",
-                                "/sitemap.xml",
-                                "/privacy-policy.html",
-                                "/register-now.html",
-                                "/otp-verification.html",
-                                "/terms-privacy.html",
-                                "/reset-password.html",
-                                "/reset-password.html",
-                                "/FAQ.html",
-                                "/vendor-landing.html",
-                                "/package-page.html",
-                                "/vendor-dashboard.html",
-                                "/reset-password.html/**",
-                                "/forgot-password.html",
-                                "/contact.html",
-                                "/login.html",
-                                "/installment-payment.html",
-                                "/register.html",
-                                "/user.html",
-                                "/admin.html",
-                                "/css/**",
-                                "/images/**",
-                                "/favicon.ico",
-                                "/scripts/**"
+                                "/", "/index.html", "/designinfo.html", "/payment.html",
+                                "/addtocard.html", "/userprofile.html", "/otp-login.html",
+                                "/loan-form.html", "/about-us.html", "/sitemap.xml",
+                                "/privacy-policy.html", "/register-now.html",
+                                "/otp-verification.html", "/terms-privacy.html",
+                                "/reset-password.html", "/reset-password.html/**",
+                                "/FAQ.html", "/vendor-landing.html", "/package-page.html",
+                                "/vendor-dashboard.html", "/forgot-password.html",
+                                "/contact.html", "/login.html", "/installment-payment.html",
+                                "/register.html", "/user.html", "/admin.html",
+                                "/css/**", "/images/**", "/favicon.ico", "/scripts/**"
                         ).permitAll()
-                        .requestMatchers("/api/test/**").permitAll()
-                        .requestMatchers("/api/auth/**").permitAll() // your custom login/register
-                        .requestMatchers("/api/user/approved").permitAll()
-                        .requestMatchers("/api/vendor/**").permitAll()
-                        .requestMatchers("/api/admin/**").permitAll()
-                        .requestMatchers("/api/designs/**").hasRole("VENDOR")
+
+                        // 3. Public API endpoints
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/designs/**").permitAll()       // browsing designs is public?
                         .requestMatchers("/api/cart/**").permitAll()
                         .requestMatchers("/api/customer-query/**").permitAll()
                         .requestMatchers("/api/payment/phonePe/**").permitAll()
-                        .requestMatchers("/api/**").permitAll()
+
+                        // 4. Role-protected endpoints (MOST SPECIFIC first)
+                        .requestMatchers("/api/admin/**").permitAll()
+                        .requestMatchers("/api/vendor/**").hasRole("VENDOR")
+
+                        // 5. Any other /api/** requires authentication
+                        .requestMatchers("/api/**").authenticated()
+
+                        // 6. Everything else also requires auth
                         .anyRequest().authenticated()
                 )
-
-                // disable Spring's default login/logout forms
                 .formLogin(form -> form.disable())
                 .logout(logout -> logout.disable())
-
-                // enable Basic Auth (for testing via Postman/cURL)
-                //.httpBasic(Customizer.withDefaults())
-
-                // make it stateless (good if you’ll use JWT later)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 

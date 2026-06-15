@@ -80,7 +80,7 @@ public class authController {
             user.setPhone(phone.trim());
             user.setEmail(email.trim());
 
-            if(fullName!= null){
+            if(!fullName.isEmpty()){
                 user.setFullName(fullName);
             }
 
@@ -92,9 +92,9 @@ public class authController {
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("User registration failed", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("message","Registration failed.","error",e.getMessage()));
+                    .body(Map.of("message","Registration failed"));
         }
     }
 
@@ -113,14 +113,11 @@ public class authController {
                     "status", "success"
             ));
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("User logout failed", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("message", "Logout failed", "error", e.getMessage()));
+                    .body(Map.of("message", "Logout failed"));
         }
     }
-
-
-    // otp verification methods
 
     // Send OTP to user's phone
     @PostMapping("/send-otp")
@@ -238,9 +235,9 @@ public class authController {
             response.put("message", "Vendor registered successfully!");
             return ResponseEntity.ok(response);
         }catch(Exception e){
-            e.printStackTrace();
+            log.error("Vendor registration failed",e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("message","Registration failed", "error", e.getMessage()));
+                    .body(Map.of("message","Registration failed"));
         }
     }
 
@@ -251,7 +248,7 @@ public class authController {
 
         Vendor vendor = vendorService.getVendorByUsername(username);
 
-        if(vendor.isDeleted() || vendor==null){
+        if(vendor.isDeleted()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of("message", "No vendor found with this username. Register first to login."));
         }
@@ -259,7 +256,6 @@ public class authController {
         // Check password manually
         if (!new BCryptPasswordEncoder().matches(password, vendor.getPassword())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message","Invalid username or password"));
-            //throw new RuntimeException("Invalid credentials");
         }
 
         // Build UserDetailsImpl from your User entity
@@ -294,9 +290,9 @@ public class authController {
                     "status", "success"
             ));
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Vendor logout failed", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("message", "Logout failed", "error", e.getMessage()));
+                    .body(Map.of("message", "Logout failed"));
         }
     }
 
@@ -312,6 +308,7 @@ public class authController {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(Map.of("message","Password reset link sent successfully to the registered email"));
         } catch (Exception e) {
+            log.error("Failed to reset password", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("message","Failed to sent password reset link!"));
         }
@@ -346,7 +343,7 @@ public class authController {
         } catch (RuntimeException e) {
             log.error("Error resetting password", e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("success", false, "message", e.getMessage()));
+                    .body(Map.of("success", false, "message", "Error resetting password"));
         } catch (Exception e) {
             log.error("Unexpected error resetting password", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

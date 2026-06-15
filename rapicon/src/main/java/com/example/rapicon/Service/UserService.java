@@ -1,9 +1,15 @@
 package com.example.rapicon.Service;
 
 
+import com.example.rapicon.Models.Notification;
 import com.example.rapicon.Models.User;
 import com.example.rapicon.Repository.userRepo;
+import com.google.firebase.messaging.BatchResponse;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.MulticastMessage;
+import com.google.firebase.messaging.SendResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +22,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
 
     private final userRepo userRepository;
@@ -23,6 +30,8 @@ public class UserService {
     private final CartItemService cartItemService;
     private final PaymentDetailsService paymentDetailsService;
     private final OrderService orderService;
+    private final FcmTokenService fcmTokenService;
+    private final NotificationService notificationService;
 
     public void registerUser(User user) {
         user.setCreatedAt(new Timestamp(System.currentTimeMillis()));
@@ -82,9 +91,11 @@ public class UserService {
    }
 
    private void deleteUserData(Long id){
+        fcmTokenService.deleteAllTokensForUser(id);
+        cartItemService.deleteItemByUser(id);
+        notificationService.deleteByUserId(id);
         paymentDetailsService.deleteByUserId(id);
         orderService.deleteByUser(id);
-        cartItemService.deleteItemByUser(id);
         userRepository.deleteById(id);
    }
 }

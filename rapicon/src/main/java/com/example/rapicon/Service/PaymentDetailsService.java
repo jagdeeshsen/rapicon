@@ -127,6 +127,10 @@ public class PaymentDetailsService {
 
     public void deleteByUserId(Long userId){
         List<Long> orderIds = orderRepo.findIdsByUserId(userId);
+
+        if(orderIds == null || orderIds.isEmpty()){
+            return ;
+        }
         paymentDetailsRepo.deleteByOrderIds(orderIds);
     }
 }

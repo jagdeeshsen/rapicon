@@ -1,16 +1,12 @@
 package com.example.rapicon.Controller;
 
 import com.example.rapicon.Models.Vendor;
-import com.example.rapicon.Security.JwtUtil;
 import com.example.rapicon.Security.UserDetailsImpl;
-import com.example.rapicon.Service.PasswordResetService;
 import com.example.rapicon.Service.VendorService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,14 +19,7 @@ import java.util.Map;
 @CrossOrigin(origins = "*")
 public class VendorController {
 
-    @Autowired
-    private VendorService vendorService;
-
-    @Autowired
-    private PasswordResetService passwordResetService;
-
-    @Autowired
-    private JwtUtil jwtUtil;
+    private final VendorService vendorService;
 
     @GetMapping("/get-vendor/{id}")
     public ResponseEntity<Vendor> getVendorById(@PathVariable String id){
@@ -72,13 +61,13 @@ public class VendorController {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(Map.of("message", "Vendor profile updated successfully!", "vendor", savedVendor));
         }catch (Exception e){
+            log.error("Failed to update vendor profile",e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("message", "Failed to update vendor profile", "error", e.getMessage()));
+                    .body(Map.of("message", "Failed to update vendor profile"));
         }
     }
 
     @DeleteMapping("/delete-account")
-    //@PreAuthorize("hasRole('VENDOR')")
     public ResponseEntity<?> deleteUserAccount(@RequestBody Map<String, String> request, Authentication authentication){
         UserDetailsImpl userDetails= (UserDetailsImpl) authentication.getPrincipal();
 
