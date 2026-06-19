@@ -181,7 +181,7 @@ async function renderDesigns() {
     try {
         const token = localStorage.getItem('user_token');
 
-        const response = await fetch('/api/user/approved', {
+        const response = await fetch('/api/admin/approved', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
