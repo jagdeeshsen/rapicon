@@ -39,12 +39,13 @@ function redirectToLogin() {
 
 async function fetchVendorData() {
   const id= localStorage.getItem('vendor_id');
+  const token = localStorage.getItem('vendor_token');
   try {
     const response = await fetch(`/api/vendor/get-vendor/${id}`, {
       method: 'GET',
-      credentials: 'include',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
       }
     });
 
