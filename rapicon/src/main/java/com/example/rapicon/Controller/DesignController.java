@@ -329,7 +329,7 @@ public class DesignController {
         return ResponseEntity.ok(designList);
     }
 
-    @PutMapping("/update")
+    /*@PutMapping("/update")
     @PreAuthorize("hasRole('VENDOR')")
     public ResponseEntity<?> updateDesignStatus(@RequestParam("id") Long id,
                                                      @RequestParam("status") String status){
@@ -352,5 +352,42 @@ public class DesignController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
+    }*/
+
+    @PutMapping("/update")
+    @PreAuthorize("hasRole('VENDOR')")
+    public ResponseEntity<?> updateDesignStatus(@RequestParam("id") Long id,
+                                                @RequestParam("status") String status) {
+
+        if (status == null || status.isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "message", "status is required", "success", false));
+        }
+
+        Status newStatus;
+        try {
+            newStatus = Status.valueOf(status.trim().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "message", "invalid status value: " + status, "success", false));
+        }
+
+        // Vendors may only deactivate their own design; approval/rejection is admin-only.
+        if (newStatus != Status.DEACTIVATE) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of(
+                    "message", "vendors are not permitted to set this status", "success", false));
+        }
+
+        try {
+            Design updated = designService.updateDesignStatus(id, newStatus);
+            return ResponseEntity.ok(Map.of(
+                    "design", updated,
+                    "message", "design status updated to " + updated.getStatus(),
+                    "status", updated.getStatus().name(),
+                    "success", true));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
+                    "message", "design not found", "success", false));
+        }
     }
 }
