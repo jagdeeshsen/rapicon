@@ -117,7 +117,7 @@ function showApiError(message) {
 
 async function registerUser(formData) {
     try {
-        const response = await fetch('/api/auth/create-vendor', {
+        const response = await fetch('/api/v1/auth/vendor', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

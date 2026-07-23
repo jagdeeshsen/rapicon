@@ -1,5 +1,6 @@
 package com.example.rapicon.Service;
 
+import com.example.rapicon.DTO.VendorRegistrationRequest;
 import com.example.rapicon.Models.Vendor;
 import com.example.rapicon.Repository.VendorRepo;
 import lombok.RequiredArgsConstructor;
@@ -24,10 +25,35 @@ public class VendorService {
     private final DesignService designService;
     private final PasswordResetService passwordResetService;
 
-    public void registerVendor(Vendor vendor){
-        vendor.setPassword(passwordEncoder.encode(vendor.getPassword()));
+    public Vendor registerVendor(VendorRegistrationRequest request){
+        Vendor vendor = new Vendor();
+
+        vendor.setFullName(request.getFullName());
+        vendor.setUsername(request.getUsername());
+        vendor.setEmail(request.getEmail());
+        vendor.setPhone(request.getPhone());
+        vendor.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        vendor.setCompanyName(request.getCompanyName());
+        vendor.setDegree(request.getDegree());
+        vendor.setExperience(request.getExperience());
+
+        vendor.setAccountNumber(request.getAccountNumber());
+        vendor.setIfscCode(request.getIfscCode());
+        vendor.setBankName(request.getBankName());
+        vendor.setBranchName(request.getBranchName());
+        vendor.setPanNumber(request.getPanNumber());
+        vendor.setGstNumber(request.getGstNumber());
+
+        vendor.setStreetAddress(request.getStreetAddress());
+        vendor.setCity(request.getCity());
+        vendor.setState(request.getState());
+        vendor.setZipCode(request.getZipCode());
+        vendor.setCountry(request.getCountry());
+
         vendor.setCreatedAt(new Timestamp(System.currentTimeMillis()));
-        vendorRepo.save(vendor);
+
+        return vendorRepo.save(vendor);
     }
 
     public Vendor getVendorById(Long id){

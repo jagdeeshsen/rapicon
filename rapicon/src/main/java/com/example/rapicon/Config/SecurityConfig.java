@@ -74,6 +74,7 @@ public class SecurityConfig {
 
                         // 3. Public API endpoints
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/api/designs/**").permitAll()       // browsing designs is public?
                         .requestMatchers("/api/cart/**").permitAll()
                         .requestMatchers("/api/customer-query/**").permitAll()

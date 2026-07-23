@@ -24,7 +24,6 @@ public class NotificationController {
 
     // ─── FCM Token endpoints ──────────────────────────────────────────
 
-    // POST /api/user/fcm-token
     @PostMapping("/user/fcm-token")
     public ResponseEntity<?> saveFcmToken(
             @RequestHeader("X-User-Id") Long userId,   // set by your JWT filter
@@ -34,7 +33,6 @@ public class NotificationController {
         return ResponseEntity.ok(Map.of("message", "FCM token saved"));
     }
 
-    // DELETE /api/user/fcm-token
     @DeleteMapping("/user/fcm-token")
     public ResponseEntity<?> deleteFcmToken(
             @RequestHeader("X-User-Id") Long userId,

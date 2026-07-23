@@ -44,61 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Step 1: Register user
-    /*form.addEventListener('submit', async (e) => {
-      e.preventDefault();
 
-      const email = document.getElementById('email').value.trim();
-      const phone = document.getElementById('phone').value.trim();
-
-      // Empty check
-      if (!email || !phone) {
-        showError('Please enter both email and phone number.');
-        return;
-      }
-
-      // Email validation
-      if (!isValidEmail(email)) {
-        showError('Please enter a valid email address.');
-        return;
-      }
-
-      // Phone validation
-      if (!isValidPhone(phone)) {
-        showError('Please enter a valid 10-digit mobile number.');
-        return;
-      }
-
-      registerBtn.disabled = true;
-      showSuccess('Registering...');
-
-      try {
-        const registerResult = await apiCall('/api/auth/register-user', { email, phone });
-
-        if (!registerResult.success) {
-          showError(registerResult.message || 'Registration failed.');
-          registerBtn.disabled = false;
-          return;
-        }
-
-        showSuccess('Account created successfully. Sending OTP...');
-        localStorage.setItem('pendingPhone', phone);
-
-        const otpResult = await apiCall('/api/auth/send-otp', { phone });
-
-        if (otpResult.success) {
-          showSuccess('OTP sent! Please verify to complete registration.');
-          window.location.href = '/otp-verification.html';
-        } else {
-          showError(otpResult.message || 'Failed to send OTP.');
-        }
-
-      } catch (err) {
-        showError('Something went wrong. Please try again.');
-      }
-
-      registerBtn.disabled = false;
-    });*/
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -124,10 +70,10 @@ document.addEventListener('DOMContentLoaded', () => {
         registerBtn.disabled = true;
         showSuccess('Registering...');
 
-        const registerResult = await apiCall('/api/auth/register-user', { email, phone });
+        const registerResult = await apiCall('/api/v1/auth/user', { email, phone });
 
         if (!registerResult.success) {
-            showError(registerResult.message); // ✅ REAL backend message
+            showError(registerResult.message); // REAL backend message
             registerBtn.disabled = false;
             return;
         }

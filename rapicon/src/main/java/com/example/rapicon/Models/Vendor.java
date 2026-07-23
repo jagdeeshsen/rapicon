@@ -41,15 +41,12 @@ public class Vendor {
     private String branchName;
 
     private String companyName;
-
     @Column(nullable = false)
     private String degree;
-
     @Column(nullable = false)
     private String experience;
 
     private String panNumber;
-
     private String gstNumber;
 
     private String streetAddress;

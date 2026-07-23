@@ -1,5 +1,6 @@
 package com.example.rapicon.Security;
 
+import com.example.rapicon.Models.Admin;
 import com.example.rapicon.Models.User;
 import com.example.rapicon.Models.Vendor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -54,6 +55,13 @@ public class UserDetailsImpl implements UserDetails {
         return new UserDetailsImpl(vendor.getId(),
                 vendor.getUsername(), vendor.getEmail(), vendor.getPassword(),authorities);
 
+    }
+
+    // ------------------- For Admin ------------------------//
+
+    public static UserDetailsImpl build(Admin admin) {
+        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        return new UserDetailsImpl(admin.getId(), admin.getUsername(), admin.getEmail(), admin.getPassword(), authorities);
     }
 
     @Override

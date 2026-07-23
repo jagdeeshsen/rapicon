@@ -10,7 +10,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
     };
 
     try {
-        const response = await fetch('/api/auth/login-vendor', {
+        const response = await fetch('/api/v1/auth/vendor/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

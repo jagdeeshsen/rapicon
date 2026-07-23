@@ -1,28 +1,26 @@
 package com.example.rapicon.Controller;
 
-import com.example.rapicon.DTO.ResetPasswordRequest;
+import com.example.rapicon.DTO.*;
+import com.example.rapicon.Models.Admin;
 import com.example.rapicon.Models.User;
 import com.example.rapicon.Models.Vendor;
 import com.example.rapicon.Security.JwtUtil;
 import com.example.rapicon.Security.UserDetailsImpl;
-import com.example.rapicon.Service.OTPService;
-import com.example.rapicon.Service.PasswordResetService;
-import com.example.rapicon.Service.UserService;
-import com.example.rapicon.Service.VendorService;
+import com.example.rapicon.Service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping({"/api/auth", "/api/v1/auth"})
 @Slf4j
 @CrossOrigin(origins = "*")
 @RequiredArgsConstructor
@@ -34,6 +32,8 @@ public class authController {
     private final JwtUtil jwtUtil;
     private final PasswordResetService passwordResetService;
     private final OTPService otpService;
+    private final AdminService adminService;
+    private final AuthService authService;
 
     @Value("${app.test-login.enabled:false}")
     private boolean testLoginEnabled;
@@ -44,58 +44,23 @@ public class authController {
 
     //--------------------------User Authentication Logic---------------------------------------------//
 
-    @PostMapping("/register-user")
-    public ResponseEntity<Map<String, String>> register(@RequestBody Map<String, String> request) {
+    @PostMapping("/user")
+    public ResponseEntity<?> register(@RequestBody @Valid UserRegistrationRequest request) {
 
-        try{
-            String phone = request.get("phone").trim();
-            String email = request.get("email").trim();
-
-            String fullName= request.getOrDefault("person", "Guest").trim();
-
-            // Validate input
-            if (phone.isEmpty() || phone.isBlank() || email.isEmpty() || email.isBlank()) {
-                return ResponseEntity.badRequest().body(Map.of(
-                        "message", "Phone number and email are required"
-                ));
-            }
-
-            // check if user already exists by phone
-            Optional<User> optionalUser= userService.findUserByPhone(phone);
-
-            if(optionalUser.isPresent()){
-                return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body(Map.of("message", "User with this phone number already exists"));
-            }
-
-            // check if user already exists by email
-            Optional<User> optionalUser1= userService.findUserByPhone(phone);
-
-            if(optionalUser1.isPresent()){
-                return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body(Map.of("message", "User with this email address already exists"));
-            }
-
-            User user= new User();
-            user.setPhone(phone.trim());
-            user.setEmail(email.trim());
-
-            if(!fullName.isEmpty()){
-                user.setFullName(fullName);
-            }
-
-            userService.registerUser(user);
-
-            Map<String, String> response= new HashMap<>();
-
-            response.put("message", "User registered successfully");
-            return ResponseEntity.ok(response);
-
-        } catch (Exception e) {
-            log.error("User registration failed", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("message","Registration failed"));
+        if(userService.userExistsByEmail(request.getEmail())){
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("message", "Email already exists try with another email address."));
         }
+
+        if(userService.userExistsByPhone(request.getPhone())){
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("message", "Phone already exists try with another phone number."));
+        }
+
+        User user = userService.registerUser(request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(Map.of("message", "User registration successfully!", "userId", user.getId()));
+
     }
 
     @PostMapping("/logout-user")
@@ -210,68 +175,40 @@ public class authController {
 
     // ----------------------------------Vendor Authentication Logic--------------------------------//
 
-    @PostMapping("/create-vendor")
-    public ResponseEntity<Map<String, String>> createVendor(@RequestBody Vendor vendor){
-        try {
-            // check if vendor exists
-            boolean emailExist= vendorService.vendorExistsByEmail(vendor.getEmail());
-            boolean usernameExits = vendorService.vendorExistsByUsername(vendor.getUsername());
-
-            if(emailExist){
-                return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body(Map.of("message", "Email already exists try with another email address"));
-            } else if (usernameExits) {
-                return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body(Map.of("message", "Username already exists try with another username"));
-            }
-
-            if (vendor.getPhone() == null || !vendor.getPhone().matches("\\d{10}")) {
-                return ResponseEntity.badRequest()
-                        .body(Map.of("message", "Invalid phone number. Must be 10 digits."));
-            }
-
-            vendorService.registerVendor(vendor);
-            Map<String, String> response= new HashMap<>();
-            response.put("message", "Vendor registered successfully!");
-            return ResponseEntity.ok(response);
-        }catch(Exception e){
-            log.error("Vendor registration failed",e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("message","Registration failed"));
+    @PostMapping("/vendor")
+    public ResponseEntity<?> createVendor(@RequestBody @Valid VendorRegistrationRequest request){
+        if(vendorService.vendorExistsByEmail(request.getEmail())){
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("message", "Email already exists try with another email address"));
         }
+
+        if (vendorService.vendorExistsByUsername(request.getUsername())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("message", "Username already exists try with another username"));
+        }
+
+        Vendor vendor= vendorService.registerVendor(request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(Map.of("message", "Vendor registered successfully!", "vendorId", vendor.getId()));
     }
 
-    @PostMapping("/login-vendor")
-    public ResponseEntity<Map<String, String>> loggingVendor(@RequestBody Map<String, String> loginData) {
-        String username = loginData.get("username").trim();
-        String password = loginData.get("password").trim();
+    @PostMapping("/vendor/login")
+    public ResponseEntity<?> loginVendor(@RequestBody @Valid LoginRequest request) {
+        String username = request.getUsername();
+        String password = request.getPassword();
 
-        Vendor vendor = vendorService.getVendorByUsername(username);
-
-        if(vendor.isDeleted()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("message", "No vendor found with this username. Register first to login."));
+        if(username == null || username.isBlank() || password == null || password.isBlank()){
+            return ResponseEntity.badRequest().body(Map.of("message", "Username or password required"));
         }
 
-        // Check password manually
-        if (!new BCryptPasswordEncoder().matches(password, vendor.getPassword())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message","Invalid username or password"));
-        }
-
-        // Build UserDetailsImpl from your User entity
-        UserDetailsImpl vendorDetails = UserDetailsImpl.build(vendor);
-
-        // Generate token and refreshToken with id, email, role, etc.
-        String token = jwtUtil.generateToken(vendorDetails);
-        String refreshToken = jwtUtil.generateRefreshToken(vendorDetails);
-
+        AuthResult authResult = authService.authenticateVendor(username.trim(), password);
         return ResponseEntity.ok(Map.of(
-                "token", token,
-                "refreshToken", refreshToken,
-                "role", "VENDOR",
-                "id", String.valueOf(vendor.getId()), // optional, just for client convenience
-                "fullName", vendor.getFullName(),
-                "email",vendor.getEmail()
+                "token", authResult.token(),
+                "refreshToken", authResult.refreshToken(),
+                "role", authResult.role(),
+                "id", authResult.id(),
+                "fullName", authResult.fullName(),
+                "email", authResult.email()
         ));
     }
 
@@ -398,4 +335,45 @@ public class authController {
         ));
     }
 
+
+    //----------------------------------- Admin Endpoints ---------------------------------
+
+    @PostMapping("/admin")
+    public ResponseEntity<?> createAdmin(@RequestBody @Valid AdminRegistrationRequest request){
+
+        if(adminService.adminExistsByEmail(request.getEmail())){
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("message", "Email is already exists try with another email address"));
+        }
+
+        if(adminService.adminExistsByUsername(request.getUsername())){
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("message", "Username is already exists try with another username"));
+        }
+
+        Admin created= adminService.register(request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(Map.of("message", "Admin registered successfully!", "adminId", created.getId()));
+    }
+
+    @PostMapping("/admin/login")
+    public ResponseEntity<?> loginAdmin(@RequestBody @Valid LoginRequest request){
+        String username= request.getUsername();
+        String password = request.getPassword();
+
+        if(username == null || username.isBlank() || password == null || password.isBlank()){
+            return ResponseEntity.badRequest().body(Map.of("message", "Username or password required"));
+        }
+
+        AuthResult authResult= authService.authenticateAdmin(username.trim(), password);
+        return ResponseEntity.ok(Map.of(
+                "token", authResult.token(),
+                "refreshToken", authResult.refreshToken(),
+                "role", authResult.role(),
+                "id", authResult.id(),
+                "fullName", authResult.fullName(),
+                "email", authResult.email(),
+                "phone", authResult.phone()
+        ));
+    }
 }

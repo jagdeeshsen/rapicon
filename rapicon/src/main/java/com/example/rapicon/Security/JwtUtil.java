@@ -19,7 +19,7 @@ public class JwtUtil {
 
     //----------- Generate auth token----------------------------
     public String generateToken(UserDetailsImpl userDetails) {
-        final long EXPIRATION = 1000*60*60*24; // 24 hours
+        final long EXPIRATION = 1000*60*60; // 1 hour
         String role= userDetails.getAuthorities().iterator().next().getAuthority();
         if(role.startsWith("ROLE_")){
             role=role.substring(5);

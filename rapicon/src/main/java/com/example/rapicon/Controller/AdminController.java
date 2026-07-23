@@ -1,17 +1,16 @@
 package com.example.rapicon.Controller;
 
+import com.example.rapicon.DTO.AdminRegistrationRequest;
 import com.example.rapicon.Enum.Status;
 import com.example.rapicon.Models.*;
-import com.example.rapicon.Service.DesignService;
-import com.example.rapicon.Service.OrderService;
-import com.example.rapicon.Service.UserService;
-import com.example.rapicon.Service.VendorService;
+import com.example.rapicon.Service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +25,11 @@ public class AdminController {
     private final UserService userService;
     private final OrderService orderService;
     private final VendorService vendorService;
+
+    private final AdminService adminService;
+
+    //======================== admin Endpoints =================================
+
 
 
     // -------------------------- Design Endpoints--------------------------------//

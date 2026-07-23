@@ -1,6 +1,7 @@
 package com.example.rapicon.Service;
 
 
+import com.example.rapicon.DTO.UserRegistrationRequest;
 import com.example.rapicon.Models.User;
 import com.example.rapicon.Repository.userRepo;
 import lombok.RequiredArgsConstructor;
@@ -28,18 +29,29 @@ public class UserService {
     private final FcmTokenService fcmTokenService;
     private final NotificationService notificationService;
 
-    public void registerUser(User user) {
+    public User registerUser(UserRegistrationRequest request) {
+
+        User user= new User();
+
+        String fullName = request.getFullName();
+
+        user.setFullName((fullName == null || fullName.isBlank()) ? "Guest": fullName.trim());
+        user.setEmail(request.getEmail());
+        user.setPhone(request.getPhone());
+
+        user.setStreetAddress(request.getStreetAddress());
+        user.setCity(request.getCity());
+        user.setState(request.getState());
+        user.setZipCode(request.getZipCode());
+        user.setCountry(request.getCountry());
+
         user.setCreatedAt(new Timestamp(System.currentTimeMillis()));
-        userRepository.save(user);
+
+        return userRepository.save(user);
     }
 
     public List<User> getAllUser(){
         return userRepository.findAll();
-    }
-
-   public User existsByEmail(String email) {
-        Optional<User> user= userRepository.findByEmail(email);
-        return user.get();
     }
 
    public Optional<User> findById(Long id){
@@ -55,10 +67,14 @@ public class UserService {
        userRepository.save(user);
    }
 
-   public Optional<User> findUserByEmail(String email){
-        return userRepository.findByEmail(email);
+
+   public boolean userExistsByEmail(String email){
+        return userRepository.existsByEmail(email);
    }
 
+   public boolean userExistsByPhone(String phone){
+        return userRepository.existsByPhone(phone);
+   }
 
     // user account delete method
     @Transactional
