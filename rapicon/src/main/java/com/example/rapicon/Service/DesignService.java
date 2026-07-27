@@ -1,10 +1,14 @@
 package com.example.rapicon.Service;
 
+import com.example.rapicon.CustomExceptions.ResourceNotFoundException;
 import com.example.rapicon.Models.Design;
 import com.example.rapicon.Enum.Status;
 import com.example.rapicon.Repository.DesignRepo;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -22,14 +26,12 @@ public class DesignService{
         design.setCreatedAt(LocalDateTime.now());
         design.setUpdatedAt(LocalDateTime.now());
 
-        Design savedDesign= designRepository.save(design);
-        return savedDesign;
+        return designRepository.save(design);
     }
 
 
     public Design updateDesign(Design design) {
-        Design updatedDesign= designRepository.save(design);
-        return updatedDesign;
+        return designRepository.save(design);
     }
 
     public List<Design> getDesigns(Long id){
@@ -55,7 +57,7 @@ public class DesignService{
         Optional<Design> design= designRepository.findById(id);
 
         if(design.isEmpty()){
-            throw new RuntimeException("Design not found: "+ id);
+            throw new ResourceNotFoundException("Design not found with id :" + id );
         }
 
         Design originalDesign= design.get();
@@ -73,6 +75,11 @@ public class DesignService{
 
     public List<Design> getAllDesigns(){
         return designRepository.findAll();
+    }
+
+    public Page<Design> findAllPagination(int page, int size){
+        Pageable pageable = PageRequest.of(page,size);
+        return designRepository.findAll(pageable);
     }
 
     public Optional<Design> findDesignById(Long id){

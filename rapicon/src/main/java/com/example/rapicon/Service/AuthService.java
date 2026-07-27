@@ -29,11 +29,10 @@ public class AuthService {
 
         UserDetailsImpl adminDetails = UserDetailsImpl.build(admin);
 
-        // Generate token and refreshToken
+        // Generate token and refreshToken is not require for admin
         String token = jwtUtil.generateToken(adminDetails);
-        String refreshToken = jwtUtil.generateRefreshToken(adminDetails);
 
-        return new AuthResult(token,refreshToken, "ADMIN", admin.getFullName(), admin.getId(), admin.getEmail(), admin.getPhone());
+        return new AuthResult(token, "ADMIN", admin.getFullName(), admin.getId(), admin.getEmail(), admin.getPhone());
     }
 
     public AuthResult authenticateVendor(String username, String password){
@@ -49,11 +48,10 @@ public class AuthService {
 
         UserDetailsImpl vendorDetails = UserDetailsImpl.build(vendor);
 
-        // Generate token and refreshToken
+        // Generate token and refresh token is not require for vendor
         String token = jwtUtil.generateToken(vendorDetails);
-        String refreshToken = jwtUtil.generateRefreshToken(vendorDetails);
 
-        return new AuthResult(token, refreshToken, "VENDOR", vendor.getFullName(), vendor.getId(), vendor.getEmail(), vendor.getPhone());
+        return new AuthResult(token, "VENDOR", vendor.getFullName(), vendor.getId(), vendor.getEmail(), vendor.getPhone());
 
     }
 

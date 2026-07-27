@@ -204,7 +204,6 @@ public class authController {
         AuthResult authResult = authService.authenticateVendor(username.trim(), password);
         return ResponseEntity.ok(Map.of(
                 "token", authResult.token(),
-                "refreshToken", authResult.refreshToken(),
                 "role", authResult.role(),
                 "id", authResult.id(),
                 "fullName", authResult.fullName(),
@@ -368,7 +367,6 @@ public class authController {
         AuthResult authResult= authService.authenticateAdmin(username.trim(), password);
         return ResponseEntity.ok(Map.of(
                 "token", authResult.token(),
-                "refreshToken", authResult.refreshToken(),
                 "role", authResult.role(),
                 "id", authResult.id(),
                 "fullName", authResult.fullName(),

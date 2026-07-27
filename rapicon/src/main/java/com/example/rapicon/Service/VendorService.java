@@ -1,9 +1,13 @@
 package com.example.rapicon.Service;
 
+import com.example.rapicon.CustomExceptions.ResourceNotFoundException;
 import com.example.rapicon.DTO.VendorRegistrationRequest;
 import com.example.rapicon.Models.Vendor;
 import com.example.rapicon.Repository.VendorRepo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -57,12 +61,18 @@ public class VendorService {
     }
 
     public Vendor getVendorById(Long id){
-        Optional<Vendor> vendor= vendorRepo.findById(id);
-        return vendor.get();
+        return vendorRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Vendor not found with id :" + id));
     }
 
     public List<Vendor> getAllVendors(){
         return vendorRepo.findAll();
+    }
+
+    public Page<Vendor> findAllPagination(int page, int size){
+        Pageable pageable = PageRequest.of(page, size);
+
+        return vendorRepo.findAll(pageable);
     }
 
     public Vendor getVendorByUsername(String username){

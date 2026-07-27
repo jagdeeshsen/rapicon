@@ -6,6 +6,9 @@ import com.example.rapicon.Models.User;
 import com.example.rapicon.Repository.userRepo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,6 +55,12 @@ public class UserService {
 
     public List<User> getAllUser(){
         return userRepository.findAll();
+    }
+
+    public Page<User> findAllPagination(int page, int size){
+        Pageable pageable = PageRequest.of(page, size);
+
+        return userRepository.findAll(pageable);
     }
 
    public Optional<User> findById(Long id){

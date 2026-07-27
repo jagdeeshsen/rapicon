@@ -1,22 +1,21 @@
 package com.example.rapicon.Controller;
 
-import com.example.rapicon.DTO.AdminRegistrationRequest;
 import com.example.rapicon.Enum.Status;
 import com.example.rapicon.Models.*;
 import com.example.rapicon.Service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/admin")
+@RequestMapping({"/api/admin", "/api/v1/admin"})
 @CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class AdminController {
@@ -27,8 +26,6 @@ public class AdminController {
     private final VendorService vendorService;
 
     private final AdminService adminService;
-
-    //======================== admin Endpoints =================================
 
 
 
@@ -65,6 +62,12 @@ public class AdminController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(designs);
+    }
+
+    @GetMapping("designs")
+    public ResponseEntity<Page<Design>> findAllDesigns(@RequestParam(defaultValue = "0") int page,
+                                                       @RequestParam(defaultValue = "10") int size){
+        return ResponseEntity.ok(designService.findAllPagination(page, size));
     }
 
     @GetMapping("/fetch/{id}")
@@ -123,6 +126,12 @@ public class AdminController {
         }
     }
 
+    @GetMapping("/users")
+    public ResponseEntity<Page<User>> findAllUsers(@RequestParam(defaultValue = "0") int page,
+                                              @RequestParam(defaultValue = "10") int size){
+        return ResponseEntity.ok(userService.findAllPagination(page, size));
+    }
+
 
     //----------------------------- Vendor Endpoints --------------------------------//
 
@@ -136,6 +145,12 @@ public class AdminController {
         }
     }
 
+    @GetMapping("/vendors")
+    public ResponseEntity<Page<Vendor>> findAllVendors(@RequestParam(defaultValue = "0") int page,
+                                                @RequestParam(defaultValue = "10") int size){
+        return ResponseEntity.ok(vendorService.findAllPagination(page, size));
+    }
+
     //----------------------- Order Endpoints -----------------------------------//
     @GetMapping("/orders/get/all")
     public ResponseEntity<List<Order>> getAllOrders(){
@@ -145,5 +160,11 @@ public class AdminController {
         }else{
             return ResponseEntity.ok(orders);
         }
+    }
+
+    @GetMapping("/orders")
+    public ResponseEntity<Page<Order>> findAllOrders(@RequestParam(defaultValue = "0") int page,
+                                                     @RequestParam(defaultValue = "10") int size){
+        return ResponseEntity.ok( orderService.findAllPagination(page, size));
     }
 }

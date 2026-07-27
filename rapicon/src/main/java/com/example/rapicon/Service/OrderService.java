@@ -1,10 +1,14 @@
 package com.example.rapicon.Service;
 
+import com.example.rapicon.CustomExceptions.ResourceNotFoundException;
 import com.example.rapicon.DTO.OrderRequestDTO;
 import com.example.rapicon.Models.*;
 import com.example.rapicon.Repository.OrderRepo;
 import com.example.rapicon.Repository.userRepo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -90,12 +94,17 @@ public class OrderService {
     }
 
     public Order getOrderById(Long id){
-        Optional<Order> order= orderRepo.findById(id);
-        return  order.get();
+        return orderRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found with id :" + id));
     }
 
     public List<Order> getAllOrders(){
         return orderRepo.findAll();
+    }
+
+    public Page<Order> findAllPagination(int page, int size){
+        Pageable pageable = PageRequest.of(page, size);
+        return orderRepo.findAll(pageable);
     }
 
     public List<Order> getOrderByUser(Long userId){
