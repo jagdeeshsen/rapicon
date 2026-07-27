@@ -7,7 +7,6 @@ import com.example.rapicon.Repository.OrderRepo;
 import com.example.rapicon.Repository.userRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +15,6 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -102,8 +100,7 @@ public class OrderService {
         return orderRepo.findAll();
     }
 
-    public Page<Order> findAllPagination(int page, int size){
-        Pageable pageable = PageRequest.of(page, size);
+    public Page<Order> findAllPagination(Pageable pageable){
         return orderRepo.findAll(pageable);
     }
 

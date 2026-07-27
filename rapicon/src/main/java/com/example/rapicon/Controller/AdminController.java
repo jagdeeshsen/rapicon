@@ -6,6 +6,9 @@ import com.example.rapicon.Service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +18,7 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@RequestMapping({"/api/admin", "/api/v1/admin"})
+@RequestMapping("/api/v1/admin")
 @CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class AdminController {
@@ -163,8 +166,7 @@ public class AdminController {
     }
 
     @GetMapping("/orders")
-    public ResponseEntity<Page<Order>> findAllOrders(@RequestParam(defaultValue = "0") int page,
-                                                     @RequestParam(defaultValue = "10") int size){
-        return ResponseEntity.ok( orderService.findAllPagination(page, size));
+    public ResponseEntity<Page<Order>> findAllOrders(@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable){
+        return ResponseEntity.ok( orderService.findAllPagination(pageable));
     }
 }

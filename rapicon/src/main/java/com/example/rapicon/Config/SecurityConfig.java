@@ -81,7 +81,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/payment/phonePe/**").permitAll()
 
                         // 4. Role-protected endpoints (MOST SPECIFIC first)
-                        .requestMatchers("/api/admin/**").permitAll()
+                        .requestMatchers("/api/v1/admin/**").permitAll()
                         .requestMatchers("/api/vendor/**").hasRole("VENDOR")
 
                         // 5. Any other /api/** requires authentication
