@@ -77,7 +77,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/api/designs/**").permitAll()       // browsing designs is public?
                         .requestMatchers("/api/cart/**").permitAll()
-                        .requestMatchers("/api/customer-query/**").permitAll()
+                        .requestMatchers("/api/v1/customer/**").permitAll()
                         .requestMatchers("/api/payment/phonePe/**").permitAll()
 
                         // 4. Role-protected endpoints (MOST SPECIFIC first)

@@ -1,45 +1,55 @@
 package com.example.rapicon.Service;
 
+import com.example.rapicon.CustomExceptions.ResourceNotFoundException;
+import com.example.rapicon.DTO.CustomerQueryRequest;
 import com.example.rapicon.Models.CustomerQuery;
 import com.example.rapicon.Repository.CustomerQueryRepo;
-import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.List;
-import java.util.concurrent.Callable;
+import java.util.Date;
 
 @Service
+@RequiredArgsConstructor
 public class CustomerQueryService {
 
-    @Autowired
-    private CustomerQueryRepo customerQueryRepo;
+    final private CustomerQueryRepo queryRepo;
 
-    public String createQuery(CustomerQuery query){
-        customerQueryRepo.save(query);
+    public String createQuery(CustomerQueryRequest request){
+
+        CustomerQuery query= new CustomerQuery();
+
+        query.setFullName(request.getFullName());
+        query.setPhone(request.getPhone());
+        query.setEmail(request.getEmail());
+        query.setQuery(request.getQuery());
+
+        query.setCreatedAt(new Date(System.currentTimeMillis()));
+        query.setQueryStatus(CustomerQuery.QueryStatus.NEW);
+
+        queryRepo.save(query);
         return "Your Query has been submitted successfully!";
     }
 
-    public List<CustomerQuery> getAllQuery(){
-        return customerQueryRepo.findAll();
+    public Page<CustomerQuery> getAllQuery(Pageable pageable){
+        return queryRepo.findAll(pageable);
     }
 
-    public List<CustomerQuery> getQueryByStatus(String status){
-        CustomerQuery.QueryStatus queryStatus= CustomerQuery.QueryStatus.valueOf(status.trim().toUpperCase());
-        return customerQueryRepo.findByQueryStatus(queryStatus);
+    public CustomerQuery updateQueryStatus(Long id, CustomerQuery.QueryStatus status){
+        CustomerQuery query = queryRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Query not found with id: "+ id));
+
+        query.setQueryStatus(status);
+        return queryRepo.save(query);
     }
 
-    @Transactional
-    public String deleteQueryByStatus(String status){
-        CustomerQuery.QueryStatus queryStatus= CustomerQuery.QueryStatus.valueOf(status.trim().toUpperCase());
-        customerQueryRepo.deleteByQueryStatus(queryStatus);
-        return "Queries deleted successfully";
-    }
+    public String deleteQuery(Long id){
+        queryRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Query not found with id: "+ id));
 
-    public CustomerQuery updateQuery(CustomerQuery query){
-        return customerQueryRepo.save(query);
+        queryRepo.deleteById(id);
+        return "Query deleted successfully!";
     }
 }

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface CustomerQueryRepo extends JpaRepository<CustomerQuery, Integer> {
+public interface CustomerQueryRepo extends JpaRepository<CustomerQuery, Long> {
 
     List<CustomerQuery> findByQueryStatus(CustomerQuery.QueryStatus status);
     void deleteByQueryStatus(CustomerQuery.QueryStatus status);

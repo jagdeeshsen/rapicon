@@ -1,40 +1,37 @@
 package com.example.rapicon.Controller;
 
+import com.example.rapicon.DTO.CustomerQueryRequest;
 import com.example.rapicon.Models.CustomerQuery;
 import com.example.rapicon.Service.CustomerQueryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
+import javax.validation.Valid;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/customer-query")
+@RequestMapping("/api/v1/customer")
 @CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class CustomerQueryController {
 
-    private final CustomerQueryService customerQueryService;
+    private final CustomerQueryService queryService;
 
-    @PostMapping("/create-query")
-    public ResponseEntity<Map<String,String>> createQuery(@RequestBody Map<String, String> request){
+    @PostMapping("/query")
+    public ResponseEntity<Map<String,String>> createQuery(@RequestBody @Valid CustomerQueryRequest request){
         Map<String, String> response= new HashMap<>();
         try{
-            CustomerQuery query= new CustomerQuery();
-            query.setFullName(request.get("fullName"));
-            query.setPhone(request.get("phone"));
-            query.setEmail(request.get("email"));
-            query.setQuery(request.get("query"));
-            query.setQueryStatus(CustomerQuery.QueryStatus.NEW);
-            query.setCreatedAt(new Date(System.currentTimeMillis()));
-
-            String message= customerQueryService.createQuery(query);
+            String message= queryService.createQuery(request);
             response.put("message", message);
             return ResponseEntity.ok(response);
         }catch (Exception e) {
@@ -44,15 +41,23 @@ public class CustomerQueryController {
         }
     }
 
-    @GetMapping("/fetch-query")
-    public ResponseEntity<List<CustomerQuery>> getAllQuery(){
-        List<CustomerQuery> queries= customerQueryService.getAllQuery();
-        return ResponseEntity.ok(queries);
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/queries")
+    public ResponseEntity<Page<CustomerQuery>> findAll(@PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC)Pageable pageable){
+        return ResponseEntity.ok(queryService.getAllQuery(pageable));
     }
 
-    @DeleteMapping("/delete-query")
-    public ResponseEntity<?> deleteQueryByStatus(@RequestParam String status){
-        customerQueryService.deleteQueryByStatus(status);
-        return ResponseEntity.ok("Query deleted successfully");
+    @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/query/{id}/status")
+    public ResponseEntity<CustomerQuery> updateStatus(@PathVariable Long id,
+                                                      @RequestParam CustomerQuery.QueryStatus status){
+        return ResponseEntity.ok(queryService.updateQueryStatus(id, status));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/query/{id}")
+    public ResponseEntity<String> deleteQuery(@PathVariable Long id){
+        return ResponseEntity.ok(queryService.deleteQuery(id));
     }
 }

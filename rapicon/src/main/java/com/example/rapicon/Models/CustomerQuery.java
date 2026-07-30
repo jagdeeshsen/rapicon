@@ -10,13 +10,13 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "Customer-Queries")
+@Table(name = "Customer_Queries")
 @Entity
 public class CustomerQuery {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Column(nullable = false)
     private String fullName;
@@ -27,6 +27,7 @@ public class CustomerQuery {
     @Column(nullable = false)
     private String email;
 
+    @Column(nullable = false)
     private String query;
 
     private Date createdAt;

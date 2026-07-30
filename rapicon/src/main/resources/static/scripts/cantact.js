@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", function () {
      }
 
      // --- Send POST request to backend ---
-     fetch("/api/customer-query/create-query", {
+     fetch("/api/v1/customer/query", {
          method: "POST",
          headers: {
              "Content-Type": "application/json"
