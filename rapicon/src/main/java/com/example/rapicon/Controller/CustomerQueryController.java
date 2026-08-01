@@ -60,4 +60,9 @@ public class CustomerQueryController {
     public ResponseEntity<String> deleteQuery(@PathVariable Long id){
         return ResponseEntity.ok(queryService.deleteQuery(id));
     }
+
+    @GetMapping("/queries/count/new")
+    public ResponseEntity<?> newCount(){
+        return ResponseEntity.ok(queryService.newCount());
+    }
 }

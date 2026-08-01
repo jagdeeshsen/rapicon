@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -51,5 +52,10 @@ public class CustomerQueryService {
 
         queryRepo.deleteById(id);
         return "Query deleted successfully!";
+    }
+
+    public int  newCount() {
+        List<CustomerQuery> queries = queryRepo.findByQueryStatus(CustomerQuery.QueryStatus.NEW);
+        return queries.size();
     }
 }

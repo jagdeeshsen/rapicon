@@ -1,6 +1,7 @@
 package com.example.rapicon.Controller;
 
 import com.example.rapicon.DTO.DesignRequestDTO;
+import com.example.rapicon.DTO.DesignStatusUpdateRequest;
 import com.example.rapicon.Enum.Status;
 import com.example.rapicon.Models.*;
 import com.example.rapicon.Security.UserDetailsImpl;
@@ -11,6 +12,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,6 +23,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -139,12 +145,7 @@ public class DesignController {
     @PreAuthorize("hasRole('VENDOR')")
     public ResponseEntity<?> updateDesignByVendor(@PathVariable Long id, @ModelAttribute DesignRequestDTO request) throws IOException {
         try{
-            Optional<Design> optionalDesign= designService.findDesignById(id);
-            if(optionalDesign.isEmpty()){
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Design not found");
-            }
-
-            Design design= optionalDesign.get();
+            Design design= designService.getDesignById(id);
 
             // set the design
             design.setDesignType(request.getDesignType());
@@ -233,7 +234,7 @@ public class DesignController {
 
         try{
             Vendor vendor= vendorService.getVendorByUsername(userDetails.getUsername());
-            List<Design> myDesign= designService.getDesigns(vendor.getId());
+            List<Design> myDesign= designService.findByVendor(vendor.getId());
 
             return ResponseEntity.ok(myDesign);
         }catch (Exception e){
@@ -245,8 +246,7 @@ public class DesignController {
     @DeleteMapping("/delete")
     @PreAuthorize("hasRole('VENDOR')")
     public String deleteDesignByVendor(@RequestParam("id") Long id){
-        designService.deleteDesign(id);
-        return "Design deleted successfully";
+        return designService.deleteDesign(id);
     }
 
     // Helper method for file validation
@@ -323,71 +323,25 @@ public class DesignController {
         }
     }
 
-    @GetMapping("/fetch-all-designs")
-    public ResponseEntity<List<Design>> getAllDesigns(){
-        List<Design> designList= designService.getAllDesigns();
-        return ResponseEntity.ok(designList);
+    @GetMapping("/all")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Page<Design>> getAllDesigns(@PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable){
+        return ResponseEntity.ok(designService.findAllPagination(pageable));
     }
 
-    /*@PutMapping("/update")
-    @PreAuthorize("hasRole('VENDOR')")
-    public ResponseEntity<?> updateDesignStatus(@RequestParam("id") Long id,
-                                                     @RequestParam("status") String status){
-
-        // Validate status
-        if (!status.equalsIgnoreCase("approved")
-                && !status.equalsIgnoreCase("pending")
-                && !status.equalsIgnoreCase("rejected")
-                && !status.equalsIgnoreCase("deactivate")) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        try{
-            Design updateDesign= designService.updateDesignStatus(id, Status.valueOf(status.toUpperCase()));
-            return ResponseEntity.ok(Map.of("design", updateDesign,
-                                             "message", "design deactivated successfully",
-                                             "status","DEACTIVATE",
-                                             "success", true));
-        }catch (RuntimeException e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-
-    }*/
-
-    @PutMapping("/update")
-    @PreAuthorize("hasRole('VENDOR')")
-    public ResponseEntity<?> updateDesignStatus(@RequestParam("id") Long id,
-                                                @RequestParam("status") String status) {
-
-        if (status == null || status.isBlank()) {
-            return ResponseEntity.badRequest().body(Map.of(
-                    "message", "status is required", "success", false));
-        }
-
-        Status newStatus;
+    @PatchMapping("/status/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> updateDesignStatus(@PathVariable Long id,
+                                                @RequestBody @Valid DesignStatusUpdateRequest request) {
         try {
-            newStatus = Status.valueOf(status.trim().toUpperCase());
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(Map.of(
-                    "message", "invalid status value: " + status, "success", false));
-        }
-
-        // Vendors may only deactivate their own design; approval/rejection is admin-only.
-        if (newStatus != Status.DEACTIVATE) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of(
-                    "message", "vendors are not permitted to set this status", "success", false));
-        }
-
-        try {
-            Design updated = designService.updateDesignStatus(id, newStatus);
+            Design design = designService.updateDesignStatus(id, request);
             return ResponseEntity.ok(Map.of(
-                    "design", updated,
-                    "message", "design status updated to " + updated.getStatus(),
-                    "status", updated.getStatus().name(),
-                    "success", true));
+                    "id", design.getId(),
+                    "status", design.getStatus(),
+                    "message", "Design status updated successfully"));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
-                    "message", "design not found", "success", false));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                    "message", "Server error", "success", false));
         }
     }
 }

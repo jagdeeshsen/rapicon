@@ -10,7 +10,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface DesignRepo extends JpaRepository<Design,Long> {
@@ -19,10 +18,6 @@ public interface DesignRepo extends JpaRepository<Design,Long> {
 
     // Find designs by status
     List<Design> findByStatus(Status status);
-
-    @Override
-    Optional<Design> findById(Long aLong);
-    Design getDesignById(Long id);
 
     @Modifying
     @Transactional

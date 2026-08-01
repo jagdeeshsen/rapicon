@@ -1,13 +1,13 @@
 package com.example.rapicon.Service;
 
 import com.example.rapicon.CustomExceptions.ResourceNotFoundException;
+import com.example.rapicon.DTO.DesignStatusUpdateRequest;
 import com.example.rapicon.Models.Design;
 import com.example.rapicon.Enum.Status;
 import com.example.rapicon.Repository.DesignRepo;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -15,10 +15,11 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 public class DesignService{
 
-    @Autowired
-    private DesignRepo designRepository;
+    final private DesignRepo designRepository;
+    final private EmailService emailService;
 
 
     public Design createDesign(Design design) {
@@ -34,7 +35,7 @@ public class DesignService{
         return designRepository.save(design);
     }
 
-    public List<Design> getDesigns(Long id){
+    public List<Design> findByVendor(Long id){
 
         return designRepository.findByVendorId(id);
     }
@@ -43,7 +44,7 @@ public class DesignService{
         if (designRepository.existsById(id)) {
             designRepository.deleteById(id);
         } else {
-            throw new RuntimeException("Design not found with ID: " + id);
+            throw new ResourceNotFoundException("Design not found with ID: " + id);
         }
         return "Design Deleted Successfully.";
     }
@@ -53,37 +54,28 @@ public class DesignService{
         return designRepository.findByStatus(status);
     }
 
-    public Design updateDesignStatus(Long id, Status status) {
-        Optional<Design> design= designRepository.findById(id);
+    public Design updateDesignStatus(Long id, DesignStatusUpdateRequest request) {
+        Design design = designRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Design not found with id: " + id));
 
-        if(design.isEmpty()){
-            throw new ResourceNotFoundException("Design not found with id :" + id );
-        }
+        design.setStatus(request.getStatus());
+        design.setUpdatedAt(LocalDateTime.now());
 
-        Design originalDesign= design.get();
-        originalDesign.setStatus(status);
+        Design updatedDesign = designRepository.save(design);
 
-        Design updatedDesign = designRepository.save(originalDesign);
-        System.out.println("Design status updated to {} for id: {}"+ status+ id);
+        // Notify vendor for his design update status
+        emailService.sendDesignUpdateEmail(design, request);
 
         return updatedDesign;
     }
 
     public Design getDesignById(Long id) {
-        return  designRepository.getDesignById(id);
+        return  designRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Design not found with id: " + id));
     }
 
-    public List<Design> getAllDesigns(){
-        return designRepository.findAll();
-    }
-
-    public Page<Design> findAllPagination(int page, int size){
-        Pageable pageable = PageRequest.of(page,size);
+    public Page<Design> findAllPagination(Pageable pageable){
         return designRepository.findAll(pageable);
-    }
-
-    public Optional<Design> findDesignById(Long id){
-        return designRepository.findById(id);
     }
 
     @Transactional

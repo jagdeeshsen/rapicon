@@ -1,5 +1,8 @@
 package com.example.rapicon.Service;
 
+import com.example.rapicon.DTO.DesignStatusUpdateRequest;
+import com.example.rapicon.Models.Design;
+import com.example.rapicon.Models.Vendor;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -75,6 +78,54 @@ public class EmailService {
         helper.setText(htmlContent, true);
 
         mailSender.send(message);
+    }
+
+    public void sendDesignUpdateEmail(Design design, DesignStatusUpdateRequest request) {
+        Vendor vendor = design.getVendor();
+        if (vendor == null || vendor.getEmail() == null) {
+            log.warn("Cannot send design update email — no vendor/email found for design id: {}", design.getId());
+            return;
+        }
+
+        String designName = design.getDesignCategory() != null
+                ? design.getDesignCategory()
+                : design.getDesignType();
+
+        String subject;
+        String htmlContent;
+
+        switch (request.getStatus()) {
+            case APPROVED:
+                subject = "Your Design Has Been Approved - Rapicon Infrastructure LLP";
+                htmlContent = buildDesignApprovedEmailTemplate(vendor.getFullName(), designName);
+                break;
+            case REJECTED:
+                subject = "Your Design Has Been Rejected - Rapicon Infrastructure LLP";
+                htmlContent = buildDesignStatusEmailTemplate(
+                        vendor.getFullName(), designName, request.getReason(),
+                        "Design Rejected", "#dc3545",
+                        "Unfortunately, your submitted design did not meet our current requirements."
+                );
+                break;
+            case DEACTIVATE:
+                subject = "Your Design Has Been Deactivated - Rapicon Infrastructure LLP";
+                htmlContent = buildDesignStatusEmailTemplate(
+                        vendor.getFullName(), designName, request.getReason(),
+                        "Design Deactivated", "#6c757d",
+                        "Your design has been deactivated and is no longer visible to customers."
+                );
+                break;
+            default:
+                log.info("No email template for design status: {} — skipping email.", request.getStatus());
+                return;
+        }
+
+        try {
+            sendHtmlEmail(vendor.getEmail(), subject, htmlContent);
+            log.info("Design status email sent to {} for design id {}", vendor.getEmail(), design.getId());
+        } catch (Exception e) {
+            log.error("Failed to send design status email to: {}", vendor.getEmail(), e);
+        }
     }
 
     /**
@@ -185,4 +236,57 @@ public class EmailService {
                 "</body>" +
                 "</html>";
     }
+
+    private String buildDesignApprovedEmailTemplate(String vendorName, String designName) {
+        return "<!DOCTYPE html>" +
+                "<html><head><style>" +
+                "        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }" +
+                "        .container { max-width: 600px; margin: 0 auto; padding: 20px; }" +
+                "        .header { background-color: #28a745; color: white; padding: 30px 20px; text-align: center; }" +
+                "        .content { padding: 30px 20px; background-color: #f9f9f9; }" +
+                "        .footer { padding: 20px; text-align: center; font-size: 12px; color: #666; }" +
+                "</style></head><body>" +
+                "    <div class='container'>" +
+                "        <div class='header'><h1>Design Approved</h1></div>" +
+                "        <div class='content'>" +
+                "            <p>Dear " + vendorName + ",</p>" +
+                "            <p>Good news — your design <strong>\"" + designName + "\"</strong> has been approved and is now live.</p>" +
+                "            <p>Best regards,<br><strong>Rapicon Infrastructure Team</strong></p>" +
+                "        </div>" +
+                "        <div class='footer'><p>© " + java.time.Year.now().getValue() + " Rapicon Infrastructure LLP</p></div>" +
+                "    </div>" +
+                "</body></html>";
+    }
+
+    private String buildDesignStatusEmailTemplate(String vendorName, String designName, String reason,
+                                                  String headerTitle, String headerColor, String bodyMessage) {
+        String reasonBlock = (reason != null && !reason.isBlank())
+                ? "<div class='reason'><strong>Reason:</strong><p>" + reason + "</p></div>"
+                : "";
+
+        return "<!DOCTYPE html>" +
+                "<html><head><style>" +
+                "        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }" +
+                "        .container { max-width: 600px; margin: 0 auto; padding: 20px; }" +
+                "        .header { background-color: " + headerColor + "; color: white; padding: 30px 20px; text-align: center; }" +
+                "        .content { padding: 30px 20px; background-color: #f9f9f9; }" +
+                "        .reason { background-color: #fff3cd; padding: 15px; border-left: 4px solid #ffc107;" +
+                "                  margin: 20px 0; border-radius: 4px; }" +
+                "        .footer { padding: 20px; text-align: center; font-size: 12px; color: #666; }" +
+                "</style></head><body>" +
+                "    <div class='container'>" +
+                "        <div class='header'><h1>" + headerTitle + "</h1></div>" +
+                "        <div class='content'>" +
+                "            <p>Dear " + vendorName + ",</p>" +
+                "            <p>" + bodyMessage + "</p>" +
+                "            <p>Design: <strong>\"" + designName + "\"</strong></p>" +
+                reasonBlock +
+                "            <p>If you have questions, please contact our support team.</p>" +
+                "            <p>Best regards,<br><strong>Rapicon Infrastructure Team</strong></p>" +
+                "        </div>" +
+                "        <div class='footer'><p>© " + java.time.Year.now().getValue() + " Rapicon Infrastructure LLP</p></div>" +
+                "    </div>" +
+                "</body></html>";
+    }
+
 }

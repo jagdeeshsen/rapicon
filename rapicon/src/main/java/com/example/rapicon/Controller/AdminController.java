@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @RestController
@@ -58,21 +57,6 @@ public class AdminController {
         return "Design deleted Successfully";
     }
 
-    @GetMapping("/designs/get/all")
-    public ResponseEntity<List<Design>> getAllDesigns(){
-        List<Design> designs= designService.getAllDesigns();
-        if(designs.isEmpty()){
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.ok(designs);
-    }
-
-    @GetMapping("designs")
-    public ResponseEntity<Page<Design>> findAllDesigns(@RequestParam(defaultValue = "0") int page,
-                                                       @RequestParam(defaultValue = "10") int size){
-        return ResponseEntity.ok(designService.findAllPagination(page, size));
-    }
-
     @GetMapping("/fetch/{id}")
     public ResponseEntity<Design> getDesignById(@PathVariable Long id){
         try{
@@ -84,36 +68,6 @@ public class AdminController {
         }catch (RuntimeException e){
             log.error("Failed to fetch design by id",e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
-    }
-
-    @PutMapping("/update-status")
-    public ResponseEntity<?> updateDesignStatus(@RequestParam("id") Long id,
-                                                @RequestParam("status") String status) {
-
-        if (status == null || status.isBlank()) {
-            return ResponseEntity.badRequest().body(Map.of(
-                    "message", "status is required", "success", false));
-        }
-
-        Status newStatus;
-        try {
-            newStatus = Status.valueOf(status.trim().toUpperCase());
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(Map.of(
-                    "message", "invalid status value: " + status, "success", false));
-        }
-
-        try {
-            Design updated = designService.updateDesignStatus(id, newStatus);
-            return ResponseEntity.ok(Map.of(
-                    "design", updated,
-                    "message", "design status updated to " + updated.getStatus(),
-                    "status", updated.getStatus().name(),
-                    "success", true));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
-                    "message", "design not found", "success", false));
         }
     }
 

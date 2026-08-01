@@ -1,5 +1,8 @@
 package com.example.rapicon.Enum;
 
+import lombok.Getter;
+
+@Getter
 public enum Status {
     PENDING("Pending Review"),
     APPROVED("Approved"),
@@ -12,30 +15,5 @@ public enum Status {
 
     Status(String displayName) {
         this.displayName = displayName;
-    }
-
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    @Override
-    public String toString() {
-        return displayName;
-    }
-
-    public boolean isActive() {
-        return this == APPROVED;
-    }
-
-    public boolean isPending() {
-        return this == PENDING;
-    }
-
-    public boolean isDeactivate(){
-        return this == DEACTIVATE;
-    }
-
-    public boolean isRejected() {
-        return this == REJECTED;
     }
 }
