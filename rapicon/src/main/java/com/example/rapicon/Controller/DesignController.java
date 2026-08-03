@@ -336,9 +336,9 @@ public class DesignController {
         try {
             Design design = designService.updateDesignStatus(id, request);
             return ResponseEntity.ok(Map.of(
-                    "id", design.getId(),
-                    "status", design.getStatus(),
-                    "message", "Design status updated successfully"));
+                    "design", design,
+                    "message", "Design status updated successfully",
+                    "success", true));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
                     "message", "Server error", "success", false));

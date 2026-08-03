@@ -232,15 +232,10 @@ async function resetPassword(newPassword) {
 
         if (response.ok && data.success === true) {
             // Show success message
-            showMessage.success('Password reset successful! Redirecting to login...');
-            successText.textContent = data.message || 'Password reset successful! Redirecting to login...';
+            showMessage.success('Password reset successful!');
+            successText.textContent = data.message || 'Your Password has been reset successful.';
             successMessage.style.display = 'block';
             resetPasswordForm.style.display = 'none';
-
-            // Redirect to login after 3 seconds
-            setTimeout(() => {
-                window.location.href = 'login.html';
-            }, 3000);
         } else {
             showMessage.error(data.message || 'Failed to reset password. Please try again.');
             submitBtn.disabled = false;

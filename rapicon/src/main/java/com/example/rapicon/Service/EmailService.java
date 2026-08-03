@@ -52,10 +52,10 @@ public class EmailService {
     /**
      * Send Welcome Email
      */
-    public void sendWelcomeEmail(String toEmail, String vendorName) {
+    public void sendWelcomeEmail(String toEmail, String name) {
         try {
             String subject = "Welcome to Rapicon Infrastructure LLP";
-            String htmlContent = buildWelcomeEmailTemplate(vendorName);
+            String htmlContent = buildWelcomeEmailTemplate(name);
 
             sendHtmlEmail(toEmail, subject, htmlContent);
 
