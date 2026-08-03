@@ -33,12 +33,12 @@ public class EmailService {
     /**
      * Send Password Reset Email
      */
-    public void sendPasswordResetEmail(String toEmail, String resetToken, String vendorName) {
+    public void sendPasswordResetEmail(String toEmail, String resetToken, String name, String accountType) {
         try {
             String resetLink = appUrl + "/reset-password.html?token=" + resetToken;
 
             String subject = "Password Reset Request - Rapicon Infrastructure LLP";
-            String htmlContent = buildPasswordResetEmailTemplate(vendorName, resetLink);
+            String htmlContent = buildPasswordResetEmailTemplate(name, resetLink, accountType);
 
             sendHtmlEmail(toEmail, subject, htmlContent);
 
@@ -131,7 +131,7 @@ public class EmailService {
     /**
      * Password Reset Email Template
      */
-    private String buildPasswordResetEmailTemplate(String vendorName, String resetLink) {
+    private String buildPasswordResetEmailTemplate(String name, String resetLink, String accountType) {
         return "<!DOCTYPE html>" +
                 "<html>" +
                 "<head>" +
@@ -165,8 +165,8 @@ public class EmailService {
                 "        </div>" +
                 "        <div class='content'>" +
                 "            <h2>Password Reset Request</h2>" +
-                "            <p>Hello " + vendorName + ",</p>" +
-                "            <p>We received a request to reset your password for your Rapicon Infrastructure vendor account.</p>" +
+                "            <p>Hello " + name + ",</p>" +
+                "            <p>We received a request to reset your password for your Rapicon Infrastructure" + accountType + " account.</p>" +
                 "            <p>Click the button below to reset your password:</p>" +
                 "            <p style='text-align: center;'>" +
                 "                <a href='" + resetLink + "' class='button'>Reset Password</a>" +

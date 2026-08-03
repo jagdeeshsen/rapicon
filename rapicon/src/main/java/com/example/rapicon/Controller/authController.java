@@ -250,6 +250,12 @@ public class authController {
         }
     }
 
+    @PostMapping("/admin/forgot-password")
+    public ResponseEntity<Void> forgotPassword(@RequestParam String email) {
+        passwordResetService.initiatePasswordResetForAdmin(email);
+        return ResponseEntity.ok().build();
+    }
+
     /**
      * Validate Reset Token Endpoint
      */

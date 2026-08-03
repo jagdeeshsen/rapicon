@@ -1,7 +1,6 @@
 package com.example.rapicon.Models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -9,7 +8,6 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
-@AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "password-reset-tokens")
 public class PasswordResetToken {
@@ -18,8 +16,11 @@ public class PasswordResetToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column
     private Long vendorId;
+
+    @Column
+    private Long adminId;
 
     @Column(nullable = false, length = 100)
     private String email;

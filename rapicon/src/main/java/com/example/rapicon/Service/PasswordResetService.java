@@ -1,7 +1,9 @@
 package com.example.rapicon.Service;
 
+import com.example.rapicon.Models.Admin;
 import com.example.rapicon.Models.PasswordResetToken;
 import com.example.rapicon.Models.Vendor;
+import com.example.rapicon.Repository.AdminRepo;
 import com.example.rapicon.Repository.PasswordResetTokenRepo;
 import com.example.rapicon.Repository.VendorRepo;
 import jakarta.transaction.Transactional;
@@ -24,6 +26,7 @@ public class PasswordResetService {
     private final PasswordResetTokenRepo tokenRepository;
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
+    private final AdminRepo adminRepo;
 
     @Value("${app.token.expiration}")
     private Long tokenExpirationMs;
@@ -33,11 +36,8 @@ public class PasswordResetService {
      */
     @Transactional
     public void initiatePasswordReset(String email) {
-        // Find vendor by email
         Optional<Vendor> optionalVendor = vendorRepository.findByEmail(email.trim().toLowerCase());
 
-        // Don't reveal if email exists (security best practice)
-        log.info(optionalVendor.toString());
         if (optionalVendor.isEmpty()) {
             log.warn("Password reset requested for non-existent email: {}", email);
             return; // Still return success to user
@@ -61,7 +61,42 @@ public class PasswordResetService {
 
         // Send reset email
         try {
-            emailService.sendPasswordResetEmail(vendor.getEmail(), token, vendor.getFullName());
+            emailService.sendPasswordResetEmail(vendor.getEmail(), token, vendor.getFullName(), "vendor");
+            log.info("Password reset email sent to: {}", email);
+        } catch (Exception e) {
+            log.error("Failed to send password reset email", e);
+            throw new RuntimeException("Failed to send reset email");
+        }
+    }
+
+    @Transactional
+    public void initiatePasswordResetForAdmin(String email) {
+        Optional<Admin> adminOptional = adminRepo.findByEmail(email.trim().toLowerCase());
+
+        if (adminOptional.isEmpty()) {
+            log.warn("Password reset requested for non-existent admin email: {}", email);
+            return; // Still return success to user
+        }
+
+        Admin admin = adminOptional.get();
+
+        // Generate reset token
+        String token = UUID.randomUUID().toString();
+        LocalDateTime expiresAt = LocalDateTime.now().plusSeconds(tokenExpirationMs / 1000);
+
+        // Create and save reset token
+        PasswordResetToken resetToken = new PasswordResetToken();
+        resetToken.setAdminId(admin.getId());
+        resetToken.setEmail(admin.getEmail());
+        resetToken.setToken(token);
+        resetToken.setExpiresAt(expiresAt);
+        resetToken.setUsed(false);
+
+        tokenRepository.save(resetToken);
+
+        // Send reset email
+        try {
+            emailService.sendPasswordResetEmail(admin.getEmail(), token, admin.getFullName(),"admin");
             log.info("Password reset email sent to: {}", email);
         } catch (Exception e) {
             log.error("Failed to send password reset email", e);

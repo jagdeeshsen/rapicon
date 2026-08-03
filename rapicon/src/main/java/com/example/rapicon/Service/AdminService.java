@@ -1,5 +1,6 @@
 package com.example.rapicon.Service;
 
+import com.example.rapicon.CustomExceptions.ResourceNotFoundException;
 import com.example.rapicon.DTO.AdminRegistrationRequest;
 import com.example.rapicon.Models.Admin;
 import com.example.rapicon.Repository.AdminRepo;
