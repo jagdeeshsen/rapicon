@@ -332,8 +332,8 @@ public class authController {
 
         UserDetailsImpl userDetails= null;
         if(role.equals("USER")){
-            Optional<User> user= userService.findById(id);
-            if(user.isPresent() ) userDetails= UserDetailsImpl.build(user.get());
+            User user= userService.findById(id);
+            userDetails= UserDetailsImpl.build(user);
         }else if(role.equals("VENDOR")){
             Vendor vendor= vendorService.getVendorByUsername(username);
             userDetails = UserDetailsImpl.build(vendor);
