@@ -251,9 +251,18 @@ public class authController {
     }
 
     @PostMapping("/admin/forgot-password")
-    public ResponseEntity<Void> forgotPassword(@RequestParam String email) {
-        passwordResetService.initiatePasswordResetForAdmin(email);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<?> forgotPassword(@RequestParam String email) {
+        try {
+            passwordResetService.initiatePasswordResetForAdmin(email);
+
+            // Always return success (don't reveal if email exists)
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(Map.of("message","Password reset link sent successfully to the registered email"));
+        } catch (Exception e) {
+            log.error("Failed to reset password", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message","Failed to sent password reset link!"));
+        }
     }
 
     /**

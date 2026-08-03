@@ -166,7 +166,7 @@ public class EmailService {
                 "        <div class='content'>" +
                 "            <h2>Password Reset Request</h2>" +
                 "            <p>Hello " + name + ",</p>" +
-                "            <p>We received a request to reset your password for your Rapicon Infrastructure" + accountType + " account.</p>" +
+                "            <p>We received a request to reset your password for your Rapicon Infrastructure " + accountType + " account.</p>" +
                 "            <p>Click the button below to reset your password:</p>" +
                 "            <p style='text-align: center;'>" +
                 "                <a href='" + resetLink + "' class='button'>Reset Password</a>" +

@@ -144,19 +144,32 @@ public class PasswordResetService {
             throw new RuntimeException("Reset token has expired");
         }
 
-        // Find vendor
-        Vendor vendor = vendorRepository.findById(resetToken.getVendorId())
-                .orElseThrow(() -> new RuntimeException("Vendor not found"));
+        String encodedPassword = passwordEncoder.encode(newPassword);
 
-        // Update password
-        vendor.setPassword(passwordEncoder.encode(newPassword));
-        vendorRepository.save(vendor);
+        if (resetToken.getVendorId() != null) {
+            Vendor vendor = vendorRepository.findById(resetToken.getVendorId())
+                    .orElseThrow(() -> new RuntimeException("Vendor not found"));
+            vendor.setPassword(encodedPassword);
+            vendorRepository.save(vendor);
+            log.info("Password reset successful for vendor: {}", vendor.getEmail());
+
+        } else if (resetToken.getAdminId() != null) {
+            Admin admin = adminRepo.findById(resetToken.getAdminId())
+                    .orElseThrow(() -> new RuntimeException("Admin not found"));
+            admin.setPassword(encodedPassword);
+            adminRepo.save(admin);
+            log.info("Password reset successful for admin: {}", admin.getEmail());
+
+        } else {
+            // Shouldn't happen if tokens are only ever created via initiatePasswordReset,
+            // but guards against a malformed/corrupted row.
+            log.error("Reset token {} has neither vendorId nor adminId set", resetToken.getId());
+            throw new RuntimeException("Invalid reset token");
+        }
 
         // Mark token as used
         resetToken.setUsed(true);
         tokenRepository.save(resetToken);
-
-        log.info("Password reset successful for vendor: {}", vendor.getEmail());
     }
 
     /**
