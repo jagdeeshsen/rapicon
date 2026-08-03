@@ -1,13 +1,13 @@
 package com.example.rapicon.Service;
 
 
+import com.example.rapicon.CustomExceptions.ResourceNotFoundException;
 import com.example.rapicon.DTO.UserRegistrationRequest;
 import com.example.rapicon.Models.User;
 import com.example.rapicon.Repository.userRepo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -57,14 +57,13 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public Page<User> findAllPagination(int page, int size){
-        Pageable pageable = PageRequest.of(page, size);
-
+    public Page<User> findAllPagination(Pageable pageable){
         return userRepository.findAll(pageable);
     }
 
-   public Optional<User> findById(Long id){
-        return userRepository.findById(id);
+   public User findById(Long id){
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: "+ id));
    }
 
 

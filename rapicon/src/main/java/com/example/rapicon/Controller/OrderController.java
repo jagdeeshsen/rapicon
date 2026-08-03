@@ -5,7 +5,12 @@ import com.example.rapicon.Models.*;
 import com.example.rapicon.Service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -30,7 +35,7 @@ public class OrderController {
             }else {
                 amount= requestData.getTotalAmount();
             }
-            BigDecimal amountInPaise= amount.multiply(new BigDecimal(100));
+            BigDecimal amountInPasse= amount.multiply(new BigDecimal(100));
 
             // 5. SAVE ONLY ONCE
             Order savedOrder = orderService.createOrder(requestData);
@@ -39,7 +44,7 @@ public class OrderController {
             Map<String, Object> response = new HashMap<>();
             response.put("id", savedOrder.getId());  // Your internal DB order ID
             response.put("merchantOrderId", savedOrder.getMerchantOrderId());     // Order ID for PhonePe
-            response.put("amount", amountInPaise);
+            response.put("amount", amountInPasse);
             response.put("userId", savedOrder.getUserId());
             response.put("customerName", savedOrder.getCustomerName());
             response.put("customerEmail", savedOrder.getCustomerEmail());
@@ -54,6 +59,23 @@ public class OrderController {
                     Map.of("error", "Failed to create order")
             );
         }
+    }
+
+    @GetMapping("/all")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<Order>> getAllOrders(){
+        List<Order> orders= orderService.getAllOrders();
+        if(orders.isEmpty()){
+            return ResponseEntity.noContent().build();
+        }else{
+            return ResponseEntity.ok(orders);
+        }
+    }
+
+    @GetMapping("/page/all")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Page<Order>> findAllOrders(@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        return ResponseEntity.ok(orderService.findAllPagination(pageable));
     }
 
     /**

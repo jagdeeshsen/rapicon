@@ -6,7 +6,6 @@ import com.example.rapicon.Models.Vendor;
 import com.example.rapicon.Repository.VendorRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -69,9 +68,7 @@ public class VendorService {
         return vendorRepo.findAll();
     }
 
-    public Page<Vendor> findAllPagination(int page, int size){
-        Pageable pageable = PageRequest.of(page, size);
-
+    public Page<Vendor> findAllPagination(Pageable pageable){
         return vendorRepo.findAll(pageable);
     }
 

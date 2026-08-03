@@ -4,13 +4,18 @@ import com.example.rapicon.Models.User;
 import com.example.rapicon.Security.UserDetailsImpl;
 import com.example.rapicon.Service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/user")
@@ -22,36 +27,41 @@ public class UserController {
 
     @GetMapping("/get-user/{id}")
     public ResponseEntity<?> getUserById(@PathVariable Long id){
-        Optional<User> user= userService.findById(id);
-
-        if(user.isPresent()){
-            return ResponseEntity.status(HttpStatus.OK).body(user.get());
-        }else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "User not found."));
-        }
+        return ResponseEntity.status(HttpStatus.OK).body(userService.findById(id));
     }
 
     @PutMapping("/update-user")
     public ResponseEntity<?> updateUser(@RequestBody Map<String, String> request){
         Long id= Long.parseLong(request.get("id"));
-        Optional<User> existUser= userService.findById(id);
-        if(existUser.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("message", "User Not Found"));
-        }
+        User user = userService.findById(id);
 
-        User updatedUser= existUser.get();
-        updatedUser.setFullName(request.get("fullName"));
-        updatedUser.setEmail(request.get("email"));
-        updatedUser.setCity(request.get("city"));
-        updatedUser.setState(request.get("state"));
-        updatedUser.setCountry(request.get("country"));
-        updatedUser.setStreetAddress(request.get("streetAddress"));
-        updatedUser.setZipCode(request.get("zipCode"));
+        user.setFullName(request.get("fullName"));
+        user.setEmail(request.get("email"));
+        user.setCity(request.get("city"));
+        user.setState(request.get("state"));
+        user.setCountry(request.get("country"));
+        user.setStreetAddress(request.get("streetAddress"));
+        user.setZipCode(request.get("zipCode"));
 
-        userService.updateUser(updatedUser);
+        userService.updateUser(user);
 
         return ResponseEntity.ok(Map.of("message", "Profile Updated Successfully"));
+    }
+
+    @GetMapping("/all")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<User>> getAllUser(){
+        List<User> users= userService.getAllUser();
+        if(users.isEmpty()){
+            return ResponseEntity.noContent().build();
+        }else {
+            return ResponseEntity.ok(users);
+        }
+    }
+
+    @GetMapping("/page/users")
+    public ResponseEntity<Page<User>> findAllUsers(@PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.ASC)Pageable pageable){
+        return ResponseEntity.ok(userService.findAllPagination(pageable));
     }
 
     @DeleteMapping("/delete-account")
