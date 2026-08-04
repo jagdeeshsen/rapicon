@@ -82,7 +82,7 @@ public class SecurityConfig {
 
                         // 4. Role-protected endpoints (MOST SPECIFIC first)
                         .requestMatchers("/api/admin/**").permitAll()
-                        .requestMatchers("/api/vendor/**").hasRole("VENDOR")
+                        .requestMatchers("/api/vendor/**").permitAll()
 
                         // 5. Any other /api/** requires authentication
                         .requestMatchers("/api/**").authenticated()

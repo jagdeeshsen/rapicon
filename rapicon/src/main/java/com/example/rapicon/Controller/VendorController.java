@@ -28,12 +28,14 @@ public class VendorController {
     private final VendorService vendorService;
 
     @GetMapping("/get-vendor/{id}")
+    @PreAuthorize("hasRole('VENDOR')")
     public ResponseEntity<Vendor> getVendorById(@PathVariable String id){
         Vendor vendor= vendorService.getVendorById(Long.parseLong(id));
         return ResponseEntity.ok(vendor);
     }
 
     @PutMapping("/update-vendor/{id}")
+    @PreAuthorize("hasRole('VENDOR')")
     public ResponseEntity<?> updateVendor(@PathVariable String id, @RequestBody Vendor vendor){
 
         try{
@@ -91,7 +93,8 @@ public class VendorController {
     }
 
     @DeleteMapping("/delete-account")
-    public ResponseEntity<?> deleteUserAccount(@RequestBody Map<String, String> request, Authentication authentication){
+    @PreAuthorize("hasRole('VENDOR')")
+    public ResponseEntity<?> deleteVendorAccount(@RequestBody Map<String, String> request, Authentication authentication){
         UserDetailsImpl userDetails= (UserDetailsImpl) authentication.getPrincipal();
 
         Long vendorId= userDetails.getId();
