@@ -9,7 +9,8 @@ public enum Status {
     REJECTED("Rejected"),
     SUSPENDED("Suspended"),
     DEACTIVATE("Deactivate"),
-    DRAFT("Draft");
+    DRAFT("Draft"),
+    CHANGES_REQUESTED("Changes_Requested");
 
     private final String displayName;
 

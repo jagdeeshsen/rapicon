@@ -69,6 +69,12 @@ public class DesignService{
         return updatedDesign;
     }
 
+    // DesignService.java — new method, does NOT touch design.status or call save()
+    public void notifyVendorChangesRequested(Long id, String reason) {
+        Design design = getDesignById(id);
+        emailService.sendDesignChangesRequestedEmail(design, reason);
+    }
+
     public Design getDesignById(Long id) {
         return  designRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Design not found with id: " + id));
