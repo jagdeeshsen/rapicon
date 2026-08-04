@@ -60,7 +60,7 @@ public class UserController {
     }
 
     @GetMapping("/page/users")
-    public ResponseEntity<Page<User>> findAllUsers(@PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.ASC)Pageable pageable){
+    public ResponseEntity<Page<User>> findAllUsers(@PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC)Pageable pageable){
         return ResponseEntity.ok(userService.findAllPagination(pageable));
     }
 

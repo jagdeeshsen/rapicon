@@ -86,7 +86,7 @@ public class VendorController {
 
     @GetMapping("/page/vendors")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<Vendor>> findAllVendors(@PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.ASC)Pageable pageable){
+    public ResponseEntity<Page<Vendor>> findAllVendors(@PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC)Pageable pageable){
         return ResponseEntity.ok(vendorService.findAllPagination(pageable));
     }
 
