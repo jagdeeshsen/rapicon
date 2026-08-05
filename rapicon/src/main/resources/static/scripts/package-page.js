@@ -147,10 +147,7 @@ const builtUpArea= sessionStorage.getItem('builtUpArea');
           });
 
           if (response.ok) {
-            showNotification("✅ Design added successfully!", 'success');
-            setTimeout(() => {
-                //window.location.href = '/addtocard.html';
-              }, 1500);
+            showNotification(" Design added successfully!", 'success');
           } else if (response.status === 401) {
             alert('Session expired. Please log in again.');
           } else {
@@ -165,15 +162,9 @@ const builtUpArea= sessionStorage.getItem('builtUpArea');
     }
 
     function handleBuy(packageName, packagePrice) {
-      //alert(`Proceeding to purchase ${packageName} package. You'll be redirected to the booking form.`);
        packagePrice*= builtUpArea;
        sessionStorage.setItem('selectedPackage', packageName);
        window.location.href = '/addtocard.html';
-       /*if(packageName==='Basic'){
-          window.location.href = 'addtocard.html?price='+packagePrice;
-       }else{
-          window.location.href= 'installment-payment.html?price='+packagePrice;
-       }*/
     }
 
     function showNotification(message, type = 'success') {

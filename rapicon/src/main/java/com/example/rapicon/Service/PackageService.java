@@ -1,8 +1,10 @@
 package com.example.rapicon.Service;
 
+import com.example.rapicon.CustomExceptions.ResourceNotFoundException;
+import com.example.rapicon.DTO.PackageRequestDTO;
 import com.example.rapicon.Models.Package;
 import com.example.rapicon.Repository.PackageRepo;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -10,46 +12,62 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class PackageService {
 
-    @Autowired
-    private PackageRepo packageRepo;
 
-    public Package createPackage(Package p){
-        p.setCreatedAt(LocalDateTime.now());
-        p.setUpdatedAt(LocalDateTime.now());
-        return packageRepo.save(p);
+    final private PackageRepo packageRepo;
+
+    public Package createPackage(PackageRequestDTO request){
+        Package pkg = new Package();
+
+        pkg.setName(request.getName());
+        pkg.setPackageAmount(request.getPkgAmount());
+        pkg.setNoOfInstallments(request.getNoOfInstallments());
+        pkg.setDescription(request.getDescription());
+        pkg.setHighlights(request.getHighlights());
+
+        pkg.setCreatedAt(LocalDateTime.now());
+
+        return packageRepo.save(pkg);
     }
 
-    public Package updatePackage(Package p){
-        p.setUpdatedAt(LocalDateTime.now());
-        return packageRepo.save(p);
+    public Package updatePackage(Long id, PackageRequestDTO request){
+        Package pkg = findPackageById(id);
+
+        pkg.setName(request.getName());
+        pkg.setPackageAmount(request.getPkgAmount());
+        pkg.setNoOfInstallments(request.getNoOfInstallments());
+        pkg.setDescription(request.getDescription());
+        pkg.setHighlights(request.getHighlights());
+
+        pkg.setUpdatedAt(LocalDateTime.now());
+
+        return packageRepo.save(pkg);
     }
 
-    public void deletePackageById(Long id){
-        packageRepo.deleteById(id);
+    public String deletePackageById(Long id){
+        Package pkg = findPackageById(id);
+        packageRepo.deleteById(pkg.getId());
+        return "Package deleted successfully!";
     }
 
-    public Package getPackageById(Long id){
-        Optional<Package> optionalPackage= packageRepo.findById(id);
-        if(optionalPackage.isPresent()){
-            return optionalPackage.get();
-        }else{
-            return null;
-        }
+    public Package findPackageById(Long id){
+        return packageRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Package not found with id: "+ id));
     }
 
     public List<Package> getAllPackage(){
-        List<Package> packagesList= packageRepo.findAll();
-        return packagesList;
+        return packageRepo.findAll();
     }
 
     public Package getPackageByName(String name){
         Optional<Package> packageOptional= packageRepo.findByName(name);
-        if(packageOptional.isPresent()){
-            return packageOptional.get();
+
+        if(packageOptional.isEmpty()){
+            throw new ResourceNotFoundException("Package not found with name: "+name);
         }else{
-            return null;
+            return packageOptional.get();
         }
     }
 }

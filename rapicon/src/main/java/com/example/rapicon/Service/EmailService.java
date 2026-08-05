@@ -95,6 +95,14 @@ public class EmailService {
         String htmlContent;
 
         switch (request.getStatus()) {
+            case CHANGES_REQUESTED:
+                subject = "Changes Requested on Your Design - Rapicon Infrastructure LLP";
+                htmlContent = buildDesignStatusEmailTemplate(
+                        vendor.getFullName(), designName, request.getReason(),
+                        "Changes Requested", "#f97316",
+                        "Please review the feedback below and update your design submission."
+                );
+                break;
             case APPROVED:
                 subject = "Your Design Has Been Approved - Rapicon Infrastructure LLP";
                 htmlContent = buildDesignApprovedEmailTemplate(vendor.getFullName(), designName);
