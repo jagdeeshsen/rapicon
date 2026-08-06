@@ -1,7 +1,6 @@
 package com.example.rapicon.Controller;
 
 import com.example.rapicon.Models.Vendor;
-import com.example.rapicon.Security.UserDetailsImpl;
 import com.example.rapicon.Service.VendorService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,9 +11,9 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
@@ -92,15 +91,10 @@ public class VendorController {
         return ResponseEntity.ok(vendorService.findAllPagination(pageable));
     }
 
-    @DeleteMapping("/delete-account")
-    @PreAuthorize("hasAnyRole('VENDOR', 'ADMIN')")
-    public ResponseEntity<?> deleteVendorAccount(@RequestBody Map<String, String> request, Authentication authentication){
-        UserDetailsImpl userDetails= (UserDetailsImpl) authentication.getPrincipal();
-
-        Long vendorId= userDetails.getId();
-        String role = userDetails.getAuthorities().iterator().next().getAuthority();
-
-        vendorService.deleteAccountBasedOnRole(vendorId, role, request);
+    @PutMapping("/deactivate/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VENDOR')")
+    public ResponseEntity<?> deactivateVendorAccount(@PathVariable Long id, @RequestBody @Valid String password){
+        vendorService.deactivateAccountBasedOnRole(id, password);
         return ResponseEntity.ok(Map.of("message", "Account deleted permanently"));
     }
 }

@@ -212,7 +212,7 @@ async function deleteAccount() {
   }
 
   const confirmDelete = await showMessage.confirm(
-      '⚠️ WARNING: This will permanently delete your account and all associated data. This action cannot be undone.\n\nAre you absolutely sure you want to delete your account?'
+      ' WARNING: This will permanently delete your account and all associated data. This action cannot be undone.\n\nAre you absolutely sure you want to delete your account?'
   );
 
  if (!confirmDelete) return;
@@ -228,13 +228,13 @@ async function deleteAccount() {
      }
 
      // Delete account
-     const deleteResponse = await fetch("/api/vendor/delete-account", {
-         method: 'DELETE',
+     const deleteResponse = await fetch(`/api/vendor/deactivate/${id}`, {
+         method: 'PUT',
          headers: {
              'Authorization': `Bearer ${token}`,
              'Content-Type': 'application/json'
          },
-         body: JSON.stringify({ password: password })
+         body: JSON.stringify({ password })
      });
 
      if (!deleteResponse.ok) {

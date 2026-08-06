@@ -1,5 +1,6 @@
 package com.example.rapicon.Service;
 
+import com.example.rapicon.CustomExceptions.InvalidCredentialsException;
 import com.example.rapicon.CustomExceptions.ResourceNotFoundException;
 import com.example.rapicon.DTO.VendorRegistrationRequest;
 import com.example.rapicon.Models.Vendor;
@@ -7,16 +8,14 @@ import com.example.rapicon.Repository.VendorRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
+import javax.validation.Valid;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -89,30 +88,23 @@ public class VendorService {
 
 
     @Transactional
-    public void deleteAccountBasedOnRole(Long id, String role, Map<String, String> request){
+    public void deactivateAccountBasedOnRole(Long id, @Valid String password) {
+        Vendor vendor = getVendorById(id);
 
-        if(role.equals("ROLE_VENDOR")){
-            Vendor vendor = getVendorById(id);
-
-            String password= request.get("password");
-
-            if (password == null || password.isBlank()) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password required");
-            }
-
-            if(!passwordEncoder.matches(password, vendor.getPassword())){
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
-            }
-
-            vendor.setDeleted(true);
-            vendor.setDeletedAt(LocalDateTime.now());
-
-            designService.deactivateVendorDesigns(vendor.getId());
-            passwordResetService.deleteTokensByVendorId(vendor.getId());
-
-            vendorRepo.save(vendor);
+        if (password == null || password.isBlank()) {
+            throw new InvalidCredentialsException("Password require for deactivating account");
         }
+
+        if(!passwordEncoder.matches(password, vendor.getPassword())){
+            throw new InvalidCredentialsException("Invalid password");
+        }
+
+        vendor.setDeleted(true);
+        vendor.setDeletedAt(LocalDateTime.now());
+
+        designService.deactivateVendorDesigns(id);
+        passwordResetService.deleteTokensByVendorId(id);
+
+        vendorRepo.save(vendor);
     }
-
-
 }
