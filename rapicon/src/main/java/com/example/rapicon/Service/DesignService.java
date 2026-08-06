@@ -32,6 +32,7 @@ public class DesignService{
 
 
     public Design updateDesign(Design design) {
+        design.setStatus(Status.PENDING);
         return designRepository.save(design);
     }
 
@@ -67,12 +68,6 @@ public class DesignService{
         emailService.sendDesignUpdateEmail(design, request);
 
         return updatedDesign;
-    }
-
-    // DesignService.java — new method, does NOT touch design.status or call save()
-    public void notifyVendorChangesRequested(Long id, String reason) {
-        Design design = getDesignById(id);
-        emailService.sendDesignChangesRequestedEmail(design, reason);
     }
 
     public Design getDesignById(Long id) {

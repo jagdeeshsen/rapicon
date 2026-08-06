@@ -136,32 +136,6 @@ public class EmailService {
         }
     }
 
-    public void sendDesignChangesRequestedEmail(Design design, String reason) {
-        Vendor vendor = design.getVendor();
-        if (vendor == null || vendor.getEmail() == null) {
-            log.warn("Cannot send changes-requested email — no vendor/email found for design id: {}", design.getId());
-            return;
-        }
-
-        String designName = design.getDesignCategory() != null
-                ? design.getDesignCategory()
-                : design.getDesignType();
-
-        String subject = "Changes Requested on Your Design - Rapicon Infrastructure LLP";
-        String htmlContent = buildDesignStatusEmailTemplate(
-                vendor.getFullName(), designName, reason,
-                "Changes Requested", "#f97316",
-                "An admin has reviewed your design and requested some changes before it can be approved."
-        );
-
-        try {
-            sendHtmlEmail(vendor.getEmail(), subject, htmlContent);
-            log.info("Changes-requested email sent to {} for design id {}", vendor.getEmail(), design.getId());
-        } catch (Exception e) {
-            log.error("Failed to send changes-requested email to: {}", vendor.getEmail(), e);
-        }
-    }
-
     /**
      * Password Reset Email Template
      */

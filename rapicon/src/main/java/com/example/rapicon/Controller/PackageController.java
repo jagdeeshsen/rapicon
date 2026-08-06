@@ -51,6 +51,18 @@ public class PackageController {
         }
     }
 
+    @PatchMapping("/package/deactivate/{id}")
+    public ResponseEntity<?> deactivatePackage(@PathVariable Long id){
+        try{
+            Package updatedPkg = packageService.deactivatePackage(id);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(Map.of("package",updatedPkg, "message", "Package deactivate successfully"));
+        }catch (RuntimeException e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Failed to deactivate package with id: "+ id));
+        }
+    }
+
     @GetMapping("/package/{id}")
     public Package findPackageById(@PathVariable Long id){
         return packageService.findPackageById(id);

@@ -70,4 +70,11 @@ public class PackageService {
             return packageOptional.get();
         }
     }
+
+    public Package deactivatePackage(Long id) {
+        Package pkg = findPackageById(id);
+
+        pkg.setActive(false);
+        return packageRepo.save(pkg);
+    }
 }

@@ -1,7 +1,5 @@
 package com.example.rapicon.Controller;
 
-import com.example.rapicon.CustomExceptions.ResourceNotFoundException;
-import com.example.rapicon.DTO.DesignChangeRequest;
 import com.example.rapicon.DTO.DesignRequestDTO;
 import com.example.rapicon.DTO.DesignStatusUpdateRequest;
 import com.example.rapicon.Enum.Status;
@@ -344,23 +342,6 @@ public class DesignController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
                     "message", "Server error", "success", false));
-        }
-    }
-
-    // DesignController.java
-    @PostMapping("/{id}/request-changes")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> requestDesignChanges(@PathVariable Long id,
-                                                  @RequestBody @Valid DesignChangeRequest request) {
-        try {
-            designService.notifyVendorChangesRequested(id, request.getReason());
-            return ResponseEntity.ok(Map.of("message", "Vendor notified successfully", "success", true));
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("message", e.getMessage(), "success", false));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("message", "Server error", "success", false));
         }
     }
 }

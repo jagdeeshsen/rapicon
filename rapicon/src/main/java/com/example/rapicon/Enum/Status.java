@@ -7,9 +7,7 @@ public enum Status {
     PENDING("Pending Review"),
     APPROVED("Approved"),
     REJECTED("Rejected"),
-    SUSPENDED("Suspended"),
     DEACTIVATE("Deactivate"),
-    DRAFT("Draft"),
     CHANGES_REQUESTED("Changes_Requested");
 
     private final String displayName;
