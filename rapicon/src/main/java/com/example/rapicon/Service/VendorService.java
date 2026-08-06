@@ -17,7 +17,6 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -93,11 +92,7 @@ public class VendorService {
     public void deleteAccountBasedOnRole(Long id, String role, Map<String, String> request){
 
         if(role.equals("ROLE_VENDOR")){
-            Optional<Vendor> vendor = vendorRepo.findById(id);
-
-            if(vendor.isEmpty()){
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Vendor not found");
-            }
+            Vendor vendor = getVendorById(id);
 
             String password= request.get("password");
 
@@ -105,18 +100,17 @@ public class VendorService {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password required");
             }
 
-            if(!passwordEncoder.matches(password, vendor.get().getPassword())){
+            if(!passwordEncoder.matches(password, vendor.getPassword())){
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
             }
 
-            Vendor deletedVendor= vendor.get();
-            deletedVendor.setDeleted(true);
-            deletedVendor.setDeletedAt(LocalDateTime.now());
+            vendor.setDeleted(true);
+            vendor.setDeletedAt(LocalDateTime.now());
 
-            designService.deactivateVendorDesigns(deletedVendor.getId());
-            passwordResetService.deleteTokensByVendorId(deletedVendor.getId());
+            designService.deactivateVendorDesigns(vendor.getId());
+            passwordResetService.deleteTokensByVendorId(vendor.getId());
 
-            vendorRepo.save(deletedVendor);
+            vendorRepo.save(vendor);
         }
     }
 

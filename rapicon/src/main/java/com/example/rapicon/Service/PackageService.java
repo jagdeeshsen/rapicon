@@ -71,10 +71,11 @@ public class PackageService {
         }
     }
 
-    public Package deactivatePackage(Long id) {
+    public Package toggleActive(Long id) {
         Package pkg = findPackageById(id);
 
-        pkg.setActive(false);
+        pkg.setActive(!pkg.isActive());
+        pkg.setUpdatedAt(LocalDateTime.now());
         return packageRepo.save(pkg);
     }
 }

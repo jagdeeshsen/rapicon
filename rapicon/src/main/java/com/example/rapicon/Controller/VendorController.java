@@ -93,7 +93,7 @@ public class VendorController {
     }
 
     @DeleteMapping("/delete-account")
-    @PreAuthorize("hasRole('VENDOR')")
+    @PreAuthorize("hasAnyRole('VENDOR', 'ADMIN')")
     public ResponseEntity<?> deleteVendorAccount(@RequestBody Map<String, String> request, Authentication authentication){
         UserDetailsImpl userDetails= (UserDetailsImpl) authentication.getPrincipal();
 

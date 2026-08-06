@@ -51,10 +51,10 @@ public class PackageController {
         }
     }
 
-    @PatchMapping("/package/deactivate/{id}")
-    public ResponseEntity<?> deactivatePackage(@PathVariable Long id){
+    @PatchMapping("/package/toggle/{id}")
+    public ResponseEntity<?> toggleActive(@PathVariable Long id){
         try{
-            Package updatedPkg = packageService.deactivatePackage(id);
+            Package updatedPkg = packageService.toggleActive(id);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(Map.of("package",updatedPkg, "message", "Package deactivate successfully"));
         }catch (RuntimeException e){
