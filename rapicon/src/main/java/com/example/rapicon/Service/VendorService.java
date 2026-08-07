@@ -1,5 +1,6 @@
 package com.example.rapicon.Service;
 
+import com.example.rapicon.CustomExceptions.AccountInactiveException;
 import com.example.rapicon.CustomExceptions.InvalidCredentialsException;
 import com.example.rapicon.CustomExceptions.ResourceNotFoundException;
 import com.example.rapicon.DTO.VendorRegistrationRequest;
@@ -95,8 +96,25 @@ public class VendorService {
             throw new InvalidCredentialsException("Password require for deactivating account");
         }
 
-        if(!passwordEncoder.matches(password, vendor.getPassword())){
+        if(!passwordEncoder.matches(password.trim(), vendor.getPassword())){
             throw new InvalidCredentialsException("Invalid password");
+        }
+
+        vendor.setDeleted(true);
+        vendor.setDeletedAt(LocalDateTime.now());
+
+        designService.deactivateVendorDesigns(id);
+        passwordResetService.deleteTokensByVendorId(id);
+
+        vendorRepo.save(vendor);
+    }
+
+    @Transactional
+    public void deactivateAccountBasedOnRoleByAdmin(Long id) {
+        Vendor vendor = getVendorById(id);
+
+        if(vendor.isDeleted()){
+            throw new AccountInactiveException("Account is already deactivate.");
         }
 
         vendor.setDeleted(true);

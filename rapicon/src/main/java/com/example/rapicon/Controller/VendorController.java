@@ -92,9 +92,16 @@ public class VendorController {
     }
 
     @PutMapping("/deactivate/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'VENDOR')")
+    @PreAuthorize("hasRole('VENDOR')")
     public ResponseEntity<?> deactivateVendorAccount(@PathVariable Long id, @RequestBody @Valid String password){
         vendorService.deactivateAccountBasedOnRole(id, password);
-        return ResponseEntity.ok(Map.of("message", "Account deleted permanently"));
+        return ResponseEntity.ok(Map.of("message", "Account deactivated permanently"));
+    }
+
+    @PutMapping("/admin/deactivate/{id}")
+    @PreAuthorize("hasRole('VENDOR')")
+    public ResponseEntity<?> deactivateVendorAccountByAdmin(@PathVariable Long id){
+        vendorService.deactivateAccountBasedOnRoleByAdmin(id);
+        return ResponseEntity.ok(Map.of("message", "Account deactivated permanently"));
     }
 }
