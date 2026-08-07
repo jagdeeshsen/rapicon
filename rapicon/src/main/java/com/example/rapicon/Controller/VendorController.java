@@ -99,7 +99,7 @@ public class VendorController {
     }
 
     @PutMapping("/admin/deactivate/{id}")
-    @PreAuthorize("hasRole('VENDOR')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deactivateVendorAccountByAdmin(@PathVariable Long id){
         vendorService.deactivateAccountBasedOnRoleByAdmin(id);
         return ResponseEntity.ok(Map.of("message", "Account deactivated permanently"));
