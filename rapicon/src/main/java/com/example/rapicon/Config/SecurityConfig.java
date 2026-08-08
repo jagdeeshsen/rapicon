@@ -113,6 +113,7 @@ public class SecurityConfig {
                 "http://localhost:5173",           // React dev server (Vite)
                 "http://localhost:3000",           // Alternative React dev server
                 "https://rapiconinfra.com",        // Your production frontend
+                "https://admin.rapiconinfra.com",
                 "https://www.rapiconinfra.com"     // With www subdomain
         ));
 

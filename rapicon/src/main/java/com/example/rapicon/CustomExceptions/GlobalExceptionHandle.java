@@ -38,7 +38,7 @@ public class GlobalExceptionHandle {
     @ExceptionHandler(DataAccessException.class)
     public ResponseEntity<?> handleDataAccess(DataAccessException e){
         log.error("Database error", e);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
                 .body(Map.of("message", "Service temporarily unavailable. Please try again later."));
     }
 

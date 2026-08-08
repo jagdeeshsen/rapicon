@@ -100,6 +100,10 @@ public class VendorService {
             throw new InvalidCredentialsException("Invalid password");
         }
 
+        if(vendor.isDeleted()){
+            throw new AccountInactiveException("Account is already deactivate.");
+        }
+
         vendor.setDeleted(true);
         vendor.setDeletedAt(LocalDateTime.now());
 
