@@ -36,8 +36,6 @@ public class User {
     private String state;
     private String zipCode;
     private String country;
-
-    private boolean isActive = true;
     private Timestamp createdAt;
 
 }
