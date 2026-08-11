@@ -5,11 +5,14 @@ import com.example.rapicon.Models.*;
 import com.example.rapicon.Service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -19,29 +22,15 @@ import java.util.List;
 public class AdminController {
 
     private final DesignService designService;
-    private final UserService userService;
-    private final VendorService vendorService;
 
 
 
     // -------------------------- Design Endpoints--------------------------------//
 
-    @GetMapping("/pending")
-    public ResponseEntity<List<Design>> getPendingDesigns(){
-        List<Design> pendingDgn=designService.findDesignsByStatus(Status.PENDING);
-        return ResponseEntity.ok(pendingDgn);
-    }
-
-    @GetMapping("/approved")
-    public ResponseEntity<List<Design>> getApprovedDesigns(){
-        List<Design> pendingDgn=designService.findDesignsByStatus(Status.APPROVED);
-        return ResponseEntity.ok(pendingDgn);
-    }
-
-    @GetMapping("/rejected")
-    public ResponseEntity<List<Design>> getRejectedDesigns(){
-        List<Design> pendingDgn=designService.findDesignsByStatus(Status.REJECTED);
-        return ResponseEntity.ok(pendingDgn);
+    @GetMapping("/designs/approved")
+    public ResponseEntity<Page<Design>> getApprovedDesigns(@RequestParam Status status,
+                                                           @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC)Pageable pageable){
+        return ResponseEntity.ok(designService.findDesignsByStatus(status, pageable));
     }
 
     @DeleteMapping("/delete")

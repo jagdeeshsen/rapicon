@@ -50,9 +50,8 @@ public class DesignService{
         return "Design Deleted Successfully.";
     }
 
-
-    public List<Design> findDesignsByStatus(Status status) {
-        return designRepository.findByStatus(status);
+    public Page<Design> findDesignsByStatus(Status status, Pageable pageable){
+        return designRepository.findByStatus(status, pageable);
     }
 
     public Design updateDesignStatus(Long id, DesignStatusUpdateRequest request) {

@@ -3,6 +3,8 @@ package com.example.rapicon.Repository;
 import com.example.rapicon.Models.Design;
 import com.example.rapicon.Enum.Status;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -17,7 +19,7 @@ public interface DesignRepo extends JpaRepository<Design,Long> {
     List<Design> findByVendorId(Long vendorId);
 
     // Find designs by status
-    List<Design> findByStatus(Status status);
+    Page<Design> findByStatus(Status status, Pageable pageable);
 
     @Modifying
     @Transactional
