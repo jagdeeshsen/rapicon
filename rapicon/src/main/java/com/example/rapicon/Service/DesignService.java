@@ -54,6 +54,10 @@ public class DesignService{
         return designRepository.findByStatus(status, pageable);
     }
 
+    public List<Design> findByStatus(){
+        return designRepository.findByStatus(Status.APPROVED);
+    }
+
     public Design updateDesignStatus(Long id, DesignStatusUpdateRequest request) {
         Design design = designRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Design not found with id: " + id));

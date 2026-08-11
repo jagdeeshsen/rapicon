@@ -13,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @Slf4j
 @RestController
@@ -31,6 +33,11 @@ public class AdminController {
     public ResponseEntity<Page<Design>> getApprovedDesigns(@RequestParam Status status,
                                                            @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC)Pageable pageable){
         return ResponseEntity.ok(designService.findDesignsByStatus(status, pageable));
+    }
+
+    @GetMapping("/approved")
+    public ResponseEntity<List<Design>> getApprovedDesign(){
+        return ResponseEntity.ok(designService.findByStatus());
     }
 
     @DeleteMapping("/delete")

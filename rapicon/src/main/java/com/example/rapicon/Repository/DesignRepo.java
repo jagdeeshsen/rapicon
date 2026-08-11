@@ -20,6 +20,7 @@ public interface DesignRepo extends JpaRepository<Design,Long> {
 
     // Find designs by status
     Page<Design> findByStatus(Status status, Pageable pageable);
+    List<Design> findByStatus(Status status);
 
     @Modifying
     @Transactional
