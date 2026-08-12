@@ -25,12 +25,12 @@ public class UserController {
 
     private final UserService userService;
 
-    @GetMapping("/get-user/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<?> getUserById(@PathVariable Long id){
         return ResponseEntity.status(HttpStatus.OK).body(userService.findById(id));
     }
 
-    @PutMapping("/update-user")
+    @PutMapping("/update")
     public ResponseEntity<?> updateUser(@RequestBody Map<String, String> request){
         Long id= Long.parseLong(request.get("id"));
         User user = userService.findById(id);
@@ -43,9 +43,9 @@ public class UserController {
         user.setStreetAddress(request.get("streetAddress"));
         user.setZipCode(request.get("zipCode"));
 
-        userService.updateUser(user);
+        User updatedUser = userService.updateUser(user);
 
-        return ResponseEntity.ok(Map.of("message", "Profile Updated Successfully"));
+        return ResponseEntity.ok(Map.of("user", updatedUser,"message", "Profile Updated Successfully"));
     }
 
     @GetMapping("/all")
@@ -64,7 +64,7 @@ public class UserController {
         return ResponseEntity.ok(userService.findAllPagination(pageable));
     }
 
-    @DeleteMapping("/delete-account")
+    @DeleteMapping("/delete")
     public ResponseEntity<?> deleteUserAccount(@RequestBody Map<String, String> request, Authentication authentication){
         UserDetailsImpl userDetails= (UserDetailsImpl) authentication.getPrincipal();
 
