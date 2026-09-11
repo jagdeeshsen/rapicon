@@ -5,29 +5,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Login - Rapicon</title>
     <meta name="description" content="User login page to access your dashboard and manage orders.">
+    <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/login.css">
     <script src="scripts/showMessage.js"></script>
-
 </head>
 <body>
-<div class="login-container">
-    <div class="logo">
-        <h1>Rapicon</h1>
-        <p>Rapicon Design Management System</p>
-    </div>
 
-    <form id="loginForm">
-        <div class="form-group">
-            <label for="phone">Mobile</label>
-            <input type="text" id="phone" name="phone" required placeholder="Enter mobile number">
+<!-- Header (same as other pages) -->
+<header class="rc-header">
+    <div class="rc-header-inner">
+        <a href="/" class="rc-brand">
+            <span class="rc-brand-mark">R</span>
+            <span>
+        <span class="rc-brand-name" style="display:block;">RAPICON</span>
+        <span class="rc-brand-sub">Infrastructure</span>
+      </span>
+        </a>
+        <ul class="rc-nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="designs.html">Designs</a></li>
+            <li><a href="about-us.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+        <div class="rc-header-actions">
+            <a href="vendor-landing.html" class="rc-nav-cta">Start Selling</a>
+        </div>
+        <button class="rc-nav-toggle" aria-label="Open menu">☰</button>
+    </div>
+</header>
+
+<div class="rc-login-page">
+    <div class="rc-login-card">
+        <div class="rc-login-logo">
+            <span class="rc-brand-mark">R</span>
+            <h1>Rapicon</h1>
+            <p>Design Management System</p>
         </div>
 
-        <button type="submit" class="login-btn">Send OTP</button>
-        <div class="error-message" id="errorMessage"></div>
-    </form>
+        <form id="loginForm">
+            <div class="rc-login-field">
+                <label for="phone">Mobile Number</label>
+                <input type="tel" id="phone" name="phone" required placeholder="Enter mobile number" inputmode="numeric" maxlength="10" pattern="[0-9]{10}">
+            </div>
 
-    <div class="register-link">
-        <p>Don't have an account? <a href="register.html">Register here</a></p>
+            <button type="submit" class="btn-gold login-btn">Send OTP</button>
+            <div class="error-message" id="errorMessage"></div>
+        </form>
+
+        <div class="rc-register-link">
+            <p>Don't have an account? <a href="register.html">Register here</a></p>
+        </div>
     </div>
 </div>
 

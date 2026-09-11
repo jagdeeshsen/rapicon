@@ -1,0 +1,247 @@
+/* ==========================================================================
+   Rapicon — Homepage-only styles
+   Load AFTER base.css. Hero, search bar, categories, plot sizes,
+   features, 2D/3D split, CTA, start-selling, testimonials, FAQ —
+   none of this is used by plans.html or detail.html.
+   ========================================================================== */
+
+.rc-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 500;
+  margin-bottom: var(--space-3);
+}
+.rc-eyebrow::before { content: ""; width: 32px; height: 1px; background: var(--gold); }
+.rc-eyebrow.center { justify-content: center; }
+
+/* ---------- Hero ---------- */
+.rc-hero {
+  position: relative;
+  min-height: 92vh;
+  display: flex;
+  align-items: center;
+  background: var(--ink);
+  overflow: hidden;
+}
+.rc-hero-bg { position: absolute; inset: 0; }
+.rc-hero-bg img { width: 100%; height: 100%; object-fit: cover; }
+.rc-hero-bg::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, rgba(28,25,23,0.92) 0%, rgba(28,25,23,0.65) 45%, rgba(28,25,23,0.35) 100%);
+}
+.rc-hero-inner { position: relative; z-index: 1; padding: 96px 0; }
+.rc-hero-copy { max-width: 560px; }
+.rc-hero-title {
+  font-size: clamp(2.6rem, 5.5vw, 4.25rem);
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.05;
+  margin: 0 0 var(--space-5);
+}
+.rc-hero-title span { color: var(--gold); }
+.rc-hero-sub {
+  font-size: 16px;
+  color: rgba(255,255,255,0.75);
+  line-height: 1.7;
+  max-width: 420px;
+  margin: 0 0 var(--space-7);
+}
+.rc-hero-actions { display: flex; gap: var(--space-3); flex-wrap: wrap; }
+.rc-hero-meta {
+  margin-top: var(--space-7);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+  flex-wrap: wrap;
+}
+.rc-hero-meta .dot { color: var(--gold); }
+.rc-scroll-cue {
+  position: absolute;
+  bottom: 32px; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: var(--space-2);
+  color: rgba(255,255,255,0.4);
+  z-index: 1;
+}
+.rc-scroll-cue .line { width: 1px; height: 48px; background: linear-gradient(180deg, transparent, rgba(255,255,255,0.35)); }
+.rc-scroll-cue span { font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; }
+
+/* ---------- Search & filters ---------- */
+.rc-search-section { background: #fff; border-bottom: 1px solid var(--border); padding: var(--space-7) 0; }
+.rc-search-heading { text-align: center; font-size: 22px; font-weight: 700; margin: 0 0 var(--space-6); }
+.rc-search-box { max-width: 900px; margin: 0 auto; }
+.rc-search-input-wrap { position: relative; margin-bottom: var(--space-4); }
+.rc-search-input-wrap svg { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--muted); }
+.rc-search-input-wrap input {
+  width: 100%;
+  padding: 16px 16px 16px 44px;
+  border: 1px solid var(--border);
+  background: var(--bg-light);
+  font-size: 14px;
+  color: var(--ink);
+}
+.rc-search-input-wrap input:focus { outline: none; border-color: var(--gold); }
+.rc-filter-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-2); margin-bottom: var(--space-4); }
+.rc-filter-row select {
+  padding: 12px; border: 1px solid var(--border); background: #fff;
+  font-size: 12px; color: var(--muted); appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B6560' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center;
+}
+.rc-filter-row select:focus { outline: none; border-color: var(--gold); }
+.rc-clear-filters { font-size: 12px; color: var(--muted); background: none; border: none; text-decoration: underline; text-underline-offset: 2px; }
+.rc-clear-filters:hover { color: var(--ink); }
+@media (max-width: 700px) { .rc-filter-row { grid-template-columns: repeat(2, 1fr); } }
+
+/* ---------- Section heads ---------- */
+.rc-section { padding: var(--space-8) 0; }
+.rc-section.tint { background: var(--bg-light); }
+.rc-section-head { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: var(--space-6); gap: var(--space-4); flex-wrap: wrap; }
+.rc-section-head h2 { font-size: clamp(24px, 3vw, 34px); font-weight: 700; margin: 0; }
+.rc-section-count { font-size: 12px; color: var(--muted); }
+
+/* ---------- Categories ---------- */
+.rc-categories-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-4); }
+@media (max-width: 900px) { .rc-categories-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 600px) { .rc-categories-grid { grid-template-columns: repeat(2, 1fr); } }
+.rc-category-card { position: relative; height: 220px; overflow: hidden; background: var(--bg-card); cursor: pointer; }
+.rc-category-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+.rc-category-card:hover img { transform: scale(1.08); }
+.rc-category-scrim { position: absolute; inset: 0; background: linear-gradient(0deg, rgba(28,25,23,0.85), rgba(28,25,23,0) 55%); }
+.rc-category-label { position: absolute; bottom: 0; left: 0; right: 0; padding: var(--space-3); }
+.rc-category-label .name { color: #fff; font-size: 13px; font-weight: 700; }
+.rc-category-label .count { color: rgba(255,255,255,0.6); font-size: 11px; }
+
+/* ---------- Plot sizes ---------- */
+.rc-plots-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-3); }
+@media (max-width: 700px) { .rc-plots-grid { grid-template-columns: repeat(2, 1fr); } }
+.rc-plot-card { border: 1px solid var(--border); background: #fff; padding: var(--space-5); cursor: pointer; transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease; }
+.rc-plot-card:hover { border-color: var(--gold); }
+.rc-plot-card.active { background: var(--ink); border-color: var(--ink); color: #fff; }
+.rc-plot-dim { font-size: 20px; font-weight: 700; margin-bottom: var(--space-1); }
+.rc-plot-area { font-size: 11px; color: var(--gold); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: var(--space-3); }
+.rc-plot-count { font-size: 12px; color: var(--muted); margin-bottom: var(--space-3); }
+.rc-plot-card.active .rc-plot-count { color: rgba(255,255,255,0.7); }
+.rc-plot-link { display: flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; }
+
+/* ---------- Features ---------- */
+.rc-features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-6); }
+@media (max-width: 900px) { .rc-features-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .rc-features-grid { grid-template-columns: 1fr; } }
+.rc-feature { display: flex; gap: var(--space-4); }
+.rc-feature-icon { width: 40px; height: 40px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; flex: none; color: var(--gold); }
+.rc-feature h3 { font-size: 15px; font-weight: 700; margin: 0 0 var(--space-2); }
+.rc-feature p { font-size: 13px; color: var(--muted); line-height: 1.6; margin: 0; }
+
+/* ---------- 2D/3D split + blueprint bar ---------- */
+.rc-split { display: grid; grid-template-columns: 1fr 1fr; }
+@media (max-width: 900px) { .rc-split { grid-template-columns: 1fr; } }
+.rc-split-panel { position: relative; min-height: 480px; overflow: hidden; }
+.rc-split-panel img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.rc-split-panel .tint { position: absolute; inset: 0; background: rgba(28,25,23,0.3); }
+.rc-split-copy { position: relative; z-index: 1; height: 100%; display: flex; align-items: flex-end; padding: var(--space-6); }
+.rc-split-copy .tag { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: var(--space-2); }
+.rc-split-copy .headline { font-size: 22px; font-weight: 700; color: #fff; }
+
+.rc-blueprint-bar {
+  background: #fff; border: 1px solid var(--border);
+  margin: var(--space-6) 24px 0;
+  padding: var(--space-6) var(--space-6);
+  display: flex; align-items: center; justify-content: space-between; gap: var(--space-6);
+  flex-wrap: wrap;
+}
+@media (min-width: 1024px) { .rc-blueprint-bar { margin-left: 40px; margin-right: 40px; padding: var(--space-7) 64px; } }
+.rc-blueprint-bar h2 { font-size: clamp(24px, 3vw, 34px); font-weight: 700; margin: 0 0 var(--space-2); }
+.rc-blueprint-bar p { font-size: 14px; color: var(--muted); max-width: 480px; margin: 0; }
+.rc-blueprint-actions { display: flex; gap: var(--space-3); flex-wrap: wrap; }
+/* ---------- CTA ---------- */
+.rc-cta { position: relative; background: var(--ink); padding: var(--space-9) 0; overflow: hidden; text-align: center; }
+.rc-cta-bg { position: absolute; inset: 0; }
+.rc-cta-bg img { width: 100%; height: 100%; object-fit: cover; opacity: 0.15; }
+.rc-cta-inner { position: relative; z-index: 1; max-width: 640px; margin: 0 auto; }
+.rc-cta-rule { width: 64px; height: 1px; background: var(--gold); margin: 0 auto var(--space-6); }
+.rc-cta h2 { font-size: clamp(28px, 4.5vw, 44px); font-weight: 700; color: #fff; line-height: 1.15; margin: 0 0 var(--space-4); }
+.rc-cta p { font-size: 15px; color: rgba(255,255,255,0.65); line-height: 1.7; margin: 0 0 var(--space-7); }
+.rc-cta-actions { display: flex; justify-content: center; gap: var(--space-3); flex-wrap: wrap; }
+
+/* ---------- Start selling ---------- */
+.rc-start-selling { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-7); align-items: center; }
+@media (max-width: 900px) { .rc-start-selling { grid-template-columns: 1fr; } }
+.rc-start-selling-media { height: 440px; overflow: hidden; background: var(--bg-card); }
+.rc-start-selling-media img { width: 100%; height: 100%; object-fit: cover; }
+.rc-start-selling h2 { font-size: clamp(26px, 3.5vw, 38px); font-weight: 700; line-height: 1.15; margin: 0 0 var(--space-4); }
+.rc-start-selling > div p.lead { font-size: 14px; color: var(--muted); line-height: 1.7; margin: 0 0 var(--space-6); }
+.rc-checklist { display: flex; flex-direction: column; gap: var(--space-3); margin-bottom: var(--space-6); }
+.rc-checklist div { display: flex; align-items: flex-start; gap: var(--space-3); font-size: 13px; color: var(--muted); }
+.rc-checklist svg { color: var(--gold); flex: none; margin-top: 2px; }
+
+/* ---------- Testimonials ---------- */
+.rc-testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-5); }
+@media (max-width: 900px) { .rc-testimonials-grid { grid-template-columns: 1fr; } }
+.rc-testimonial { border: 1px solid var(--border); background: var(--bg-light); padding: var(--space-6); }
+.rc-testimonial .stars { display: flex; gap: 2px; margin-bottom: var(--space-4); color: var(--gold); }
+.rc-testimonial .stars svg { fill: var(--gold); }
+.rc-testimonial p { font-size: 13px; font-style: italic; line-height: 1.7; margin: 0 0 var(--space-5); }
+.rc-testimonial-person { display: flex; align-items: center; gap: var(--space-3); }
+.rc-testimonial-avatar { width: 36px; height: 36px; background: var(--ink); color: var(--gold); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex: none; }
+.rc-testimonial-name { font-size: 13px; font-weight: 600; }
+.rc-testimonial-loc { font-size: 11px; color: var(--muted); }
+
+/* ---------- FAQ ---------- */
+.rc-faq-layout { display: grid; grid-template-columns: 1fr 2fr; gap: var(--space-7); }
+@media (max-width: 900px) { .rc-faq-layout { grid-template-columns: 1fr; } }
+.rc-faq-layout > div:first-child p { font-size: 13px; color: var(--muted); line-height: 1.7; }
+.rc-faq-item { border-bottom: 1px solid var(--border); }
+.rc-faq-item:last-child { border-bottom: none; }
+.rc-faq-q {
+  width: 100%; display: flex; align-items: center; justify-content: space-between;
+  gap: var(--space-4); padding: var(--space-5) 0; background: none; border: none;
+  text-align: left; font-size: 14px; font-weight: 600; color: var(--ink);
+}
+.rc-faq-q svg { flex: none; color: var(--muted); transition: transform 0.15s ease; }
+.rc-faq-item.open .rc-faq-q svg { color: var(--gold); transform: rotate(180deg); }
+.rc-faq-a { max-height: 0; overflow: hidden; transition: max-height 0.2s ease; }
+.rc-faq-item.open .rc-faq-a { max-height: 240px; }
+.rc-faq-a p { font-size: 13px; color: var(--muted); line-height: 1.7; margin: 0 0 var(--space-5); }
+
+/* ==========================================================================
+   ADD THIS to css/index.css (append at the end) — the account dialog.
+   Nothing else in index.css needs to change; the cart button reuses the
+   existing .rc-icon-btn class from base.css.
+   ========================================================================== */
+
+.rc-account-modal {
+  display: none; position: fixed; inset: 0; z-index: 300;
+  background: rgba(28,25,23,0.55);
+  align-items: center; justify-content: center; padding: 24px;
+}
+.rc-account-modal.active { display: flex; }
+.rc-account-modal-content {
+  position: relative;
+  background: #fff; width: 100%; max-width: 320px;
+  padding: 40px 32px 32px; text-align: center;
+}
+.rc-account-modal-close {
+  position: absolute; top: 12px; right: 12px;
+  width: 28px; height: 28px; border: none; background: none;
+  font-size: 18px; color: var(--muted); cursor: pointer;
+}
+.rc-account-modal-close:hover { color: var(--ink); }
+.rc-account-modal-avatar {
+  width: 48px; height: 48px; margin: 0 auto 16px;
+  background: rgba(196,168,130,0.12); color: var(--gold);
+  display: flex; align-items: center; justify-content: center;
+}
+.rc-account-modal-title { font-size: 15px; font-weight: 700; margin-bottom: 20px; }
+.rc-account-modal-actions { display: flex; flex-direction: column; gap: 10px; }
+.rc-account-modal-actions .btn-ink,
+.rc-account-modal-actions .btn-outline-ink { width: 100%; }

@@ -3,32 +3,61 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rapicon Infrastructure - Verify OTP</title>
+  <title>Verify OTP - Rapicon Infrastructure</title>
+  <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/otp-verification.css">
   <script src="scripts/showMessage.js"></script>
 </head>
 <body>
-<div class="verify-container">
-  <div class="logo">
-    <h1>Rapicon Infrastructure Llp</h1>
-    <p>Verify Your OTP</p>
-  </div>
 
-  <form id="verifyForm">
-    <div class="form-group">
-      <label for="otp">Enter OTP</label>
-      <input type="text" id="otp" name="otp" maxlength="6" required placeholder="Enter 6-digit OTP">
+<!-- Header (same as other pages, minus account icon — this IS the account flow) -->
+<header class="rc-header">
+  <div class="rc-header-inner">
+    <a href="/" class="rc-brand">
+      <span class="rc-brand-mark">R</span>
+      <span>
+        <span class="rc-brand-name" style="display:block;">RAPICON</span>
+        <span class="rc-brand-sub">Infrastructure</span>
+      </span>
+    </a>
+    <ul class="rc-nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="designs.html">Designs</a></li>
+      <li><a href="about-us.html">About</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <div class="rc-header-actions">
+      <a href="vendor-landing.html" class="rc-nav-cta">Start Selling</a>
+    </div>
+    <button class="rc-nav-toggle" aria-label="Open menu">☰</button>
+  </div>
+</header>
+
+<div class="rc-verify-page">
+  <div class="rc-verify-card">
+    <div class="rc-verify-logo">
+      <span class="rc-brand-mark">R</span>
+      <h1>Rapicon Infrastructure</h1>
+      <p>Verify Your OTP</p>
     </div>
 
-    <button type="submit" class="verify-btn">Verify OTP</button>
-    <div class="error-message" id="errorMessage"></div>
-  </form>
+    <form id="verifyForm">
+      <div class="rc-verify-field">
+        <label for="otp">Enter OTP</label>
+        <input type="text" id="otp" name="otp" maxlength="6" inputmode="numeric" pattern="[0-9]{6}" required placeholder="000000">
+      </div>
 
-  <div class="resend-link">
-    <p>Didn’t receive the OTP? <a href="#" id="resendOtp">Resend OTP</a></p>
+      <button type="submit" class="btn-gold verify-btn" id="verifyBtn">Verify OTP</button>
+      <div class="error-message" id="errorMessage"></div>
+    </form>
+
+    <div class="resend-link">
+      <p>Didn't receive the OTP? <a href="#" id="resendOtp">Resend OTP</a></p>
+    </div>
   </div>
 </div>
 
 <script src="scripts/otp-verification.js"></script>
+
 </body>
 </html>

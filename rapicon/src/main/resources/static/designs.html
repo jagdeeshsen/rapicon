@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Designs — Rapicon</title>
+  <meta name="description" content="Browse all architectural designs on Rapicon — residential, commercial and semi-commercial plans, filterable by type, price, plot size and floors.">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/designs.css">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" defer></script>
+</head>
+<body>
+
+<!-- Header (same as homepage) -->
+<header class="rc-header">
+  <div class="rc-header-inner">
+    <a href="/" class="rc-brand">
+      <span class="rc-brand-mark">R</span>
+      <span>
+        <span class="rc-brand-name" style="display:block;">RAPICON</span>
+        <span class="rc-brand-sub">Infrastructure</span>
+      </span>
+    </a>
+    <ul class="rc-nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="designs.html" class="active">Designs</a></li>
+      <li><a href="about-us.html">About</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <div class="rc-header-actions">
+      <a href="otp-login.html" class="rc-icon-btn" aria-label="Account"><i data-lucide="user" width="16" height="16"></i></a>
+      <a href="vendor-landing.html" class="rc-nav-cta">Start Selling</a>
+    </div>
+    <button class="rc-nav-toggle" aria-label="Open menu">☰</button>
+  </div>
+</header>
+
+<div class="rc-wrap rc-plans-body">
+
+  <!-- Sidebar -->
+  <div class="rc-filter-backdrop" id="rcFilterBackdrop"></div>
+  <aside class="rc-sidebar" id="rcSidebar">
+    <div class="rc-sidebar-head">
+      <h2>Filters</h2>
+      <button class="rc-sidebar-clear" id="rcSidebarClear">Clear all</button>
+    </div>
+
+    <div class="rc-filter-group">
+      <div class="rc-filter-group-title">Search</div>
+      <div class="rc-sidebar-search">
+        <i data-lucide="search" width="14" height="14"></i>
+        <input type="text" id="rcSideSearch" placeholder="Search designs...">
+      </div>
+    </div>
+
+    <div class="rc-filter-group">
+      <div class="rc-filter-group-title">Design Type</div>
+      <label class="rc-check-row"><input type="checkbox" value="house" class="rc-type-check"> House</label>
+      <label class="rc-check-row"><input type="checkbox" value="villa" class="rc-type-check"> Villa</label>
+      <label class="rc-check-row"><input type="checkbox" value="apartment" class="rc-type-check"> Apartment</label>
+      <label class="rc-check-row"><input type="checkbox" value="form-house" class="rc-type-check"> Farm House</label>
+      <label class="rc-check-row"><input type="checkbox" value="row_house" class="rc-type-check"> Row House</label>
+      <label class="rc-check-row"><input type="checkbox" value="duplex" class="rc-type-check"> Duplex</label>
+      <label class="rc-check-row"><input type="checkbox" value="commercial" class="rc-type-check"> Commercial</label>
+      <label class="rc-check-row"><input type="checkbox" value="semi-commercial" class="rc-type-check"> Semi-Commercial</label>
+    </div>
+
+    <div class="rc-filter-group">
+      <div class="rc-filter-group-title">Price Range</div>
+      <label class="rc-radio-row"><input type="radio" name="rcPrice" value=""> Any price</label>
+      <label class="rc-radio-row"><input type="radio" name="rcPrice" value="0-5000"> ₹0 – ₹5,000</label>
+      <label class="rc-radio-row"><input type="radio" name="rcPrice" value="5000-10000"> ₹5,000 – ₹10,000</label>
+      <label class="rc-radio-row"><input type="radio" name="rcPrice" value="10000-15000"> ₹10,000 – ₹15,000</label>
+      <label class="rc-radio-row"><input type="radio" name="rcPrice" value="15000+"> ₹15,000+</label>
+    </div>
+
+    <div class="rc-filter-group">
+      <div class="rc-filter-group-title">Plot Size</div>
+      <label class="rc-radio-row"><input type="radio" name="rcPlot" value=""> Any size</label>
+      <label class="rc-radio-row"><input type="radio" name="rcPlot" value="50X30"> 50 × 30</label>
+      <label class="rc-radio-row"><input type="radio" name="rcPlot" value="50X20"> 50 × 20</label>
+      <label class="rc-radio-row"><input type="radio" name="rcPlot" value="40X20"> 40 × 20</label>
+      <label class="rc-radio-row"><input type="radio" name="rcPlot" value="60X60"> 60 × 60</label>
+      <label class="rc-radio-row"><input type="radio" name="rcPlot" value="54X21"> 54 × 21</label>
+    </div>
+
+    <div class="rc-filter-group">
+      <div class="rc-filter-group-title">Floors</div>
+      <label class="rc-radio-row"><input type="radio" name="rcFloor" value=""> Any</label>
+      <label class="rc-radio-row"><input type="radio" name="rcFloor" value="1"> 1 Floor</label>
+      <label class="rc-radio-row"><input type="radio" name="rcFloor" value="2"> 2 Floors</label>
+      <label class="rc-radio-row"><input type="radio" name="rcFloor" value="3"> 3 Floors</label>
+      <label class="rc-radio-row"><input type="radio" name="rcFloor" value="4"> 4+ Floors</label>
+    </div>
+  </aside>
+
+  <!-- Results -->
+  <div>
+    <div class="rc-toolbar">
+      <button class="rc-filter-toggle" id="rcFilterToggle"><i data-lucide="sliders-horizontal" width="14" height="14"></i> Filters</button>
+      <div class="rc-toolbar-count" id="rcToolbarCount"></div>
+      <div class="rc-toolbar-right">
+        <select class="rc-sort-select" id="rcSort">
+          <option value="relevance">Sort: Featured</option>
+          <option value="price-asc">Price: Low to High</option>
+          <option value="price-desc">Price: High to Low</option>
+          <option value="rating-desc">Rating: High to Low</option>
+          <option value="area-desc">Area: Largest First</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="rc-chip-row" id="rcChipRow"></div>
+
+    <div id="rcLoadingState" class="rc-state">
+      <i data-lucide="refresh-cw" width="28" height="28" class="rc-spin"></i>
+      <p style="margin-top:16px;">Loading designs...</p>
+    </div>
+
+    <div id="rcErrorState" class="rc-state" style="display:none;">
+      <div class="big-icon">❌</div>
+      <h3>Error Loading Designs</h3>
+      <p>Unable to load designs. Please try again.</p>
+      <button class="rc-retry-btn" id="rcRetryBtn">Retry</button>
+    </div>
+
+    <div id="rcEmptyState" class="rc-state" style="display:none;">
+      <div class="big-icon">🔍</div>
+      <h3>No designs found</h3>
+      <p>Try adjusting your filters or search terms.</p>
+    </div>
+
+    <div id="rcDesignsGrid" class="rc-designs-grid"></div>
+  </div>
+</div>
+
+<!-- Footer (same as homepage) -->
+<footer class="rc-footer">
+  <div class="rc-wrap">
+    <div class="rc-footer-grid">
+      <div>
+        <div class="rc-footer-brand-row">
+          <span class="rc-brand-mark">R</span>
+          <div>
+            <div style="font-size:13px; font-weight:700;">RAPICON</div>
+            <div style="font-size:10px; color:rgba(255,255,255,0.4); text-transform:uppercase; letter-spacing:0.15em;">Infrastructure</div>
+          </div>
+        </div>
+        <p class="rc-footer-tagline">"Virtuality to Reality"</p>
+        <p class="rc-footer-desc">A premium architectural design marketplace connecting homeowners and professionals across India.</p>
+        <div class="rc-footer-contact">
+          <div><i data-lucide="map-pin" width="12" height="12"></i><span>29, Bhagwandeen Nagar, Behind Sapna Sangeeta, Indore, M.P. PIN-452001</span></div>
+          <div><i data-lucide="phone" width="12" height="12"></i><a href="tel:+917314342979">+91 73143 42979</a></div>
+          <div><i data-lucide="mail" width="12" height="12"></i><a href="mailto:rapiconinfra@gmail.com">rapiconinfra@gmail.com</a></div>
+        </div>
+      </div>
+      <div>
+        <div class="rc-footer-heading">Explore</div>
+        <div class="rc-footer-links">
+          <a href="designs.html?type=house">House Designs</a>
+          <a href="designs.html?type=duplex">Duplex Designs</a>
+          <a href="designs.html?type=villa">Villa Designs</a>
+          <a href="designs.html?type=commercial">Commercial Designs</a>
+        </div>
+      </div>
+      <div>
+        <div class="rc-footer-heading">Company</div>
+        <div class="rc-footer-links">
+          <a href="about-us.html">About Us</a>
+          <a href="vendor-landing.html">Start Selling</a>
+          <a href="FAQ.html">FAQ</a>
+          <a href="contact.html">Contact Us</a>
+        </div>
+      </div>
+      <div>
+        <div class="rc-footer-heading">Support</div>
+        <div class="rc-footer-links">
+          <a href="contact.html">Contact</a>
+          <a href="terms-privacy.html">Terms &amp; Conditions</a>
+          <a href="privacy-policy.html">Privacy Policy</a>
+        </div>
+      </div>
+    </div>
+    <div class="rc-footer-bottom">
+      <span>&copy; 2025 Rapicon Infrastructure LLP. All rights reserved.</span>
+      <span>Designed with care in Indore, India.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const RC_API_URL = "/api/admin/approved";
+  const RC_TOKEN_KEY = "user_token";
+  function rcGetToken() { return localStorage.getItem(RC_TOKEN_KEY); }
+  function rcIsLoggedIn() { return !!rcGetToken(); }
+
+  let rcAllDesigns = [];
+  let rcFilters = { search: "", types: [], price: "", plot: "", floor: "", sort: "relevance" };
+
+  // Pre-fill from URL (?type=house) so homepage category links land here filtered
+  (function rcInitFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    const type = params.get("type");
+    if (type) rcFilters.types = [type];
+  })();
+
+  async function rcFetchDesigns() {
+    const loadingEl = document.getElementById("rcLoadingState");
+    const errorEl = document.getElementById("rcErrorState");
+    const emptyEl = document.getElementById("rcEmptyState");
+    const gridEl = document.getElementById("rcDesignsGrid");
+
+    loadingEl.style.display = "flex";
+    errorEl.style.display = "none";
+    emptyEl.style.display = "none";
+    gridEl.innerHTML = "";
+
+    try {
+      const token = rcGetToken();
+      const res = await fetch(RC_API_URL, { headers: token ? { Authorization: `Bearer ${token}` } : {} });
+
+      if (res.status === 401) {
+        window.location.href = "/otp-login.html";
+        return;
+      }
+      if (!res.ok) throw new Error("Failed to load designs");
+
+      rcAllDesigns = await res.json();
+      loadingEl.style.display = "none";
+      rcSyncSidebarFromState();
+      rcApplyFilters();
+    } catch (err) {
+      loadingEl.style.display = "none";
+      errorEl.style.display = "flex";
+    }
+  }
+
+  function rcSyncSidebarFromState() {
+    document.querySelectorAll(".rc-type-check").forEach((cb) => { cb.checked = rcFilters.types.includes(cb.value); });
+  }
+
+  function rcApplyFilters() {
+    const term = rcFilters.search.toLowerCase();
+
+    let result = rcAllDesigns.filter((d) => {
+      const matchSearch =
+        (d.designCategory || "").toLowerCase().includes(term) ||
+        (d.designType || "").toLowerCase().includes(term);
+
+      const matchType = rcFilters.types.length === 0 || rcFilters.types.includes((d.designCategory || "").toLowerCase());
+
+      const plotSize = `${d.length}X${d.width}`;
+      const matchPlot = !rcFilters.plot || plotSize === rcFilters.plot;
+
+      const numFloors = (d.floorList || []).length;
+      const matchFloors = !rcFilters.floor ? true : rcFilters.floor === "4" ? numFloors >= 4 : numFloors.toString() === rcFilters.floor;
+
+      const price = (d.builtUpArea || 0) * 5;
+      let matchPrice = true;
+      if (rcFilters.price) {
+        const [min, max] = rcFilters.price.split("-");
+        matchPrice = max ? (price >= parseInt(min) && price <= parseInt(max)) : price >= parseInt(min);
+      }
+
+      return matchSearch && matchType && matchPlot && matchFloors && matchPrice;
+    });
+
+    result = rcSortDesigns(result);
+    rcRenderGrid(result);
+    rcRenderChips();
+  }
+
+  function rcSortDesigns(list) {
+    const sorted = list.slice();
+    const priceOf = (d) => (d.builtUpArea || 0) * 5;
+    switch (rcFilters.sort) {
+      case "price-asc": sorted.sort((a, b) => priceOf(a) - priceOf(b)); break;
+      case "price-desc": sorted.sort((a, b) => priceOf(b) - priceOf(a)); break;
+      case "rating-desc": sorted.sort((a, b) => (parseFloat(b.rating) || 4.5) - (parseFloat(a.rating) || 4.5)); break;
+      case "area-desc": sorted.sort((a, b) => (b.totalArea || 0) - (a.totalArea || 0)); break;
+      default: break; // relevance/featured: keep API order
+    }
+    return sorted;
+  }
+
+  function rcRenderGrid(designs) {
+    const gridEl = document.getElementById("rcDesignsGrid");
+    const emptyEl = document.getElementById("rcEmptyState");
+    const countEl = document.getElementById("rcToolbarCount");
+
+    countEl.innerHTML = `<strong>${designs.length}</strong> design${designs.length !== 1 ? "s" : ""} found`;
+
+    if (designs.length === 0) {
+      gridEl.innerHTML = "";
+      emptyEl.style.display = "flex";
+      return;
+    }
+    emptyEl.style.display = "none";
+    gridEl.innerHTML = designs.map(rcCardHTML).join("");
+    if (window.lucide) lucide.createIcons();
+    gridEl.querySelectorAll("[data-design-id]").forEach((card) => {
+      card.addEventListener("click", () => rcHandleView(card.dataset.designId, designs));
+    });
+  }
+
+  function rcCardHTML(d) {
+    const urls = d.elevationUrls || [];
+    const img = urls[0];
+    const category = (d.designType || "").toUpperCase();
+    const isCommercial = category === "COMMERCIAL";
+    const isResidential = category === "RESIDENTIAL" || category === "SEMI-COMMERCIAL";
+
+    let bedrooms = 0, businessUnits = 0;
+    (d.floorList || []).forEach((f) => {
+      bedrooms += parseInt(f.bedrooms || "0") || 0;
+      businessUnits += parseInt(f.businessUnits || "0") || 0;
+    });
+
+    const floors = (d.floorList || []).length;
+    const price = (d.builtUpArea || 0) * 5;
+
+    return `
+      <div class="rc-design-card" data-design-id="${d.id}">
+        <div class="rc-design-media">
+          ${img ? `<img src="${img}" alt="${d.designCategory || ""}" loading="lazy">` : `<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:44px;">🏠</div>`}
+          <span class="rc-design-badge">${d.designType || "Residential"}</span>
+        </div>
+        <div class="rc-design-body">
+          <h3 class="rc-design-title">${d.designCategory || d.designType}</h3>
+          <div class="rc-design-specs">
+            <span>${d.length} × ${d.width} ft</span><span class="sep">·</span>
+            <span>${floors} ${floors === 1 ? "Floor" : "Floors"}</span>
+            ${isResidential && bedrooms > 0 ? `<span class="sep">·</span><span>${bedrooms} BHK</span>` : ""}
+            ${isCommercial && businessUnits > 0 ? `<span class="sep">·</span><span>${businessUnits} Units</span>` : ""}
+            <span class="sep">·</span><span>${d.totalArea || ""} sq ft</span>
+          </div>
+          <div class="rc-design-foot">
+            <div>
+              <div class="rc-design-price">₹${price.toLocaleString("en-IN")}</div>
+              <div class="rc-design-price-label">Starting price</div>
+            </div>
+            <div class="rc-design-rating"><i data-lucide="star" width="12" height="12"></i>${d.rating || "4.5"}</div>
+          </div>
+          <button class="rc-view-btn">View Design <i data-lucide="arrow-right" width="13" height="13"></i></button>
+        </div>
+      </div>`;
+  }
+
+  function rcHandleView(id, designs) {
+    const design = designs.find((d) => String(d.id) === String(id));
+
+    sessionStorage.setItem("selectedDesign", JSON.stringify(design));
+    window.location.href = "designinfo.html";
+  }
+
+  // ---------- Active filter chips ----------
+  const RC_TYPE_LABELS = { house: "House", villa: "Villa", apartment: "Apartment", "form-house": "Farm House", row_house: "Row House", duplex: "Duplex", commercial: "Commercial", "semi-commercial": "Semi-Commercial" };
+  const RC_PRICE_LABELS = { "0-5000": "₹0–₹5,000", "5000-10000": "₹5,000–₹10,000", "10000-15000": "₹10,000–₹15,000", "15000+": "₹15,000+" };
+
+  function rcRenderChips() {
+    const row = document.getElementById("rcChipRow");
+    const chips = [];
+
+    rcFilters.types.forEach((t) => chips.push({ label: RC_TYPE_LABELS[t] || t, clear: () => rcToggleType(t, false) }));
+    if (rcFilters.price) chips.push({ label: RC_PRICE_LABELS[rcFilters.price] || rcFilters.price, clear: () => { rcFilters.price = ""; document.querySelector('input[name="rcPrice"][value=""]').checked = true; rcApplyFilters(); } });
+    if (rcFilters.plot) chips.push({ label: rcFilters.plot.replace("X", " × "), clear: () => { rcFilters.plot = ""; document.querySelector('input[name="rcPlot"][value=""]').checked = true; rcApplyFilters(); } });
+    if (rcFilters.floor) chips.push({ label: `${rcFilters.floor}${rcFilters.floor === "4" ? "+" : ""} Floor${rcFilters.floor === "1" ? "" : "s"}`, clear: () => { rcFilters.floor = ""; document.querySelector('input[name="rcFloor"][value=""]').checked = true; rcApplyFilters(); } });
+    if (rcFilters.search) chips.push({ label: `"${rcFilters.search}"`, clear: () => { rcFilters.search = ""; document.getElementById("rcSideSearch").value = ""; rcApplyFilters(); } });
+
+    row.innerHTML = "";
+    chips.forEach((c) => {
+      const el = document.createElement("span");
+      el.className = "rc-chip";
+      el.innerHTML = `${c.label} <button aria-label="Remove filter">&times;</button>`;
+      el.querySelector("button").addEventListener("click", c.clear);
+      row.appendChild(el);
+    });
+  }
+
+  function rcToggleType(value, checked) {
+    if (checked) {
+      if (!rcFilters.types.includes(value)) rcFilters.types.push(value);
+    } else {
+      rcFilters.types = rcFilters.types.filter((t) => t !== value);
+    }
+    rcSyncSidebarFromState();
+    rcApplyFilters();
+  }
+
+  // ---------- Wiring ----------
+  document.getElementById("rcSideSearch").addEventListener("input", (e) => { rcFilters.search = e.target.value; rcApplyFilters(); });
+  document.querySelectorAll(".rc-type-check").forEach((cb) => cb.addEventListener("change", (e) => rcToggleType(e.target.value, e.target.checked)));
+  document.querySelectorAll('input[name="rcPrice"]').forEach((r) => r.addEventListener("change", (e) => { rcFilters.price = e.target.value; rcApplyFilters(); }));
+  document.querySelectorAll('input[name="rcPlot"]').forEach((r) => r.addEventListener("change", (e) => { rcFilters.plot = e.target.value; rcApplyFilters(); }));
+  document.querySelectorAll('input[name="rcFloor"]').forEach((r) => r.addEventListener("change", (e) => { rcFilters.floor = e.target.value; rcApplyFilters(); }));
+  document.getElementById("rcSort").addEventListener("change", (e) => { rcFilters.sort = e.target.value; rcApplyFilters(); });
+  document.getElementById("rcRetryBtn").addEventListener("click", rcFetchDesigns);
+  document.getElementById("rcSidebarClear").addEventListener("click", () => {
+    rcFilters = { search: "", types: [], price: "", plot: "", floor: "", sort: rcFilters.sort };
+    document.getElementById("rcSideSearch").value = "";
+    document.querySelectorAll(".rc-type-check").forEach((cb) => (cb.checked = false));
+    document.querySelector('input[name="rcPrice"][value=""]').checked = true;
+    document.querySelector('input[name="rcPlot"][value=""]').checked = true;
+    document.querySelector('input[name="rcFloor"][value=""]').checked = true;
+    rcApplyFilters();
+  });
+
+  // Mobile filter drawer
+  const rcSidebar = document.getElementById("rcSidebar");
+  const rcBackdrop = document.getElementById("rcFilterBackdrop");
+  document.getElementById("rcFilterToggle").addEventListener("click", () => { rcSidebar.classList.add("open"); rcBackdrop.classList.add("open"); });
+  rcBackdrop.addEventListener("click", () => { rcSidebar.classList.remove("open"); rcBackdrop.classList.remove("open"); });
+
+  // Kick off
+  rcFetchDesigns();
+  window.addEventListener("load", () => { if (window.lucide) lucide.createIcons(); });
+</script>
+
+</body>
+</html>

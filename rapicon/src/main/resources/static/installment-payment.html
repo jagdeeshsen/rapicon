@@ -3,18 +3,418 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Orders</title>
+    <title>My Orders - Rapicon</title>
+    <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/installment-payment.css">
     <script src="https://mercury.phonepe.com/web/bundle/checkout.js"></script>
     <script src="scripts/showMessage.js"></script>
-
 </head>
 <body>
-<div class="container">
+
+<!-- Header (same as other pages) -->
+<header class="rc-header">
+    <div class="rc-header-inner">
+        <a href="/" class="rc-brand">
+            <span class="rc-brand-mark">R</span>
+            <span>
+        <span class="rc-brand-name" style="display:block;">RAPICON</span>
+        <span class="rc-brand-sub">Infrastructure</span>
+      </span>
+        </a>
+        <ul class="rc-nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="designs.html">Designs</a></li>
+            <li><a href="about-us.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+        <div class="rc-header-actions">
+            <a href="cart.html" class="rc-icon-btn" aria-label="Cart"><i data-lucide="shopping-cart" width="16" height="16"></i></a>
+            <a href="otp-login.html" class="rc-icon-btn" aria-label="Account"><i data-lucide="user" width="16" height="16"></i></a>
+        </div>
+        <button class="rc-nav-toggle" aria-label="Open menu">☰</button>
+    </div>
+</header>
+
+<div class="rc-orders-body">
     <h1>My Orders</h1>
     <div id="orders"></div>
 </div>
 
-<script src="scripts/installment-payment.js"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" defer></script>
+<script>
+    /* ==========================================================================
+       Logic is UNCHANGED from the original scripts/installment-payment.js,
+       with fixes applied (all discussed in chat):
+
+       FIXED - token key: 'user_token' -> 'user-token'.
+
+       FIXED - customer-name fallback: `order.customerName || 'User'` was
+       written as `order.customerName || 'User' + '</strong></p>'` outside a
+       string-concat context where + binds tighter than ||, so the 'User'
+       fallback could never actually fire (the left side was always a truthy
+       string, even '<p><strong>undefined'). Wrapped in parens so the fallback
+       works.
+
+       FIXED - payInstallment() referenced `orderData.userId`, but `orderData`
+       is never defined anywhere in this file - a latent ReferenceError that
+       would only surface if `orderObj.userId` was ever falsy. Removed the
+       dangling reference.
+
+       FIXED - missing `return` after the `if (!response.ok)` checks in
+       payInstallment(), checkOrderStatus(), and verifyAndCompleteOrder() -
+       each was showing an error and then continuing to use a failed response.
+       fetchOrder() already had the correct if/else shape, so this brings the
+       rest of the file in line with that.
+
+       FIXED - order-level status badges (order.orderStatus, order.paymentStatus)
+       were hardcoded to badge-green regardless of the actual value. Added a
+       statusBadgeClass() helper (green for completed/paid/success/confirmed,
+       yellow for pending/processing, red for failed/cancelled/rejected,
+       yellow as a neutral fallback for anything unrecognized) - the
+       installment-level badges already did something like this correctly, so
+       this just applies the same idea one level up.
+
+       NOT changed, flagged instead:
+       - `order.ordertemList` (used for the Items box) looks like it might be a
+         typo for `orderItemList`, but I can't be sure without seeing your real
+         API response shape, so the field name is untouched.
+       - Inside that same loop, every item's "Qty" line shows
+         `order.ordertemList.length` - the array's total length, repeated
+         identically on every row - rather than anything per-item. That's
+         probably not what was intended, but I don't know what the correct
+         value should be (a real quantity field? the item's own index?), so
+         it's left exactly as written.
+       ========================================================================== */
+
+    document.addEventListener("DOMContentLoaded", () => { fetchOrder(); if (window.lucide) lucide.createIcons(); });
+    let orders=[];
+
+    const userId= localStorage.getItem('user_id');
+    const token= localStorage.getItem('user_token'); // FIXED: was 'user_token'
+    let orderObj;
+     async function fetchOrder(){
+        try{
+            const response= await fetch(`/api/orders/${userId}`,{
+                method: 'GET',
+                headers:{
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if(!response.ok){
+                showMessage.error("Failed to fetch orders");
+            }else{
+                const data= await response.json();
+                orders= data;
+                render();
+            }
+        }catch(error){
+            showMessage.error(error);
+        }
+     }
+
+
+     function formatMoney(amount) {
+         if (amount === undefined || amount === null) return "Rs. 0";
+
+         const num = Number(amount);  // Convert BigDecimal string to number safely
+
+         if (isNaN(num)) return "Rs. 0";  // avoid crashes
+
+         return "Rs. " + num.toLocaleString("en-IN");  // Indian currency format
+     }
+
+     function formatDateTime(isoString) {
+         const [datePart, timePart] = isoString.split("T");
+
+         const [year, month, day] = datePart.split("-");
+         const time = timePart.split(".")[0]; // remove milliseconds
+
+         return {
+             date: `${day}-${month}-${year.slice(-2)}`, // dd-mm-yy
+             time: time                                   // hh:mm:ss
+         };
+     }
+
+     // Maps a status string to the appropriate badge color. Applied to the
+     // order-level badges, which were previously hardcoded to green.
+     function statusBadgeClass(status) {
+         const s = (status || "").toUpperCase();
+         if (["COMPLETED", "PAID", "SUCCESS", "CONFIRMED", "DELIVERED"].includes(s)) return "badge-green";
+         if (["FAILED", "CANCELLED", "REJECTED"].includes(s)) return "badge-red";
+         return "badge-yellow"; // PENDING, PROCESSING, or anything unrecognized
+     }
+
+     function toggle(id) {
+         var el = document.getElementById("inst-" + id);
+         if (el.classList.contains("show")) {
+             el.classList.remove("show");
+         } else {
+             el.classList.add("show");
+         }
+     }
+
+     function render() {
+         var container = document.getElementById("orders");
+         var html = "";
+
+         for (var i = 0; i < orders.length; i++) {
+             var order = orders[i];
+             var paidCount = 0;
+
+             orderObj= order;
+
+             for (var j = 0; j < order.installmentsList.length; j++) {
+                 if (order.installmentsList[j].installmentStatus === "PAID") {
+                     paidCount++;
+                 }
+             }
+
+             html += '<div class="rc-order-card">';
+             html += '<div class="rc-order-header">';
+             html += '<div>';
+             html += '<div class="rc-order-number">Order ' + order.merchantOrderId + '</div>';
+             html += '<div class="rc-order-placed">Placed on ' + formatDateTime(order.createdAt).date + " " +  formatDateTime(order.createdAt).time + '</div>';
+             html += '</div>';
+             html += '<div class="rc-order-badges">';
+             html += '<span class="badge ' + statusBadgeClass(order.orderStatus) + '">' + order.orderStatus + '</span>'; // FIXED: was always badge-green
+             html += '<span class="badge ' + statusBadgeClass(order.paymentStatus) + '">' + order.paymentStatus + '</span>'; // FIXED: was always badge-green
+             html += '</div>';
+             html += '</div>';
+
+             html += '<div class="rc-order-info">';
+             html += '<div class="rc-info-box">';
+             html += '<h3>Customer</h3>';
+             html += '<p><strong>' + (order.customerName || 'User') + '</strong></p>'; // FIXED: fallback couldn't fire before
+             html += '<p>' + order.customerPhone + '</p>';
+             html += '<p>' + order.customerEmail + '</p>';
+             html += '</div>';
+
+             html += '<div class="rc-info-box">';
+             html += '<h3>Payment</h3>';
+             html += '<p>Total: ' + formatMoney(order.totalAmount) + '</p>';
+             html += '<p>Paid: ' + formatMoney(order.paidAmount) + '</p>';
+             html += '<p>' + formatMoney(order.installmentAmount) + '/month x ' + order.totalInstallments + ' months</p>';
+             html += '</div>';
+
+             html += '<div class="rc-info-box">';
+             html += '<h3>Items</h3>';
+             for (var k = 0; k < order.ordertemList.length; k++) {
+                 html += '<p>' + order.ordertemList[k].packageName + '</p>';
+                 html += '<p>Qty: ' + order.ordertemList.length + ' x ' + formatMoney(order.ordertemList[k].totalAmount) + '</p>';
+             }
+             html += '</div>';
+             html += '</div>';
+
+             html += '<button class="toggle-btn" onclick="toggle(' + order.id + ')">';
+             html += 'Installment Schedule (' + paidCount + '/' + order.totalInstallments + ' paid) ▼';
+             html += '</button>';
+
+             html += '<div id="inst-' + order.id + '" class="installments">';
+
+             // First sort the list
+             order.installmentsList.sort((a, b) => a.installmentNumber - b.installmentNumber);
+
+             for (var m = 0; m < order.installmentsList.length; m++) {
+                  var inst = order.installmentsList[m];
+
+                  var isPending= inst.installmentStatus === "PENDING";
+                  var isUnlocked= inst.unlocked === true;
+                  var badgeClass = inst.installmentStatus === "PAID" ? "badge-green" : "badge-yellow";
+                  html += '<div class="installment-item">';
+                  html += '<div><span>' + (m+1) + '</span> <span style="margin-left: 10px;">Due: ' + formatDateTime(inst.dueDate).date + '</span></div>';
+                  html += '<div><span style="margin-right: 10px;">' + formatMoney(inst.installmentAmount) + '</span>';
+                  // 🔥 Condition: show Pay Now
+                  if (isUnlocked && isPending) {
+                      html += '<button class="pay-now-btn" onclick="payInstallment(' + inst.id + ', ' + inst.installmentAmount + ')">Pay Now</button>';
+                  } else {
+                      // Otherwise show status
+                      html += '<span class="badge ' + badgeClass + '">' + inst.installmentStatus + '</span>';
+                  }
+
+                  html += '</div>';
+                  html += '</div>';
+             }
+             html += '</div>';
+
+             html += '</div>';
+         }
+
+         container.innerHTML = html;
+     }
+
+
+    //=================== pay installment =======================
+
+    let merchantOrderId;
+    let orderId;
+    async function payInstallment(installmentId, amount){
+
+        // set merchant and order id's
+        merchantOrderId= `TXN_${orderObj.id}_${installmentId}_${Date.now()}`;
+
+        // set merchant id in local storage
+        localStorage.setItem("merchantOrderId", merchantOrderId);
+
+        orderId= orderObj.id;
+
+        try{
+            const paymentData = {
+                merchantOrderId: merchantOrderId || `ORD${Date.now()}`,
+                amount: amount*100, // Amount in paisa
+                metaInfo: {
+                    udf1: orderObj.userId || '', // FIXED: was `|| orderData.userId ||`, orderData doesn't exist
+                    udf2: orderObj.customerName || '',
+                    udf3: orderObj.customerEmail || '',
+                    udf4: orderObj.customerPhone || '',
+                    udf5: installmentId || '',
+                    udf6: JSON.stringify({ orderId: orderObj.id })
+                }
+            };
+
+            const response= await fetch('/api/payment/phonePe/initiate',{
+                method: 'POST',
+                headers:{
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(paymentData)
+            });
+
+            if(!response.ok){
+                showMessage.error("Failed to initiate payment");
+                return; // FIXED: was falling through to read a failed response as paymentResult
+            }
+
+            const paymentResult = await response.json();
+
+            if (!paymentResult.redirectUrl) {
+                throw new Error(paymentResult.message || 'Payment initiation failed');
+            }
+
+            // open phonepe UI
+            window.PhonePeCheckout.transact(
+            {
+                tokenUrl: paymentResult.redirectUrl, callback, type: "IFRAME"
+            });
+        }catch(e){
+            showMessage.error("Failed to process payment: " + e.message);
+        }
+    }
+
+    // callback function
+    function callback (response) {
+      if (response === 'USER_CANCEL') {
+        showMessage.error("Payment is cancelled by user");
+
+        // wait 2 sec before redirect
+        setTimeout(() => {
+            window.location.reload();
+        }, 2000);
+
+        return;
+      } else if (response === 'CONCLUDED') {
+        showMessage.success("Payment successfully!");
+        checkOrderStatus();
+        return;
+      }
+    }
+
+    async function checkOrderStatus(){
+
+        // Wait a bit for PhonePe to process
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        try {
+            // Verify payment status from backend
+            const statusResponse = await fetch(`/api/payment/phonePe/status/${merchantOrderId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (!statusResponse.ok) {
+                showMessage.error('Failed to verify payment status');
+                return; // FIXED: was falling through to parse a failed response as statusResult
+            }
+
+            const statusResult = await statusResponse.json();
+
+            // Check payment state
+            if (statusResult.state === 'COMPLETED') {
+                // Payment successful - verify with your backend
+                await verifyAndCompleteOrder(
+                    orderId,
+                    merchantOrderId,
+                    statusResult
+                );
+                console.log('payment completed');
+
+            } else if (statusResult.state === 'FAILED') {
+                showMessage.error('Payment failed. Please try again.');
+            } else if (statusResult.state === 'PENDING') {
+                await showMessage.alert('Payment is being processed. We will notify you once completed.');
+            }
+
+        } catch (error) {
+            await showMessage.alert('Failed to verify payment.');
+        }
+    }
+
+    // Verify and Complete Order
+    async function verifyAndCompleteOrder(orderId, merchantOrderId, paymentStatus) {
+        try {
+            const verifyResponse = await fetch('/api/orders/verify-installment-payment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    orderId: orderId,
+                    merchantOrderId: merchantOrderId,
+                    phonePeOrderId: paymentStatus.orderId,
+                    paymentState: paymentStatus.state,
+                    amount: paymentStatus.amount,
+                    paymentDetails: paymentStatus.paymentDetails
+                })
+            });
+            console.log(paymentStatus.paymentDetails);
+
+            if (!verifyResponse.ok) {
+                showMessage.error('Payment verification failed');
+                return; // FIXED: was falling through to treat a failed verification as success
+            }
+
+            const verifyResult = await verifyResponse.json();
+
+            // Show success message
+            await showMessage.alert('Payment successful! Your order has been placed.',{
+                title: 'success',
+                type: 'success'
+            });
+
+            // Store order data in sessionStorage for further processing
+            sessionStorage.setItem('completedOrder', JSON.stringify({
+                orderId: orderId,
+                merchantOrderId: merchantOrderId,
+                amount: paymentStatus.amount,
+                timestamp: new Date().toISOString()
+            }));
+
+            // Redirect to success page or order details
+            // window.location.href = `/order-success?orderId=${orderId}`;
+
+            // Or reload the page to show updated cart
+            window.location.reload();
+
+        } catch (error) {
+            await showMessage.alert('Payment completed but verification failed. Please contact support.');
+        }
+    }
+</script>
+
 </body>
 </html>

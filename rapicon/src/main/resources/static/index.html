@@ -1,34 +1,445 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-
-    <meta name="description" content="Register as a user easily. Login to manage your dashboard, track orders and your purchase services with our user platform.">
-
-    <meta name="keywords" content="user registration, user dashboard, user login">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17737347730"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-
-        gtag('config', 'AW-17737347730');
-    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rapicon — Architectural Design Marketplace</title>
+    <meta name="description" content="Discover professionally crafted 2D plans, 3D designs, house plans and architectural concepts created for modern living. Residential, commercial and semi-commercial designs for Indian plots.">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/index.css">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" defer></script>
 </head>
 <body>
-    <!-- Hidden Navigation for Google -->
-    <nav style="display:none;">
-        <a href="/">Home</a>
-        <a href="/otp-login.html">Login</a>
-        <a href="/vendor-landing.html">Vendor Dashboard</a>
-        <a href="/about-us.html">About Us</a>
-        <a href="/contact.html">Contact</a>
-    </nav>
 
-    <script>
-        window.location.replace("/user.html");
-    </script>
+<!-- Header -->
+<header class="rc-header">
+    <div class="rc-header-inner">
+        <a href="/" class="rc-brand">
+            <span class="rc-brand-mark">R</span>
+            <span>
+        <span class="rc-brand-name" style="display:block;">RAPICON</span>
+        <span class="rc-brand-sub">Infrastructure</span>
+      </span>
+        </a>
+        <ul class="rc-nav-links">
+            <li><a href="/" class="active">Home</a></li>
+            <li><a href="designs.html">Designs</a></li>
+            <li><a href="about-us.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+        <div class="rc-header-actions">
+            <a href="cart.html" class="rc-icon-btn" aria-label="Cart"><i data-lucide="shopping-cart" width="16" height="16"></i></a>
+            <button class="rc-icon-btn" id="rcAccountBtn" aria-label="Account"><i data-lucide="user" width="16" height="16"></i></button>
+            <a href="vendor-landing.html" class="rc-nav-cta">Start Selling</a>
+        </div>
+        <button class="rc-nav-toggle" aria-label="Open menu">☰</button>
+    </div>
+</header>
+
+<!-- Account modal: shown only when logged in (rcAccountBtn redirects to
+     login instead, when not logged in) -->
+<div class="rc-account-modal" id="rcAccountModal">
+    <div class="rc-account-modal-content">
+        <button class="rc-account-modal-close" id="rcAccountModalClose" aria-label="Close">&times;</button>
+        <div class="rc-account-modal-avatar"><i data-lucide="user" width="20" height="20"></i></div>
+        <div class="rc-account-modal-title">My Account</div>
+        <div class="rc-account-modal-actions">
+            <a href="userprofile.html" class="btn-ink">Profile</a>
+            <button class="btn-outline-ink" id="rcLogoutBtn">Logout</button>
+        </div>
+    </div>
+</div>
+
+<!-- Hero -->
+<section class="rc-hero">
+    <div class="rc-hero-bg">
+        <img src="https://images.unsplash.com/photo-1721815693498-cc28507c0ba2?w=1600&h=900&fit=crop&auto=format" alt="Modern Indian villa exterior">
+    </div>
+    <div class="rc-wrap rc-hero-inner">
+        <div class="rc-hero-copy">
+            <div class="rc-eyebrow">Architectural Design Marketplace</div>
+            <h1 class="rc-hero-title">Design Your Space.<br><span>Build Your Vision.</span></h1>
+            <p class="rc-hero-sub">Discover professionally crafted 2D plans, 3D designs, house plans and architectural concepts created for modern living.</p>
+            <div class="rc-hero-actions">
+                <button class="btn-gold" onclick="document.getElementById('designs-section').scrollIntoView({behavior:'smooth'})">Explore Designs</button>
+                <a href="vendor-landing.html" class="btn-outline-light">Start Selling</a>
+            </div>
+            <div class="rc-hero-meta">
+                <span>2D Plans</span><span class="dot">·</span>
+                <span>3D Designs</span><span class="dot">·</span>
+                <span>Residential</span><span class="dot">·</span>
+                <span>Commercial</span>
+            </div>
+        </div>
+    </div>
+    <div class="rc-scroll-cue"><span class="line"></span><span>Scroll</span></div>
+</section>
+
+<!-- Search (filter dropdowns removed per request; text search kept) -->
+<!-- Designs Grid -->
+<section class="rc-section" id="designs-section">
+    <div class="rc-wrap">
+        <div class="rc-section-head">
+            <div>
+                <div class="rc-eyebrow">Handpicked for you</div>
+                <h2>Featured Architectural Designs</h2>
+            </div>
+            <a href="designs.html" class="btn-outline-ink" style="white-space:nowrap;">View All Plans →</a>
+        </div>
+
+        <div id="rcLoadingState" class="rc-state">
+            <i data-lucide="refresh-cw" width="28" height="28" class="rc-spin"></i>
+            <p style="margin-top:16px;">Loading designs...</p>
+        </div>
+
+        <div id="rcErrorState" class="rc-state" style="display:none;">
+            <div class="big-icon">❌</div>
+            <h3>Error Loading Designs</h3>
+            <p>Unable to load designs. Please try again.</p>
+            <button class="rc-retry-btn" id="rcRetryBtn">Retry</button>
+        </div>
+
+        <div id="rcEmptyState" class="rc-state" style="display:none;">
+            <div class="big-icon">🔍</div>
+            <h3>No designs found</h3>
+            <p>Try adjusting your filters or search terms.</p>
+        </div>
+
+        <div id="rcDesignsGrid" class="rc-designs-grid"></div>
+    </div>
+</section>
+
+<!-- Categories -->
+<section class="rc-section tint">
+    <div class="rc-wrap">
+        <div class="rc-section-head">
+            <div>
+                <div class="rc-eyebrow">Browse by Category</div>
+                <h2>Explore Architectural Designs</h2>
+            </div>
+        </div>
+        <div class="rc-categories-grid">
+            <a href="designs.html?type=house" class="rc-category-card">
+                <img src="https://images.unsplash.com/photo-1723110994499-df46435aa4b3?w=500&h=380&fit=crop&auto=format" alt="House Plans">
+                <div class="rc-category-scrim"></div>
+                <div class="rc-category-label"><div class="name">House Plans</div><div class="count">240+ designs</div></div>
+            </a>
+            <a href="designs.html?type=duplex" class="rc-category-card">
+                <img src="https://images.unsplash.com/photo-1721815693498-cc28507c0ba2?w=500&h=380&fit=crop&auto=format" alt="Duplex Designs">
+                <div class="rc-category-scrim"></div>
+                <div class="rc-category-label"><div class="name">Duplex Designs</div><div class="count">120+ designs</div></div>
+            </a>
+            <a href="designs.html?type=villa" class="rc-category-card">
+                <img src="https://images.unsplash.com/photo-1719887805632-de5be825f72b?w=500&h=380&fit=crop&auto=format" alt="Villa Designs">
+                <div class="rc-category-scrim"></div>
+                <div class="rc-category-label"><div class="name">Villa Designs</div><div class="count">85+ designs</div></div>
+            </a>
+            <a href="designs.html?type=apartment" class="rc-category-card">
+                <img src="https://images.unsplash.com/photo-1564078516393-cf04bd966897?w=500&h=380&fit=crop&auto=format" alt="Apartment Designs">
+                <div class="rc-category-scrim"></div>
+                <div class="rc-category-label"><div class="name">Apartment Designs</div><div class="count">65+ designs</div></div>
+            </a>
+            <a href="designs.html?type=commercial" class="rc-category-card">
+                <img src="https://images.unsplash.com/photo-1724582586529-62622e50c0b3?w=500&h=380&fit=crop&auto=format" alt="Commercial Designs">
+                <div class="rc-category-scrim"></div>
+                <div class="rc-category-label"><div class="name">Commercial</div><div class="count">48+ designs</div></div>
+            </a>
+            <a href="designs.html" class="rc-category-card">
+                <img src="https://images.unsplash.com/photo-1542621334-a254cf47733d?w=500&h=380&fit=crop&auto=format" alt="2D Floor Plans">
+                <div class="rc-category-scrim"></div>
+                <div class="rc-category-label"><div class="name">2D Floor Plans</div><div class="count">310+ designs</div></div>
+            </a>
+            <a href="designs.html" class="rc-category-card">
+                <img src="https://images.unsplash.com/photo-1686164748261-33e13eef70b6?w=500&h=380&fit=crop&auto=format" alt="3D Designs">
+                <div class="rc-category-scrim"></div>
+                <div class="rc-category-label"><div class="name">3D Designs</div><div class="count">195+ designs</div></div>
+            </a>
+            <a href="designs.html" class="rc-category-card">
+                <img src="https://images.unsplash.com/photo-1611048267451-e6ed903d4a38?w=500&h=380&fit=crop&auto=format" alt="Interior Designs">
+                <div class="rc-category-scrim"></div>
+                <div class="rc-category-label"><div class="name">Interior Designs</div><div class="count">130+ designs</div></div>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Plot Sizes -->
+<section class="rc-section tint">
+    <div class="rc-wrap">
+        <div class="rc-eyebrow">Quick Discovery</div>
+        <h2 style="font-size:clamp(24px,3vw,34px); font-weight:700; margin:0 0 24px;">Find Designs by Plot Size</h2>
+        <div class="rc-plots-grid" id="rcPlotsGrid">
+            <div class="rc-plot-card" data-val="50X30">
+                <div class="rc-plot-dim">50 × 30 ft</div>
+                <div class="rc-plot-area">1,500 sq ft</div>
+                <div class="rc-plot-count">— designs</div>
+                <div class="rc-plot-link">Explore <i data-lucide="arrow-right" width="12" height="12"></i></div>
+            </div>
+            <div class="rc-plot-card" data-val="50X20">
+                <div class="rc-plot-dim">50 × 20 ft</div>
+                <div class="rc-plot-area">1,000 sq ft</div>
+                <div class="rc-plot-count">— designs</div>
+                <div class="rc-plot-link">Explore <i data-lucide="arrow-right" width="12" height="12"></i></div>
+            </div>
+            <div class="rc-plot-card" data-val="40X20">
+                <div class="rc-plot-dim">40 × 20 ft</div>
+                <div class="rc-plot-area">800 sq ft</div>
+                <div class="rc-plot-count">— designs</div>
+                <div class="rc-plot-link">Explore <i data-lucide="arrow-right" width="12" height="12"></i></div>
+            </div>
+            <div class="rc-plot-card" data-val="60X60">
+                <div class="rc-plot-dim">60 × 60 ft</div>
+                <div class="rc-plot-area">3,600 sq ft</div>
+                <div class="rc-plot-count">— designs</div>
+                <div class="rc-plot-link">Explore <i data-lucide="arrow-right" width="12" height="12"></i></div>
+            </div>
+            <div class="rc-plot-card" data-val="54X21">
+                <div class="rc-plot-dim">54 × 21 ft</div>
+                <div class="rc-plot-area">1,134 sq ft</div>
+                <div class="rc-plot-count">— designs</div>
+                <div class="rc-plot-link">Explore <i data-lucide="arrow-right" width="12" height="12"></i></div>
+            </div>
+            <div class="rc-plot-card" data-val="30X40">
+                <div class="rc-plot-dim">30 × 40 ft</div>
+                <div class="rc-plot-area">1,200 sq ft</div>
+                <div class="rc-plot-count">— designs</div>
+                <div class="rc-plot-link">Explore <i data-lucide="arrow-right" width="12" height="12"></i></div>
+            </div>
+            <div class="rc-plot-card" data-val="40X60">
+                <div class="rc-plot-dim">40 × 60 ft</div>
+                <div class="rc-plot-area">2,400 sq ft</div>
+                <div class="rc-plot-count">— designs</div>
+                <div class="rc-plot-link">Explore <i data-lucide="arrow-right" width="12" height="12"></i></div>
+            </div>
+            <div class="rc-plot-card" data-val="25X40">
+                <div class="rc-plot-dim">25 × 40 ft</div>
+                <div class="rc-plot-area">1,000 sq ft</div>
+                <div class="rc-plot-count">— designs</div>
+                <div class="rc-plot-link">Explore <i data-lucide="arrow-right" width="12" height="12"></i></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Why Rapicon -->
+<section class="rc-section" style="border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+    <div class="rc-wrap">
+        <div style="text-align:center; margin-bottom:56px;">
+            <div class="rc-eyebrow center">Our Advantage</div>
+            <h2 style="font-size:clamp(28px,4vw,40px); font-weight:700; margin:0;">Why Design With Rapicon?</h2>
+        </div>
+        <div class="rc-features-grid">
+            <div class="rc-feature"><div class="rc-feature-icon"><i data-lucide="award" width="18" height="18"></i></div><div><h3>Professionally Crafted</h3><p>Quality architectural designs created with practical planning and modern aesthetics.</p></div></div>
+            <div class="rc-feature"><div class="rc-feature-icon"><i data-lucide="map-pin" width="18" height="18"></i></div><div><h3>Designed for Indian Plots</h3><p>Explore designs based on real Indian plot sizes, vastu compliance, and local requirements.</p></div></div>
+            <div class="rc-feature"><div class="rc-feature-icon"><i data-lucide="layers" width="18" height="18"></i></div><div><h3>2D & 3D Visualization</h3><p>Experience your project through detailed floor plans and realistic 3D visualizations.</p></div></div>
+            <div class="rc-feature"><div class="rc-feature-icon"><i data-lucide="dollar-sign" width="18" height="18"></i></div><div><h3>Transparent Pricing</h3><p>Know the starting price and everything included before making your decision.</p></div></div>
+            <div class="rc-feature"><div class="rc-feature-icon"><i data-lucide="shopping-bag" width="18" height="18"></i></div><div><h3>Easy Digital Purchase</h3><p>Discover and purchase architectural designs online — no middlemen, no delays.</p></div></div>
+            <div class="rc-feature"><div class="rc-feature-icon"><i data-lucide="headphones" width="18" height="18"></i></div><div><h3>Expert Support</h3><p>Get professional assistance when you need help selecting the right design.</p></div></div>
+        </div>
+    </div>
+</section>
+
+<!-- 2D + 3D split -->
+<section class="rc-section tint" style="padding-top:0; padding-bottom:0;">
+    <div class="rc-split">
+        <div class="rc-split-panel">
+            <img src="https://images.unsplash.com/photo-1542621334-a254cf47733d?w=800&h=600&fit=crop&auto=format" alt="Blueprint">
+            <div class="tint"></div>
+            <div class="rc-split-copy"><div><div class="tag">2D Floor Plans</div><div class="headline">Precise. Clear. Detailed.</div></div></div>
+        </div>
+        <div class="rc-split-panel">
+            <img src="https://images.unsplash.com/photo-1686164748261-33e13eef70b6?w=800&h=600&fit=crop&auto=format" alt="3D render">
+            <div class="tint"></div>
+            <div class="rc-split-copy"><div><div class="tag">3D Designs</div><div class="headline">Realistic. Immersive. Inspiring.</div></div></div>
+        </div>
+    </div>
+    <div class="rc-blueprint-bar">
+        <div>
+            <h2>From Blueprint to Reality</h2>
+            <p>Explore detailed 2D plans and immersive 3D designs that help you understand your space before construction begins.</p>
+        </div>
+        <div class="rc-blueprint-actions">
+            <button class="btn-ink" onclick="document.getElementById('designs-section').scrollIntoView({behavior:'smooth'})">Explore 2D Plans</button>
+            <button class="btn-outline-ink" onclick="document.getElementById('designs-section').scrollIntoView({behavior:'smooth'})">Explore 3D Designs</button>
+        </div>
+    </div>
+    <div style="height:80px;"></div>
+</section>
+
+<!-- CTA -->
+<section class="rc-cta">
+    <div class="rc-cta-bg"><img src="https://images.unsplash.com/photo-1722421492323-eaf9c401befe?w=1400&h=600&fit=crop&auto=format" alt=""></div>
+    <div class="rc-wrap rc-cta-inner">
+        <div class="rc-cta-rule"></div>
+        <h2>Your Dream Home Starts With the Right Design.</h2>
+        <p>Explore thoughtfully planned architectural designs built around modern lifestyles, practical spaces and Indian plot dimensions.</p>
+        <div class="rc-cta-actions">
+            <button class="btn-gold" onclick="document.getElementById('designs-section').scrollIntoView({behavior:'smooth'})">Explore Designs</button>
+            <a href="contact.html" class="btn-outline-light">Talk to an Expert</a>
+        </div>
+    </div>
+</section>
+
+<!-- Start Selling -->
+<section class="rc-section tint">
+    <div class="rc-wrap rc-start-selling">
+        <div class="rc-start-selling-media">
+            <img src="https://images.unsplash.com/photo-1598367815092-a2c0cbc1ea3d?w=800&h=600&fit=crop&auto=format" alt="Architect at workspace">
+        </div>
+        <div>
+            <div class="rc-eyebrow">For Professionals</div>
+            <h2>Are You an Architect or Designer?</h2>
+            <p class="lead">Turn your architectural designs into digital products and reach customers actively looking for their next project across India.</p>
+            <div class="rc-checklist">
+                <div><i data-lucide="check-circle" width="16" height="16"></i><span>Upload your designs and set your pricing</span></div>
+                <div><i data-lucide="check-circle" width="16" height="16"></i><span>Reach new customers actively searching for designs</span></div>
+                <div><i data-lucide="check-circle" width="16" height="16"></i><span>Manage your products and orders in one dashboard</span></div>
+                <div><i data-lucide="check-circle" width="16" height="16"></i><span>Grow your design business with zero upfront cost</span></div>
+            </div>
+            <a href="vendor-landing.html" class="btn-ink" style="display:inline-flex; align-items:center; gap:8px; text-transform:uppercase; letter-spacing:0.08em; font-weight:700; padding:16px 32px;">Start Selling <i data-lucide="arrow-right" width="14" height="14"></i></a>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials -->
+<section class="rc-section" style="border-top:1px solid var(--border);">
+    <div class="rc-wrap">
+        <div style="text-align:center; margin-bottom:48px;">
+            <div class="rc-eyebrow center">Customer Stories</div>
+            <h2 style="font-size:clamp(24px,3vw,34px); font-weight:700; margin:0;">What Our Customers Say</h2>
+        </div>
+        <div class="rc-testimonials-grid">
+            <div class="rc-testimonial">
+                <div class="stars"><i data-lucide="star" width="13" height="13"></i><i data-lucide="star" width="13" height="13"></i><i data-lucide="star" width="13" height="13"></i><i data-lucide="star" width="13" height="13"></i><i data-lucide="star" width="13" height="13"></i></div>
+                <p>"We found the perfect 4BHK duplex design for our 30×50 plot in Indore. The 2D and 3D views made it incredibly easy to visualize before construction."</p>
+                <div class="rc-testimonial-person">
+                    <div class="rc-testimonial-avatar">P</div>
+                    <div><div class="rc-testimonial-name">Priya Sharma</div><div class="rc-testimonial-loc">Indore, Madhya Pradesh</div></div>
+                </div>
+            </div>
+            <div class="rc-testimonial">
+                <div class="stars"><i data-lucide="star" width="13" height="13"></i><i data-lucide="star" width="13" height="13"></i><i data-lucide="star" width="13" height="13"></i><i data-lucide="star" width="13" height="13"></i><i data-lucide="star" width="13" height="13"></i></div>
+                <p>"Rapicon has an excellent collection of modern house designs. The filters by plot size saved so much time. Highly recommend to anyone planning their dream home."</p>
+                <div class="rc-testimonial-person">
+                    <div class="rc-testimonial-avatar">R</div>
+                    <div><div class="rc-testimonial-name">Rahul Verma</div><div class="rc-testimonial-loc">Bhopal, Madhya Pradesh</div></div>
+                </div>
+            </div>
+            <div class="rc-testimonial">
+                <div class="stars"><i data-lucide="star" width="13" height="13"></i><i data-lucide="star" width="13" height="13"></i><i data-lucide="star" width="13" height="13"></i><i data-lucide="star" width="13" height="13"></i><i data-lucide="star" width="13" height="13"></i></div>
+                <p>"As a civil contractor, I regularly recommend Rapicon to my clients. The quality of architectural drawings is outstanding and the pricing is very fair."</p>
+                <div class="rc-testimonial-person">
+                    <div class="rc-testimonial-avatar">A</div>
+                    <div><div class="rc-testimonial-name">Anil Patel</div><div class="rc-testimonial-loc">Surat, Gujarat</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ -->
+<section class="rc-section tint">
+    <div class="rc-wrap rc-faq-layout">
+        <div>
+            <div class="rc-eyebrow">FAQ</div>
+            <h2 style="font-size:32px; font-weight:700; margin:0 0 16px;">Frequently Asked Questions</h2>
+            <p>Everything you need to know about Rapicon and architectural design purchasing.</p>
+        </div>
+        <div id="rcFaqList">
+            <div class="rc-faq-item">
+                <button class="rc-faq-q">What type of architectural designs can I purchase?<i data-lucide="chevron-down" width="16" height="16"></i></button>
+                <div class="rc-faq-a"><p>You can purchase 2D floor plans, 3D exterior renders, interior design concepts, duplex designs, villa designs, apartment plans, and commercial building designs — all tailored for Indian plots.</p></div>
+            </div>
+            <div class="rc-faq-item">
+                <button class="rc-faq-q">What information is included with a design?<i data-lucide="chevron-down" width="16" height="16"></i></button>
+                <div class="rc-faq-a"><p>Each design package includes detailed 2D floor plans for all floors, 3D exterior renders, elevation drawings, section details, and a complete list of specifications including room dimensions and area calculations.</p></div>
+            </div>
+            <div class="rc-faq-item">
+                <button class="rc-faq-q">Can I customize a design?<i data-lucide="chevron-down" width="16" height="16"></i></button>
+                <div class="rc-faq-a"><p>Yes. After purchase, you can request modifications through our expert team. Customization options include room layout changes, material preferences, vastu adjustments, and plot-size adaptations.</p></div>
+            </div>
+            <div class="rc-faq-item">
+                <button class="rc-faq-q">Can I find designs based on my plot size?<i data-lucide="chevron-down" width="16" height="16"></i></button>
+                <div class="rc-faq-a"><p>Absolutely. Use our Plot Size filter to find designs specifically crafted for your plot dimensions. We have designs for plots ranging from 15×30 ft to 60×60 ft and beyond.</p></div>
+            </div>
+            <div class="rc-faq-item">
+                <button class="rc-faq-q">Are 2D and 3D designs available?<i data-lucide="chevron-down" width="16" height="16"></i></button>
+                <div class="rc-faq-a"><p>Yes. All featured designs include both 2D floor plans and 3D exterior visualizations. Some premium designs also include 3D interior walkthroughs.</p></div>
+            </div>
+            <div class="rc-faq-item">
+                <button class="rc-faq-q">How do I purchase a design?<i data-lucide="chevron-down" width="16" height="16"></i></button>
+                <div class="rc-faq-a"><p>Browse designs, click "View Design", review the details, then click Purchase. Fill in your project details and requirements, then complete payment securely online.</p></div>
+            </div>
+            <div class="rc-faq-item">
+                <button class="rc-faq-q">Can architects sell their designs on Rapicon?<i data-lucide="chevron-down" width="16" height="16"></i></button>
+                <div class="rc-faq-a"><p>Yes! Rapicon is an open marketplace. Create a seller account, upload your designs with details and pricing, and start earning from your architectural work.</p></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="rc-footer">
+    <div class="rc-wrap">
+        <div class="rc-footer-grid">
+            <div>
+                <div class="rc-footer-brand-row">
+                    <span class="rc-brand-mark">R</span>
+                    <div>
+                        <div style="font-size:13px; font-weight:700;">RAPICON</div>
+                        <div style="font-size:10px; color:rgba(255,255,255,0.4); text-transform:uppercase; letter-spacing:0.15em;">Infrastructure</div>
+                    </div>
+                </div>
+                <p class="rc-footer-tagline">"Virtuality to Reality"</p>
+                <p class="rc-footer-desc">A premium architectural design marketplace connecting homeowners and professionals across India.</p>
+                <div class="rc-footer-contact">
+                    <div><i data-lucide="map-pin" width="12" height="12"></i><span>29, Bhagwandeen Nagar, Behind Sapna Sangeeta, Indore, M.P. PIN-452001</span></div>
+                    <div><i data-lucide="phone" width="12" height="12"></i><a href="tel:+917314342979">+91 73143 42979</a></div>
+                    <div><i data-lucide="mail" width="12" height="12"></i><a href="mailto:rapiconinfra@gmail.com">rapiconinfra@gmail.com</a></div>
+                </div>
+            </div>
+            <div>
+                <div class="rc-footer-heading">Explore</div>
+                <div class="rc-footer-links">
+                    <a href="designs.html?type=house">House Designs</a>
+                    <a href="designs.html?type=duplex">Duplex Designs</a>
+                    <a href="designs.html?type=villa">Villa Designs</a>
+                    <a href="designs.html?type=commercial">Commercial Designs</a>
+                    <a href="designs.html">2D Plans</a>
+                    <a href="designs.html">3D Designs</a>
+                </div>
+            </div>
+            <div>
+                <div class="rc-footer-heading">Company</div>
+                <div class="rc-footer-links">
+                    <a href="about-us.html">About Us</a>
+                    <a href="vendor-landing.html">Start Selling</a>
+                    <a href="FAQ.html">FAQ</a>
+                    <a href="contact.html">Contact Us</a>
+                </div>
+            </div>
+            <div>
+                <div class="rc-footer-heading">Support</div>
+                <div class="rc-footer-links">
+                    <a href="contact.html">Contact</a>
+                    <a href="terms-privacy.html">Terms &amp; Conditions</a>
+                    <a href="privacy-policy.html">Privacy Policy</a>
+                </div>
+                <div class="rc-footer-social">
+                    <a href="#" aria-label="Website"><i data-lucide="globe" width="13" height="13"></i></a>
+                    <a href="mailto:rapiconinfra@gmail.com" aria-label="Email"><i data-lucide="mail" width="13" height="13"></i></a>
+                    <a href="tel:+917314342979" aria-label="Phone"><i data-lucide="phone" width="13" height="13"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="rc-footer-bottom">
+            <span>&copy; 2025 Rapicon Infrastructure LLP. All rights reserved.</span>
+            <span>Designed with care in Indore, India.</span>
+        </div>
+    </div>
+</footer>
+<script src="ai-assistant-chatbot/widget.js"></script>
+<script src="scripts/index.js"></script>
+
 </body>
 </html>

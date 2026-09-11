@@ -1,120 +1,48 @@
-body {
-            font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
-            margin: 0;
-            padding: 20px;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        h1 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-        .order-card {
-            background: white;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .order-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #eee;
-            margin-bottom: 15px;
-        }
-        .order-number {
-            font-size: 18px;
-            font-weight: bold;
-        }
-        .badge {
-            display: inline-block;
-            padding: 5px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            margin-left: 5px;
-        }
-        .badge-green {
-            background-color: #d4edda;
-            color: #155724;
-        }
-        .badge-yellow {
-            background-color: #fff3cd;
-            color: #856404;
-        }
-        .order-info {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            margin-bottom: 15px;
-        }
-        .info-box h3 {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 8px;
-        }
-        .info-box p {
-            margin: 4px 0;
-            font-size: 14px;
-        }
-        .toggle-btn {
-            width: 100%;
-            padding: 12px;
-            background: #f8f9fa;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            cursor: pointer;
-            text-align: left;
-            font-size: 14px;
-        }
-        .toggle-btn:hover {
-            background: #e9ecef;
-        }
-        .installments {
-            display: none;
-            margin-top: 15px;
-        }
-        .installments.show {
-            display: block;
-        }
-        .installment-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 4px;
-            margin-bottom: 8px;
-        }
-        @media (max-width: 768px) {
-            .order-info {
-                grid-template-columns: 1fr;
-            }
-        }
+/* ==========================================================================
+   Rapicon — My Orders / installment schedule page only
+   Load AFTER base.css.
+   ========================================================================== */
 
-        .pay-now-btn {
-            background: #007BFF;             /* Blue */
-            color: #fff;
-            padding: 6px 16px;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            box-shadow: 0 2px 6px rgba(0, 123, 255, 0.3);
-        }
+.rc-orders-body { max-width: 960px; margin: 0 auto; padding: 40px 24px 80px; }
+.rc-orders-body > h1 { font-size: 24px; font-weight: 700; margin: 0 0 28px; }
 
-        .pay-now-btn:hover {
-            background: #0056d2;             /* Darker blue on hover */
-            box-shadow: 0 3px 8px rgba(0, 86, 210, 0.4);
-            transform: translateY(-2px);     /* Slight lift effect */
-        }
+.rc-order-card { background: #fff; border: 1px solid var(--border); padding: 24px; margin-bottom: 20px; }
+.rc-order-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.rc-order-number { font-size: 15px; font-weight: 700; }
+.rc-order-placed { color: var(--muted); font-size: 13px; margin-top: 4px; }
+.rc-order-badges { display: flex; gap: 8px; flex-wrap: wrap; }
 
-        .pay-now-btn:active {
-            transform: translateY(0);        /* Remove lift on click */
-            background: #004bb3;
-        }
+.badge { display: inline-block; padding: 4px 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+.badge-green { background: #ECFDF5; color: #065F46; }
+.badge-yellow { background: #FFFBEB; color: #92400E; }
+.badge-red { background: #FEF2F2; color: #B91C1C; }
+
+.rc-order-info { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px; }
+@media (max-width: 700px) { .rc-order-info { grid-template-columns: 1fr; } }
+.rc-info-box { border: 1px solid var(--border); padding: 16px; }
+.rc-info-box h3 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--gold); margin: 0 0 10px; }
+.rc-info-box p { font-size: 13px; color: var(--muted); margin: 0 0 4px; line-height: 1.5; }
+.rc-info-box p strong { color: var(--ink); }
+
+.toggle-btn {
+  width: 100%; text-align: left; padding: 12px 16px;
+  background: var(--bg-light); border: 1px solid var(--border);
+  font-size: 13px; font-weight: 600; color: var(--ink); cursor: pointer;
+}
+.toggle-btn:hover { border-color: var(--gold); }
+
+.installments { display: none; margin-top: 12px; }
+.installments.show { display: block; }
+.installment-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px; border: 1px solid var(--border); border-top: none;
+  font-size: 13px; color: var(--muted);
+}
+.installment-item:first-child { border-top: 1px solid var(--border); }
+
+.pay-now-btn {
+  background-image: linear-gradient(135deg, var(--gold), var(--gold-hover));
+  color: var(--ink); border: none; padding: 8px 16px;
+  font-size: 12px; font-weight: 700; cursor: pointer;
+}
+.pay-now-btn:hover { filter: brightness(1.05); }

@@ -72,7 +72,7 @@ public class SecurityConfig {
                         // 2. Static/public frontend pages
                         .requestMatchers(
                                 "/", "/index.html", "/designinfo.html", "/payment.html",
-                                "/addtocard.html", "/userprofile.html", "/otp-login.html",
+                                "/cart.html", "/userprofile.html", "/otp-login.html",
                                 "/loan-form.html", "/about-us.html", "/sitemap.xml",
                                 "/privacy-policy.html", "/register-now.html",
                                 "/otp-verification.html", "/terms-privacy.html",
@@ -80,8 +80,8 @@ public class SecurityConfig {
                                 "/FAQ.html", "/vendor-landing.html", "/package-page.html",
                                 "/vendor-dashboard.html", "/forgot-password.html",
                                 "/contact.html", "/login.html", "/installment-payment.html",
-                                "/register.html", "/user.html", "/admin.html",
-                                "/css/**", "/images/**", "/favicon.ico", "/scripts/**"
+                                "/register.html", "/designs.html", "/admin.html",
+                                "/css/**", "/images/**", "/favicon.ico", "/scripts/**","ai-assistant-chatbot/**"
                         ).permitAll()
 
                         // 3. Public API endpoints
@@ -91,6 +91,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/cart/**").permitAll()
                         .requestMatchers("/api/v1/customer/**").permitAll()
                         .requestMatchers("/api/payment/phonePe/**").permitAll()
+                        .requestMatchers("/api/chat/**").permitAll()
 
                         // 4. Role-protected endpoints (MOST SPECIFIC first)
                         .requestMatchers("/api/admin/**").permitAll()

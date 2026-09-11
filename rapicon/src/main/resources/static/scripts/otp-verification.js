@@ -1,111 +1,122 @@
+
 document.addEventListener('DOMContentLoaded', async function () {
-    const verifyForm = document.getElementById('verifyForm');
-    const errorMessage = document.getElementById('errorMessage');
-    const resendOtpLink = document.getElementById('resendOtp');
+  const verifyForm = document.getElementById('verifyForm');
+  const errorMessage = document.getElementById('errorMessage');
+  const resendOtpLink = document.getElementById('resendOtp');
+  const verifyBtn = document.getElementById('verifyBtn');
+
+  const phone = localStorage.getItem('pendingPhone');
+  if (!phone) {
+      await showMessage.alert("Session expired. Please login again.");
+      window.location.href = "otp-login.html";
+      return;
+  }
+
+  startResendCooldown();
+
+  verifyForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      errorMessage.textContent = "";
+
+      const otp = document.getElementById('otp').value.trim();
+      if (!otp) {
+          errorMessage.textContent = "Please enter the OTP.";
+          return;
+      }
+      if (!/^\d{6}$/.test(otp)) {
+          errorMessage.textContent = "Please enter a valid 6-digit OTP.";
+          return;
+      }
+
+      verifyBtn.disabled = true;
+      verifyBtn.textContent = "Verifying...";
+
+      try {
+          const response = await fetch('/api/auth/verify-otp', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ phone, otp })
+          });
+
+          if (response.ok) {
+              const data = await response.json();
+
+              // Save token and user info for session
+              localStorage.setItem('user_token', data.token);
+              localStorage.setItem('user_id', data.id);
+              localStorage.setItem('user_role', data.role);
+              localStorage.setItem('user_fullName', data.fullName);
+              localStorage.removeItem('pendingPhone');
+
+              showMessage.success("Login successfully!");
+              // Wait 2 seconds before redirect
+              setTimeout(() => {
+                  window.location.replace("index.html");
+              }, 2000);
+          } else {
+              const err = await response.json();
+              errorMessage.textContent = err.message || "Invalid OTP. Please try again.";
+              verifyBtn.disabled = false;
+              verifyBtn.textContent = "Verify OTP";
+          }
+      } catch (error) {
+          errorMessage.textContent = "Something went wrong. Please try again.";
+          verifyBtn.disabled = false;
+          verifyBtn.textContent = "Verify OTP";
+      }
+  });
+
+  // Resend OTP
+  resendOtpLink.addEventListener('click', async function (e) {
+      e.preventDefault();
+
+      if (resendOtpLink.style.pointerEvents === "none") return;
+
+      errorMessage.textContent = "";
 
 
-    const phone = localStorage.getItem('pendingPhone');
-    if (!phone) {
-        await showMessage.alert("Session expired. Please login again.");
-        window.location.href = "otp-login.html";
-        return;
-    }
+      try {
+          const response = await fetch('/api/auth/send-otp', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ phone })
+          });
 
-    startResendCooldown();
+          if (response.ok) {
+              await showMessage.alert("OTP resent successfully!", {
+                  title: 'success',
+                  type: 'success'
+              });
 
-    verifyForm.addEventListener('submit', async function (e) {
-        e.preventDefault();
-        errorMessage.textContent = "";
+              startResendCooldown(); // 🔥 disable for 60s
+          }else {
+              errorMessage.textContent = "Failed to resend OTP. Try again.";
+          }
+      } catch (error) {
+          errorMessage.textContent = "Error resending OTP. Try again.";
+      }
+  });
 
-        const otp = document.getElementById('otp').value.trim();
-        if (!otp) {
-            errorMessage.textContent = "Please enter the OTP.";
-            return;
-        }
+  // resend timer
+  function startResendCooldown() {
+      let seconds = 60;
 
-        try {
-            const response = await fetch('/api/auth/verify-otp', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ phone, otp })
-            });
+      resendOtpLink.style.pointerEvents = "none";
+      resendOtpLink.style.opacity = "0.5";
 
-            if (response.ok) {
-                const data = await response.json();
+      const timer = setInterval(() => {
+          resendOtpLink.textContent = `Resend OTP (${seconds}s)`;
+          seconds--;
 
-                // Save token and user info for session
-                localStorage.setItem('user_token', data.token);
-                localStorage.setItem('user_id', data.id);
-                localStorage.setItem('user_role', data.role);
-                localStorage.setItem('user_fullName', data.fullName);
-                localStorage.removeItem('pendingPhone');
-
-                showMessage.success("Login successfully!");
-                // Wait 2 seconds before redirect
-                setTimeout(() => {
-                    window.location.replace("user.html");
-                }, 2000);
-            } else {
-                const err = await response.json();
-                errorMessage.textContent = err.message || "Invalid OTP. Please try again.";
-            }
-        } catch (error) {
-            errorMessage.textContent = "Something went wrong. Please try again.";
-        }
-    });
-
-    // Resend OTP
-    resendOtpLink.addEventListener('click', async function (e) {
-        e.preventDefault();
-
-        if (resendOtpLink.style.pointerEvents === "none") return;
-
-        errorMessage.textContent = "";
-
-
-        try {
-            const response = await fetch('/api/auth/send-otp', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ phone })
-            });
-
-            if (response.ok) {
-                await showMessage.alert("OTP resent successfully!", {
-                    title: 'success',
-                    type: 'success'
-                });
-
-                startResendCooldown(); // 🔥 disable for 60s
-            }else {
-                errorMessage.textContent = "Failed to resend OTP. Try again.";
-            }
-        } catch (error) {
-            errorMessage.textContent = "Error resending OTP. Try again.";
-        }
-    });
-
-    // resend timer
-    function startResendCooldown() {
-        let seconds = 60;
-
-        resendOtpLink.style.pointerEvents = "none";
-        resendOtpLink.style.opacity = "0.5";
-
-        const timer = setInterval(() => {
-            resendOtpLink.textContent = `Resend OTP (${seconds}s)`;
-            seconds--;
-
-            if (seconds < 0) {
-                clearInterval(timer);
-                resendOtpLink.textContent = "Resend OTP";
-                resendOtpLink.style.pointerEvents = "auto";
-                resendOtpLink.style.opacity = "1";
-            }
-        }, 1000);
-    }
+          if (seconds < 0) {
+              clearInterval(timer);
+              resendOtpLink.textContent = "Resend OTP";
+              resendOtpLink.style.pointerEvents = "auto";
+              resendOtpLink.style.opacity = "1";
+          }
+      }, 1000);
+  }
 
 });
-

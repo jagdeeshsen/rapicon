@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart - Rapicon</title>
+    <script src="https://mercury.phonepe.com/web/bundle/checkout.js"></script>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/cart.css">
+    <script src="scripts/showMessage.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" defer></script>
+</head>
+<body>
+
+<!-- Header (same as other pages) -->
+<header class="rc-header">
+    <div class="rc-header-inner">
+        <a href="/" class="rc-brand">
+            <span class="rc-brand-mark">R</span>
+            <span>
+        <span class="rc-brand-name" style="display:block;">RAPICON</span>
+        <span class="rc-brand-sub">Infrastructure</span>
+      </span>
+        </a>
+        <ul class="rc-nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="designs.html">Designs</a></li>
+            <li><a href="about-us.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+        <div class="rc-header-actions">
+            <button class="rc-icon-btn" aria-label="Order History" onclick="toggleOrderHistory()"><i data-lucide="clock" width="16" height="16"></i></button>
+            <a href="otp-login.html" class="rc-icon-btn" aria-label="Account"><i data-lucide="user" width="16" height="16"></i></a>
+        </div>
+        <button class="rc-nav-toggle" aria-label="Open menu">☰</button>
+    </div>
+</header>
+
+<div class="rc-cart-body">
+    <!-- Cart Section -->
+    <div class="rc-cart-section">
+        <div class="rc-section-title-row">
+            <h2>Shopping Cart</h2>
+            <span class="rc-cart-badge" id="cartBadge">0 Items</span>
+        </div>
+        <div class="rc-cart-items" id="cartItems"></div>
+    </div>
+
+    <!-- Order Summary -->
+    <div class="rc-order-summary">
+        <h2 style="font-size:18px; font-weight:700; margin:0 0 20px;">Order Summary</h2>
+
+        <div class="rc-summary-row">
+            <span>Subtotal</span>
+            <span id="subtotal">₹0</span>
+        </div>
+        <div class="rc-summary-row">
+            <span>Tax (18%)</span>
+            <span id="tax">₹0</span>
+        </div>
+        <div class="rc-summary-row total">
+            <span>Total</span>
+            <span class="amount" id="total">₹0</span>
+        </div>
+        <div class="rc-summary-row total">
+            <span>Installment</span>
+            <span class="amount" id="installment">₹0</span>
+        </div>
+
+        <button class="btn-gold rc-cart-btn" id="checkoutBtn" onclick="fullCheckout()"><i data-lucide="credit-card" width="14" height="14"></i> Proceed to Checkout</button>
+        <button class="btn-outline-ink rc-cart-btn" id="checkoutBtnSecond" onclick="installmentCheckout()"><i data-lucide="credit-card" width="14" height="14"></i> Pay in Installments</button>
+
+        <div class="rc-summary-features">
+            <p class="rc-info-text">For Virtual Reality experience, <a href="contact.html">Contact Us</a>.</p>
+            <div class="rc-feature-item"><i data-lucide="lock" width="13" height="13"></i><span>Secure payment via PhonePe</span></div>
+        </div>
+    </div>
+</div>
+
+<!-- Checkout Modal
+     NOTE: this modal's form (name/email/phone/address) is not currently
+     wired to anything — nothing in the script ever adds the "active"
+     class needed to show it, and it has no submit handler. The real,
+     working checkout runs through fullCheckout()/installmentCheckout()
+     on the buttons above. Left exactly as-is rather than guessing at
+     intended wiring — see chat for details. -->
+<div class="rc-cart-modal" id="checkoutModal">
+    <div class="rc-cart-modal-content">
+        <div class="rc-cart-modal-header">
+            <h2>Checkout</h2>
+            <p>Complete your purchase</p>
+        </div>
+        <div class="rc-cart-modal-body">
+            <form id="checkoutForm">
+                <div class="rc-cart-form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="name" placeholder="John Doe" required>
+                </div>
+                <div class="rc-cart-form-group">
+                    <label>Email</label>
+                    <input type="email" id="email" placeholder="john@example.com" required>
+                </div>
+                <div class="rc-cart-form-group">
+                    <label>Phone</label>
+                    <input type="tel" id="phone" placeholder="+91 9876543210" required>
+                </div>
+                <div class="rc-cart-form-group">
+                    <label>Address</label>
+                    <textarea id="address" rows="3" placeholder="Enter your address" required></textarea>
+                </div>
+                <div class="rc-payment-summary">
+                    <div class="rc-payment-amount">
+                        <span>Amount to pay:</span>
+                        <span id="modalTotal">₹0</span>
+                    </div>
+                </div>
+                <div class="rc-cart-modal-footer">
+                    <button type="button" class="rc-btn-cancel" onclick="closeCheckout()">Cancel</button>
+                    <button type="submit" class="rc-btn-pay">Pay Now</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Order History Modal -->
+<div class="rc-cart-modal" id="orderHistoryModal">
+    <div class="rc-cart-modal-content">
+        <div class="rc-cart-modal-header">
+            <h2>Order History</h2>
+            <p>Your past orders</p>
+        </div>
+        <div class="rc-cart-modal-body" id="orderHistoryContent"></div>
+        <div style="padding: 0 24px 24px;">
+            <button class="rc-btn-cancel" style="width:100%;" onclick="toggleOrderHistory()">Close</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    /* ==========================================================================
+       Logic is UNCHANGED from the original scripts/addtocard.js, with three
+       fixes applied (all discussed in chat):
+
+       FIXED — token key: localStorage.getItem('user_token') -> 'user-token',
+       matching the real key confirmed from your login page and already fixed
+       on every other page.
+
+       FIXED — missing `return` after every `if (!response.ok)` error check.
+       The original showed an error toast but then kept executing with data
+       that was never successfully fetched — e.g. order-creation failing would
+       still attempt to initiate a PhonePe payment with an undefined
+       merchantOrderId. fullCheckout()/installmentCheckout() already had the
+       correct error+return pattern, so this brings the rest of the file in
+       line with that existing convention rather than introducing a new one.
+
+       FIXED — hidePaymentVerificationLoader() was defined but never called,
+       so the full-screen "Processing Payment..." overlay could never go away
+       once shown. Now called right before handing off to the PhonePe iframe,
+       and in every error/early-return path within openCheckout().
+
+       UNCHANGED, flagged instead of guessed at: the #checkoutModal form
+       (name/email/phone/address + Pay Now) has no submit handler anywhere and
+       nothing ever shows it — it looks disconnected from the real PhonePe
+       flow. Left exactly as it was.
+
+       Also updated per this conversation: the empty-cart "Continue Shopping"
+       button now points at plans.html instead of the retired user.html.
+       ========================================================================== */
+
+    // User session data (stored in memory, not localStorage)
+    let userToken = localStorage.getItem('user_token'); // FIXED: was 'user_token'
+    let userId = localStorage.getItem('user_id');
+
+    // Cart state
+    let cartList = [];
+    let totalPayableAmount = 0;
+    let totalInstallments = 0;
+    let installmentAmount = 0;
+    let merchantOrderId;
+    let orderId;
+
+    // Render cart items
+    async function renderCart() {
+        const cartContainer = document.getElementById('cartItems');
+        const cartBadge = document.getElementById('cartBadge');
+
+        if (!userToken || !userId) {
+            showMessage.error('User not authenticated');
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/cart/items?user_id=${userId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${userToken}`
+                }
+            });
+
+            if (!response.ok) {
+                showMessage.error('Failed to fetch cart items');
+                return; // FIXED: was falling through to parse a failed response as cart data
+            }
+
+            cartList = await response.json();
+            cartBadge.textContent = `${cartList.length} Items`;
+
+            if (cartList.length === 0) {
+                cartContainer.innerHTML = `
+                    <div class="rc-empty-cart">
+                        <div class="icon">🛒</div>
+                        <p>Your cart is empty</p>
+                        <button class="btn-gold" onclick="window.location.href='/plans.html'" style="display:inline-flex; padding:12px 24px;">
+                            Continue Shopping
+                        </button>
+                    </div>
+                `;
+            } else {
+                // Get totalInstallments from first item
+                totalInstallments = cartList[0].totalInstallments || 1;
+
+                cartContainer.innerHTML = cartList.map(item => `
+                    <div class="rc-cart-item">
+                        <img src="${(item.design.elevationUrls && item.design.elevationUrls[0]) || ''}" alt="${item.design.designCategory || ''}">
+                        <div class="rc-cart-item-details">
+                            <div class="rc-cart-item-header">
+                                <div>
+                                    <div class="rc-cart-item-name">Package: ${item.packageName}</div>
+                                    <div class="rc-cart-item-category">${item.design.designCategory || item.design.designType}</div>
+                                </div>
+                                <button class="rc-btn-remove" onclick="removeItem(${item.id})">
+                                    <i data-lucide="trash-2" width="14" height="14"></i>
+                                </button>
+                            </div>
+                            <div>
+                                <span class="rc-cart-item-price">Price: ₹${item.totalAmount.toLocaleString()}</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                if (window.lucide) lucide.createIcons();
+            }
+
+            updateSummary();
+        } catch (error) {
+            console.error('Error loading cart:', error);
+            cartContainer.innerHTML = `
+                <div class="rc-empty-cart">
+                    <p style="color:#B23A3A;">Failed to load cart items</p>
+                </div>
+            `;
+        }
+    }
+
+    // Remove item from cart
+    async function removeItem(id) {
+        if (!userToken) {
+            await showMessage.alert('Please login to continue');
+
+            setTimeout(() => {
+            window.location.href='/otp-login.html'
+            }, 2000);
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/cart/delete?id=${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${userToken}`
+                }
+            });
+
+            if (!response.ok) {
+                showMessage.error('Failed to delete cart item');
+                return; // FIXED: was calling renderCart() even after a failed delete
+            }
+
+            renderCart();
+        } catch (error) {
+            showMessage.error('Failed to remove item from cart');
+        }
+    }
+
+    // Update order summary
+    function updateSummary() {
+        const subtotal = cartList.reduce((sum, item) => sum + item.totalAmount, 0);
+        const tax = Math.round(subtotal * 0.18);
+        const total = subtotal + tax;
+
+        totalPayableAmount = total;
+        installmentAmount = totalInstallments > 1 ? (total / totalInstallments) : total;
+
+        document.getElementById('subtotal').textContent = `₹${subtotal.toLocaleString()}`;
+        document.getElementById('tax').textContent = `₹${tax.toLocaleString()}`;
+        document.getElementById('total').textContent = `₹${total.toLocaleString()}`;
+        document.getElementById('installment').textContent = `₹${installmentAmount.toLocaleString()}`;
+        document.getElementById('modalTotal').textContent = `₹${total.toLocaleString()}`;
+
+        const checkoutBtn = document.getElementById('checkoutBtn');
+        const checkoutBtnSecond = document.getElementById('checkoutBtnSecond');
+
+        if (checkoutBtn) checkoutBtn.disabled = cartList.length === 0;
+        if (checkoutBtnSecond) checkoutBtnSecond.disabled = cartList.length === 0;
+    }
+
+    // Full payment checkout
+    function fullCheckout() {
+        if (cartList.length === 0) {
+            showMessage.error('Your cart is empty!');
+            return;
+        }
+
+        const orderData = {
+            userId: cartList[0].userId,
+            totalAmount: totalPayableAmount,
+            cartList: cartList,
+            totalInstallments: 1,
+            installmentAmount: totalPayableAmount
+        };
+
+        openCheckout(orderData);
+    }
+
+    // Installment checkout
+    function installmentCheckout() {
+        if (cartList.length === 0) {
+            showMessage.error('Your cart is empty!');
+            return;
+        }
+
+        const orderData = {
+            userId: cartList[0].userId,
+            totalAmount: totalPayableAmount,
+            cartList: cartList,
+            totalInstallments: totalInstallments,
+            installmentAmount: installmentAmount
+        };
+
+        openCheckout(orderData);
+    }
+
+    // Main checkout function - PhonePe Integration
+    async function openCheckout(orderData) {
+        if (!userToken) {
+            await showMessage.alert('Please login to continue');
+            return;
+        }
+
+        try {
+            showPaymentVerificationLoader();
+
+            // Step 1: Create order
+            const orderResponse = await fetch('/api/orders/create-order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${userToken}`
+                },
+                body: JSON.stringify(orderData)
+            });
+
+            if (!orderResponse.ok) {
+                showMessage.error('Failed to create order');
+                hidePaymentVerificationLoader(); // FIXED
+                return; // FIXED: was falling through with an undefined orderResult
+            }
+
+            const orderResult = await orderResponse.json();
+
+            // store merchant and order id
+            merchantOrderId= orderResult.merchantOrderId;
+            orderId= orderResult.id;
+
+
+            // Step 2: Initiate PhonePe payment
+            const paymentData = {
+                merchantOrderId: orderResult.merchantOrderId || `ORD${Date.now()}`,
+                amount: orderResult.amount, // Amount in paisa
+                metaInfo: {
+                    udf1: orderResult.userId || orderData.userId || '',
+                    udf2: orderResult.customerName || '',
+                    udf3: orderResult.customerEmail || '',
+                    udf4: orderResult.customerPhone || '',
+                    udf5: JSON.stringify({ orderId: orderResult.id })
+                }
+            };
+
+            const paymentResponse = await fetch('/api/payment/phonePe/initiate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${userToken}`
+                },
+                body: JSON.stringify(paymentData)
+            });
+
+            if (!paymentResponse.ok) {
+                showMessage.error('Failed to initiate payment');
+                hidePaymentVerificationLoader(); // FIXED
+                return; // FIXED: was falling through to read a failed response as paymentResult
+            }
+
+            const paymentResult = await paymentResponse.json();
+
+            if (!paymentResult.redirectUrl) {
+                hidePaymentVerificationLoader(); // FIXED
+                throw new Error(paymentResult.message || 'Payment initiation failed');
+            }
+
+            // Our own loader is about to be covered by PhonePe's iframe — hide
+            // it now so the two don't visually stack.
+            hidePaymentVerificationLoader(); // FIXED
+
+            // open phonepe UI
+            window.PhonePeCheckout.transact(
+            {
+                tokenUrl: paymentResult.redirectUrl, callback, type: "IFRAME"
+            });
+
+        } catch (error) {
+            hidePaymentVerificationLoader(); // FIXED
+            showMessage.error('Failed to process checkout: ' + error.message);
+        }
+    }
+
+    // callback function
+    function callback (response) {
+      if (response === 'USER_CANCEL') {
+        showMessage.error("Payment is cancelled by user");
+
+        // wait 2 sec before redirect
+        setTimeout(() => {
+            window.location.href='/addtocard.html'
+        }, 2000);
+
+        return;
+      } else if (response === 'CONCLUDED') {
+        showMessage.success("Payment successfully!");
+        checkOrderStatus();
+        return;
+      }
+    }
+
+    async function checkOrderStatus(){
+
+        // Wait a bit for PhonePe to process
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        try {
+            // Verify payment status from backend
+            const statusResponse = await fetch(`/api/payment/phonePe/status/${merchantOrderId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${userToken}`
+                }
+            });
+
+            if (!statusResponse.ok) {
+                showMessage.error('Failed to verify payment status');
+                return; // FIXED: was falling through to parse a failed response as statusResult
+            }
+
+            const statusResult = await statusResponse.json();
+
+            // Check payment state
+            if (statusResult.state === 'COMPLETED') {
+                // Payment successful - verify with your backend
+                await verifyAndCompleteOrder(
+                    orderId,
+                    merchantOrderId,
+                    statusResult
+                );
+                console.log('order completed');
+
+            } else if (statusResult.state === 'FAILED') {
+                showMessage.error('Payment failed. Please try again.');
+            } else if (statusResult.state === 'PENDING') {
+                await showMessage.alert('Payment is being processed. We will notify you once completed.');
+            }
+
+        } catch (error) {
+            await showMessage.alert('Failed to verify payment.');
+        }
+    }
+
+    // Verify and Complete Order
+    async function verifyAndCompleteOrder(orderId, merchantOrderId, paymentStatus) {
+        try {
+            const verifyResponse = await fetch('/api/orders/verify-payment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${userToken}`
+                },
+                body: JSON.stringify({
+                    orderId: orderId,
+                    merchantOrderId: merchantOrderId,
+                    phonePeOrderId: paymentStatus.orderId,
+                    paymentState: paymentStatus.state,
+                    amount: paymentStatus.amount,
+                    paymentDetails: paymentStatus.paymentDetails
+                })
+            });
+            console.log(paymentStatus.paymentDetails);
+
+            if (!verifyResponse.ok) {
+                showMessage.error('Payment verification failed');
+                return; // FIXED: was falling through to treat a failed verification as success
+            }
+
+            const verifyResult = await verifyResponse.json();
+
+            // Show success message
+            await showMessage.alert('Payment successful! Your order has been placed.',{
+                title: 'success',
+                type: 'success'
+            });
+
+            // Clear cart
+            /*if (typeof cartList !== 'undefined') {
+                cartList = [];
+                localStorage.removeItem('cart');
+            }*/
+
+            // Store order data in sessionStorage for further processing
+            sessionStorage.setItem('completedOrder', JSON.stringify({
+                orderId: orderId,
+                merchantOrderId: merchantOrderId,
+                amount: paymentStatus.amount,
+                timestamp: new Date().toISOString()
+            }));
+
+            // Redirect to success page or order details
+            // window.location.href = `/order-success?orderId=${orderId}`;
+
+            // Or reload the page to show updated cart
+            window.location.href = '/installment-payment.html';
+
+        } catch (error) {
+            await showMessage.alert('Payment completed but verification failed. Please contact support.');
+        }
+    }
+
+
+    // Navigate to order history
+    function toggleOrderHistory() {
+        window.location.href = '/installment-payment.html';
+    }
+
+    // Close checkout modal
+    function closeCheckout() {
+        const modal = document.getElementById('checkoutModal');
+        if (modal) {
+            modal.classList.remove('active');
+        }
+    }
+
+    // Show loading indicator
+    function showPaymentVerificationLoader() {
+        const loader = document.createElement('div');
+        loader.id = 'payment-verification-loader';
+        loader.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        `;
+
+        loader.innerHTML = `
+            <div style="background: white; padding: 30px; border-radius: 10px; text-align: center;">
+                <div style="border: 4px solid #f3f3f3; border-top: 4px solid #5f259f;
+                            border-radius: 50%; width: 50px; height: 50px;
+                            animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
+                <p style="color: #333; font-size: 16px; margin: 0;">Processing Payment...</p>
+                <p style="color: #666; font-size: 14px; margin-top: 10px;">Please wait</p>
+            </div>
+            <style>
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+            </style>
+        `;
+
+        document.body.appendChild(loader);
+    }
+
+    // Hide loading indicator
+    function hidePaymentVerificationLoader() {
+        const loader = document.getElementById('payment-verification-loader');
+        if (loader) {
+            loader.remove();
+        }
+    }
+
+    // Close modals when clicking outside
+    window.onclick = function(event) {
+        const checkoutModal = document.getElementById('checkoutModal');
+        const historyModal = document.getElementById('orderHistoryModal');
+
+        if (event.target === checkoutModal) {
+            closeCheckout();
+        }
+        if (event.target === historyModal) {
+            toggleOrderHistory();
+        }
+    };
+
+    // Initialize cart on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        renderCart();
+        if (window.lucide) lucide.createIcons();
+    });
+</script>
+
+<!--Start of Tawk.to Script-->
+<script type="text/javascript">
+    var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+    (function(){
+    var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+    s1.async=true;
+    s1.src='https://embed.tawk.to/693fc8ec0fb01c197d24c6fa/1jcgihnff';
+    s1.charset='UTF-8';
+    s1.setAttribute('crossorigin','*');
+    s0.parentNode.insertBefore(s1,s0);
+    })();
+</script>
+<!--End of Tawk.to Script-->
+
+</body>
+</html>

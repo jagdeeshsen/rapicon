@@ -1,3 +1,4 @@
+
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('registerForm');
     const successMsg = document.getElementById('successMessage');
@@ -43,8 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
             };
         }
     }
-
-
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();

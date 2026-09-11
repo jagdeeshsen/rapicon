@@ -1,0 +1,128 @@
+/* ==========================================================================
+   Rapicon — All-Designs listing page only
+   Load AFTER base.css. Sidebar filters, toolbar, sort, chips.
+   ========================================================================== */
+
+.rc-plans-hero {
+  background: var(--ink);
+  padding: var(--space-6) 0;
+}
+.rc-breadcrumb { font-size: 12px; color: rgba(255,255,255,0.45); margin-bottom: var(--space-3); }
+.rc-breadcrumb a { color: rgba(255,255,255,0.7); }
+.rc-breadcrumb a:hover { color: var(--gold); }
+.rc-plans-hero h1 { color: #fff; font-size: clamp(24px, 3vw, 32px); font-weight: 700; margin: 0 0 var(--space-2); }
+.rc-plans-hero p { color: rgba(255,255,255,0.55); font-size: 13px; margin: 0; }
+
+.rc-plans-body {
+  display: grid;
+  grid-template-columns: 264px 1fr;
+  gap: var(--space-7);
+  align-items: start;
+  padding: var(--space-7) 0 var(--space-8);
+}
+
+/* Backdrop only exists for the mobile filter drawer — hidden by default so
+   it doesn't sit in the grid's first column on desktop and push the real
+   sidebar/results out of place. */
+.rc-filter-backdrop { display: none; }
+
+/* ---------- Sidebar ---------- */
+.rc-sidebar {
+  position: sticky;
+  top: 80px;
+  border: 1px solid var(--border);
+  background: #fff;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+}
+.rc-sidebar-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--border);
+}
+.rc-sidebar-head h2 { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin: 0; }
+.rc-sidebar-clear { font-size: 11px; color: var(--muted); background: none; border: none; text-decoration: underline; text-underline-offset: 2px; }
+.rc-sidebar-clear:hover { color: var(--ink); }
+
+.rc-filter-group { padding: var(--space-4) var(--space-5); border-bottom: 1px solid var(--border); }
+.rc-filter-group:last-child { border-bottom: none; }
+.rc-filter-group-title {
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--gold); margin-bottom: var(--space-3);
+}
+.rc-sidebar-search { position: relative; }
+.rc-sidebar-search input {
+  width: 100%; padding: 10px 10px 10px 34px; border: 1px solid var(--border);
+  background: var(--bg-light); font-size: 13px;
+}
+.rc-sidebar-search input:focus { outline: none; border-color: var(--gold); }
+.rc-sidebar-search svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--muted); }
+
+.rc-check-row {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13px; color: var(--muted);
+  padding: 6px 0; cursor: pointer;
+}
+.rc-check-row input { width: 15px; height: 15px; accent-color: var(--gold); cursor: pointer; }
+.rc-check-row:hover { color: var(--ink); }
+.rc-check-row .count { margin-left: auto; font-size: 11px; color: var(--border); }
+
+.rc-radio-row {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13px; color: var(--muted);
+  padding: 6px 0; cursor: pointer;
+}
+.rc-radio-row input { width: 15px; height: 15px; accent-color: var(--gold); cursor: pointer; }
+.rc-radio-row:hover { color: var(--ink); }
+
+/* Mobile filter drawer */
+.rc-filter-toggle { display: none; }
+@media (max-width: 900px) {
+  .rc-plans-body { grid-template-columns: 1fr; }
+  .rc-sidebar {
+    position: fixed; inset: 0 0 0 auto; width: 300px; max-width: 86vw;
+    max-height: 100vh; z-index: 200;
+    transform: translateX(100%); transition: transform 0.2s ease;
+  }
+  .rc-sidebar.open { transform: translateX(0); }
+  .rc-filter-toggle {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 18px; border: 1px solid var(--ink); background: none;
+    font-size: 12px; font-weight: 600;
+  }
+  .rc-filter-backdrop {
+    position: fixed; inset: 0; background: rgba(28,25,23,0.5); z-index: 199;
+  }
+  .rc-filter-backdrop.open { display: block; }
+}
+
+/* ---------- Toolbar ---------- */
+.rc-toolbar {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--space-4);
+  margin-bottom: var(--space-5); flex-wrap: wrap;
+}
+.rc-toolbar-count { font-size: 13px; color: var(--muted); }
+.rc-toolbar-count strong { color: var(--ink); }
+.rc-toolbar-right { display: flex; align-items: center; gap: var(--space-3); }
+.rc-sort-select {
+  padding: 10px 32px 10px 12px; border: 1px solid var(--border); background: #fff;
+  font-size: 12px; color: var(--ink); appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B6560' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 10px center;
+}
+.rc-sort-select:focus { outline: none; border-color: var(--gold); }
+
+/* ---------- Active filter chips ---------- */
+.rc-chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: var(--space-5); }
+.rc-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 10px; background: var(--bg-card); border: 1px solid var(--border);
+  font-size: 12px; color: var(--ink);
+}
+.rc-chip button { background: none; border: none; color: var(--muted); font-size: 14px; line-height: 1; padding: 0; }
+.rc-chip button:hover { color: var(--ink); }
+
+/* Reuse .rc-designs-grid but 3-up since sidebar takes width */
+.rc-plans-body .rc-designs-grid { grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 1200px) { .rc-plans-body .rc-designs-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .rc-plans-body .rc-designs-grid { grid-template-columns: 1fr; } }

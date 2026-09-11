@@ -4,90 +4,76 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rapicon Registration</title>
+    <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/register.css">
 </head>
 <body>
-<div class="register-container">
-    <div class="logo">
-        <h1>Join Rapicon</h1>
-        <p>Create your account to get started</p>
+
+<!-- Header (same as other pages, minus the account icon since this IS the account flow) -->
+<header class="rc-header">
+    <div class="rc-header-inner">
+        <a href="/" class="rc-brand">
+            <span class="rc-brand-mark">R</span>
+            <span>
+        <span class="rc-brand-name" style="display:block;">RAPICON</span>
+        <span class="rc-brand-sub">Infrastructure</span>
+      </span>
+        </a>
+        <ul class="rc-nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="designs.html">Designs</a></li>
+            <li><a href="about-us.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+        <div class="rc-header-actions">
+            <a href="vendor-landing.html" class="rc-nav-cta">Start Selling</a>
+        </div>
+        <button class="rc-nav-toggle" aria-label="Open menu">☰</button>
     </div>
+</header>
 
-    <form id="registerForm">
-
-        <div class="form-group">
-            <label for="email">Email Address *</label>
-            <input type="email" id="email" name="email" required placeholder="Enter your email">
+<div class="rc-register-page">
+    <div class="rc-register-card">
+        <div class="rc-register-logo">
+            <span class="rc-brand-mark">R</span>
+            <h1>Join Rapicon</h1>
+            <p>Create your account to get started</p>
         </div>
 
-        <div class="form-group">
-            <label for="phone">Phone Number</label>
-            <input
-                    type="tel"
-                    id="phone"
-                    name="phone"
-                    maxlength="10"
-                    pattern="[6-9]{1}[0-9]{9}"
-                    placeholder="Enter mobile number"
-            />
+        <form id="registerForm">
+            <div class="rc-register-field">
+                <label for="email">Email Address <span class="req">*</span></label>
+                <input type="email" id="email" name="email" required placeholder="Enter your email">
+            </div>
 
+            <div class="rc-register-field">
+                <label for="phone">Phone Number <span class="req">*</span></label>
+                <input
+                        type="tel"
+                        id="phone"
+                        name="phone"
+                        required
+                        maxlength="10"
+                        inputmode="numeric"
+                        pattern="[6-9]{1}[0-9]{9}"
+                        placeholder="Enter mobile number"
+                >
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="terms" name="terms" required>
+                <label for="terms">I agree to the <a href="terms-privacy.html">Terms of Service</a> and <a href="privacy-policy.html">Privacy Policy</a> *</label>
+            </div>
+
+            <button type="submit" class="btn-ink register-btn" id="registerBtn">Create Account</button>
+
+            <div class="error-message" id="errorMessage"></div>
+            <div class="success-message" id="successMessage"></div>
+        </form>
+
+        <div class="rc-login-link">
+            <p>Already have an account? <a href="otp-login.html">Sign in here</a></p>
         </div>
-
-
-        <!--&lt;!&ndash; Vendor-specific fields &ndash;&gt;
-        <div id="vendorFields" class="vendor-fields">
-            <div class="form-group">
-                <label for="companyName">Company/Business Name</label>
-                <input type="text" id="companyName" name="companyName">
-            </div>
-
-            <div class="form-group">
-                <label for="experience">Years of Experience</label>
-                <select id="experience" name="experience">
-                    <option value="">Select Experience</option>
-                    <option value="0-2">0-2 years</option>
-                    <option value="3-5">3-5 years</option>
-                    <option value="6-10">6-10 years</option>
-                    <option value="10+">10+ years</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="specialization">Specialization</label>
-                <select id="specialization" name="specialization">
-                    <option value="">Select Specialization</option>
-                    <option value="residential">Residential Design</option>
-                    <option value="commercial">Commercial Design</option>
-                    <option value="industrial">Industrial Design</option>
-                    <option value="landscape">Landscape Design</option>
-                    <option value="mixed">Mixed/All Types</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="portfolio">Portfolio Website (Optional)</label>
-                <input type="text" id="portfolio" name="portfolio" placeholder="https://your-portfolio.com">
-            </div>
-
-            <div class="form-group">
-                <label for="bio">Professional Bio</label>
-                <textarea id="bio" name="bio" placeholder="Tell us about your experience and expertise..."></textarea>
-            </div>
-        </div>-->
-
-        <div class="checkbox-group">
-            <input type="checkbox" id="terms" name="terms" required>
-            <label for="terms">I agree to the <a href="terms-privacy.html" onclick="showTerms()">Terms of Service</a> and <a href="terms-privacy.html" onclick="showPrivacy()">Privacy Policy</a> *</label>
-        </div>
-
-        <button type="submit" class="register-btn" id="registerBtn">Create Account</button>
-
-        <div class="error-message" id="errorMessage"></div>
-        <div class="success-message" id="successMessage"></div>
-    </form>
-
-    <div class="login-link">
-        <p>Already have an account? <a href="otp-login.html">Sign in here</a></p>
     </div>
 </div>
 

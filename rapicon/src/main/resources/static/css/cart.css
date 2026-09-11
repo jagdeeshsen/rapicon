@@ -1,0 +1,80 @@
+/* ==========================================================================
+   Rapicon — Shopping cart / checkout page only
+   Load AFTER base.css.
+   ========================================================================== */
+
+.rc-cart-body {
+  max-width: 1280px; margin: 0 auto;
+  padding: 40px 24px 80px;
+  display: grid; grid-template-columns: 2fr 1fr; gap: var(--space-7);
+  align-items: start;
+}
+@media (max-width: 900px) { .rc-cart-body { grid-template-columns: 1fr; } }
+
+.rc-cart-section, .rc-order-summary {
+  background: #fff; border: 1px solid var(--border); padding: var(--space-6);
+}
+.rc-order-summary { position: sticky; top: 88px; }
+
+.rc-section-title-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-5); }
+.rc-section-title-row h2 { font-size: 18px; font-weight: 700; margin: 0; }
+.rc-cart-badge { font-size: 12px; font-weight: 600; color: var(--gold); background: rgba(196,168,130,0.12); padding: 4px 12px; }
+
+.rc-cart-items { display: flex; flex-direction: column; gap: var(--space-4); }
+.rc-cart-item { display: flex; gap: var(--space-4); border: 1px solid var(--border); padding: var(--space-4); }
+.rc-cart-item img { width: 96px; height: 72px; object-fit: cover; flex: none; background: var(--bg-card); }
+.rc-cart-item-details { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.rc-cart-item-header { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); }
+.rc-cart-item-name { font-size: 14px; font-weight: 700; }
+.rc-cart-item-category { font-size: 12px; color: var(--muted); text-transform: capitalize; }
+.rc-cart-item-price { font-size: 14px; font-weight: 600; color: var(--gold-hover, var(--gold)); }
+.rc-btn-remove { background: none; border: 1px solid var(--border); width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; color: var(--muted); flex: none; }
+.rc-btn-remove:hover { border-color: #B23A3A; color: #B23A3A; }
+
+.rc-empty-cart { text-align: center; padding: 64px 24px; color: var(--muted); }
+.rc-empty-cart .icon { font-size: 48px; margin-bottom: 16px; }
+.rc-empty-cart p { font-size: 15px; margin: 0 0 20px; }
+
+.rc-summary-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; font-size: 13px; color: var(--muted); border-bottom: 1px solid var(--bg-card); }
+.rc-summary-row.total { border-bottom: none; padding-top: 16px; font-size: 15px; font-weight: 700; color: var(--ink); }
+.rc-summary-row .amount { font-weight: 700; color: var(--ink); }
+
+.rc-cart-btn { width: 100%; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.rc-cart-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.rc-summary-features { margin-top: var(--space-5); padding-top: var(--space-5); border-top: 1px solid var(--border); }
+.rc-info-text { font-size: 12px; color: var(--muted); margin: 0 0 12px; line-height: 1.6; }
+.rc-info-text a { color: var(--gold); font-weight: 600; }
+.rc-feature-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+
+/* ---------- Modals ---------- */
+.rc-cart-modal {
+  display: none; position: fixed; inset: 0; z-index: 300;
+  background: rgba(28,25,23,0.55);
+  align-items: center; justify-content: center; padding: 24px;
+}
+.rc-cart-modal.active { display: flex; }
+.rc-cart-modal-content {
+  background: #fff; width: 100%; max-width: 440px; max-height: 88vh; overflow-y: auto;
+}
+.rc-cart-modal-header { padding: var(--space-6) var(--space-6) var(--space-4); border-bottom: 1px solid var(--border); }
+.rc-cart-modal-header h2 { font-size: 18px; font-weight: 700; margin: 0 0 4px; }
+.rc-cart-modal-header p { font-size: 13px; color: var(--muted); margin: 0; }
+.rc-cart-modal-body { padding: var(--space-6); }
+.rc-cart-form-group { margin-bottom: var(--space-4); }
+.rc-cart-form-group label { display: block; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+.rc-cart-form-group input, .rc-cart-form-group textarea {
+  width: 100%; padding: 12px 14px; border: 1px solid var(--border); background: var(--bg-light);
+  font-size: 13px; color: var(--ink); font-family: inherit; resize: none;
+}
+.rc-cart-form-group input:focus, .rc-cart-form-group textarea:focus { outline: none; border-color: var(--gold); }
+.rc-payment-summary { background: var(--bg-light); border: 1px solid var(--border); padding: var(--space-4); margin-bottom: var(--space-5); }
+.rc-payment-amount { display: flex; align-items: center; justify-content: space-between; font-size: 14px; font-weight: 700; }
+.rc-cart-modal-footer { display: flex; gap: var(--space-3); }
+.rc-cart-modal-footer button { flex: 1; }
+.rc-btn-cancel { background: none; border: 1px solid var(--border); padding: 12px; font-size: 13px; font-weight: 600; color: var(--ink); }
+.rc-btn-cancel:hover { border-color: var(--ink); }
+.rc-btn-pay { background: var(--ink); color: #fff; border: none; padding: 12px; font-size: 13px; font-weight: 700; }
+.rc-btn-pay:hover { background: var(--ink-hover); }
+
+@media (max-width: 900px) { .rc-order-summary { position: static; } }

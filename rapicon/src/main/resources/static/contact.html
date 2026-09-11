@@ -1,77 +1,183 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title >Contact Us - Rapicon</title>
-    <meta name="description" content="Contact our support team for vendor registration help.">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Rapicon</title>
+    <meta name="description" content="Contact Rapicon Infrastructure LLP — get in touch about architectural designs, vendor registration, or general support.">
+    <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/contact.css">
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" defer></script>
 </head>
 <body>
 
-<section class="contact-section">
+<!-- Header (same as other pages) -->
+<header class="rc-header">
+    <div class="rc-header-inner">
+        <a href="/" class="rc-brand">
+            <span class="rc-brand-mark">R</span>
+            <span>
+        <span class="rc-brand-name" style="display:block;">RAPICON</span>
+        <span class="rc-brand-sub">Infrastructure</span>
+      </span>
+        </a>
+        <ul class="rc-nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="designs.html">Designs</a></li>
+            <li><a href="about-us.html">About</a></li>
+            <li><a href="contact.html" class="active">Contact</a></li>
+        </ul>
+        <div class="rc-header-actions">
+            <a href="otp-login.html" class="rc-icon-btn" aria-label="Account"><i data-lucide="user" width="16" height="16"></i></a>
+            <a href="vendor-landing.html" class="rc-nav-cta">Start Selling</a>
+        </div>
+        <button class="rc-nav-toggle" aria-label="Open menu">☰</button>
+    </div>
+</header>
+
+<!-- Hero strip -->
+<div class="rc-contact-hero">
+    <div class="rule-label"><span class="line"></span><span>Get in Touch</span><span class="line"></span></div>
     <h1>Contact Us</h1>
-    <p>We’d love to hear from you! Let’s discuss your next project or answer your questions.</p>
+    <p>We'd love to hear from you. Let's discuss your next project or answer your questions.</p>
+</div>
 
-    <div class="contact-container">
-        <!-- Left Section -->
-        <div class="contact-info">
-            <h2>Get in Touch</h2>
+<div class="rc-contact-body">
+    <div class="rc-contact-layout">
 
-            <ul class="info-list">
-                <li>
-                    <i class="fas fa-map-marker-alt"></i>
-                    <strong>Office Address:</strong>
-                    <span>Rapicon Infrastructure LLP, 29, Bhagwandeen Nagar, Behind Sapna Sangeeta, Indore, MP, PIN- 452001</span>
-                </li>
+        <!-- Left — Info + Map -->
+        <div class="rc-contact-left">
+            <div class="rc-info-card">
+                <h2>Office Information</h2>
 
-                <li>
-                    <i class="fas fa-phone-alt"></i>
-                    <strong>Phone:</strong>
-                    <span>+91 73143 42979</span>
-                </li>
+                <div class="rc-info-row">
+                    <div class="rc-info-icon"><i data-lucide="map-pin" width="15" height="15"></i></div>
+                    <div>
+                        <div class="rc-info-label">Office Address</div>
+                        <p>Rapicon Infrastructure LLP,<br>29, Bhagwandeen Nagar,<br>Behind Sapna Sangeeta,<br>Indore, MP — PIN 452001</p>
+                    </div>
+                </div>
 
-                <li>
-                    <i class="fas fa-envelope"></i>
-                    <strong>Email:</strong>
-                    <span>rapiconinfra@gmail.com</span>
-                </li>
-            </ul>
+                <div class="rc-info-row">
+                    <div class="rc-info-icon"><i data-lucide="phone" width="15" height="15"></i></div>
+                    <div>
+                        <div class="rc-info-label">Phone</div>
+                        <a href="tel:+917314342979">+91 73143 42979</a>
+                    </div>
+                </div>
 
-            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3680.802493708359!2d75.8675380109944!3d22.69839522826195!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3962fd3e3958f8a7%3A0x4281eb3e651f5e4e!2sRapicon%20Infrastructure%20Llp!5e0!3m2!1sen!2sin!4v1760522856832!5m2!1sen!2sin" width="600" height="450" style="border:0;"
-                    allowfullscreen=""
-                    loading="lazy"
-                    referrerpolicy="no-referrer-when-downgrade">
-            </iframe>
+                <div class="rc-info-row">
+                    <div class="rc-info-icon"><i data-lucide="mail" width="15" height="15"></i></div>
+                    <div>
+                        <div class="rc-info-label">Email</div>
+                        <a href="mailto:rapiconinfra@gmail.com">rapiconinfra@gmail.com</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rc-map-frame">
+                <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3680.802493708359!2d75.8675380109944!3d22.69839522826195!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3962fd3e3958f8a7%3A0x4281eb3e651f5e4e!2sRapicon%20Infrastructure%20Llp!5e0!3m2!1sen!2sin!4v1760522856832!5m2!1sen!2sin"
+                        allowfullscreen
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"
+                        title="Rapicon Infrastructure Office Location">
+                </iframe>
+            </div>
         </div>
 
+        <!-- Right — Form -->
+        <div>
+            <div class="rc-form-card">
+                <h2>Send Us a Message</h2>
+                <p>Fill in the form below and we'll get back to you within 24 hours.</p>
 
-        <!-- Right Section -->
-        <div class="contact-form">
-            <h2>Send Message</h2>
-            <form>
-                <div class="form-group">
-                    <label>Your Name</label>
-                    <input type="text" placeholder="Enter your name" required />
-                </div>
-                <div class="form-group">
-                    <label>Your Phone</label>
-                    <input type="text" placeholder="Enter your phone" required />
-                </div>
-                <div class="form-group">
-                    <label>Email Address</label>
-                    <input type="email" placeholder="Enter your email" required />
-                </div>
-                <div class="form-group">
-                    <label>Message</label>
-                    <textarea placeholder="Write your message..." required></textarea>
-                </div>
-                <button type="submit">Send Message</button>
-            </form>
+                <div id="rcAlert" class="rc-alert" style="display:none;"></div>
+
+                <form id="rcContactForm" novalidate>
+                    <div class="rc-form-row">
+                        <div class="rc-form-group">
+                            <label>Your Name <span class="req">*</span></label>
+                            <input type="text" id="rcName" placeholder="Enter your name" required>
+                        </div>
+                        <div class="rc-form-group">
+                            <label>Phone Number <span class="req">*</span></label>
+                            <input type="tel" id="rcPhone" placeholder="9876543210" maxlength="10" required>
+                        </div>
+                    </div>
+
+                    <div class="rc-form-group">
+                        <label>Email Address <span class="req">*</span></label>
+                        <input type="email" id="rcEmail" placeholder="example@gmail.com" required>
+                    </div>
+
+                    <div class="rc-form-group">
+                        <label>Message <span class="req">*</span></label>
+                        <textarea id="rcMessage" rows="6" placeholder="Write your message or query here..." required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-ink rc-submit-btn" id="rcSubmitBtn">Send Message</button>
+                </form>
+            </div>
         </div>
     </div>
-</section>
-<script src="scripts/cantact.js"></script>
+</div>
+
+<!-- Footer (same as other pages) -->
+<footer class="rc-footer">
+    <div class="rc-wrap">
+        <div class="rc-footer-grid">
+            <div>
+                <div class="rc-footer-brand-row">
+                    <span class="rc-brand-mark">R</span>
+                    <div>
+                        <div style="font-size:13px; font-weight:700;">RAPICON</div>
+                        <div style="font-size:10px; color:rgba(255,255,255,0.4); text-transform:uppercase; letter-spacing:0.15em;">Infrastructure</div>
+                    </div>
+                </div>
+                <p class="rc-footer-tagline">"Virtuality to Reality"</p>
+                <p class="rc-footer-desc">A premium architectural design marketplace connecting homeowners and professionals across India.</p>
+                <div class="rc-footer-contact">
+                    <div><i data-lucide="map-pin" width="12" height="12"></i><span>29, Bhagwandeen Nagar, Behind Sapna Sangeeta, Indore, M.P. PIN-452001</span></div>
+                    <div><i data-lucide="phone" width="12" height="12"></i><a href="tel:+917314342979">+91 73143 42979</a></div>
+                    <div><i data-lucide="mail" width="12" height="12"></i><a href="mailto:rapiconinfra@gmail.com">rapiconinfra@gmail.com</a></div>
+                </div>
+            </div>
+            <div>
+                <div class="rc-footer-heading">Explore</div>
+                <div class="rc-footer-links">
+                    <a href="designs.html?type=house">House Designs</a>
+                    <a href="designs.html?type=duplex">Duplex Designs</a>
+                    <a href="designs.html?type=villa">Villa Designs</a>
+                    <a href="designs.html?type=commercial">Commercial Designs</a>
+                </div>
+            </div>
+            <div>
+                <div class="rc-footer-heading">Company</div>
+                <div class="rc-footer-links">
+                    <a href="about-us.html">About Us</a>
+                    <a href="vendor-landing.html">Start Selling</a>
+                    <a href="FAQ.html">FAQ</a>
+                    <a href="contact.html">Contact Us</a>
+                </div>
+            </div>
+            <div>
+                <div class="rc-footer-heading">Support</div>
+                <div class="rc-footer-links">
+                    <a href="contact.html">Contact</a>
+                    <a href="terms-privacy.html">Terms &amp; Conditions</a>
+                    <a href="privacy-policy.html">Privacy Policy</a>
+                </div>
+            </div>
+        </div>
+        <div class="rc-footer-bottom">
+            <span>&copy; 2025 Rapicon Infrastructure LLP. All rights reserved.</span>
+            <span>Designed with care in Indore, India.</span>
+        </div>
+    </div>
+</footer>
+
+<script src="scripts/contact.js"></script>
+
 </body>
 </html>

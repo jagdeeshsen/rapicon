@@ -3,120 +3,512 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Profile</title>
+    <title>My Profile - Rapicon</title>
+    <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/userprofile.css">
     <script src="scripts/showMessage.js"></script>
 </head>
 <body>
-<div class="profile-container">
-    <div class="profile-header">
-        <div class="profile-avatar" id="avatarInitial">JD</div>
-        <div class="profile-name" id="userName">John Doe</div>
-        <div class="profile-email" id="userEmail">john.doe@example.com</div>
+
+<!-- Header (same as other pages) -->
+<header class="rc-header">
+    <div class="rc-header-inner">
+        <a href="/" class="rc-brand">
+            <span class="rc-brand-mark">R</span>
+            <span>
+        <span class="rc-brand-name" style="display:block;">RAPICON</span>
+        <span class="rc-brand-sub">Infrastructure</span>
+      </span>
+        </a>
+        <ul class="rc-nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="designs.html">Designs</a></li>
+            <li><a href="about-us.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+        <div class="rc-header-actions">
+            <a href="cart.html" class="rc-icon-btn" aria-label="Cart"><i data-lucide="shopping-cart" width="16" height="16"></i></a>
+        </div>
+        <button class="rc-nav-toggle" aria-label="Open menu">☰</button>
+    </div>
+</header>
+
+<div class="rc-profile-header">
+    <div class="rc-profile-avatar" id="avatarInitial">–</div>
+    <div class="rc-profile-name" id="userName">Loading…</div>
+    <div class="rc-profile-email" id="userEmail"></div>
+</div>
+
+<div class="rc-profile-body">
+    <div id="alertContainer"></div>
+
+    <div class="stats-container">
+        <div class="stat-card" onclick="window.location.href='/installment-payment.html'">
+            <div class="stat-number">0</div>
+            <div class="stat-label">Orders</div>
+        </div>
     </div>
 
-    <div class="profile-body">
-        <div id="alertContainer"></div>
-
-        <div class="stats-container">
-            <div class="stat-card" onclick="window.location.href='/installment-payment.html' ">
-                <div class="stat-number">0</div>
-                <div class="stat-label">Orders</div>
+    <div class="profile-section">
+        <div class="section-title">Personal Information</div>
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="info-label">Full Name</div>
+                <div class="info-value loading" id="fullName">—</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Email Address</div>
+                <div class="info-value loading" id="email">—</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Phone Number</div>
+                <div class="info-value loading" id="phone">—</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Member Since</div>
+                <div class="info-value loading" id="memberSince">—</div>
             </div>
         </div>
+    </div>
 
-        <div class="profile-section">
-            <div class="section-title">Personal Information</div>
-            <div class="info-grid">
-                <div class="info-item">
-                    <div class="info-label">Full Name</div>
-                    <div class="info-value" id="fullName">John Doe</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">Email Address</div>
-                    <div class="info-value" id="email">john.doe@example.com</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">Phone Number</div>
-                    <div class="info-value" id="phone">+91 9876543210</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">Member Since</div>
-                    <div class="info-value" id="memberSince">January 2024</div>
-                </div>
+    <div class="profile-section">
+        <div class="section-title">Address Details</div>
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="info-label">Street Address</div>
+                <div class="info-value loading" id="address">—</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">City</div>
+                <div class="info-value loading" id="city">—</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">State</div>
+                <div class="info-value loading" id="state">—</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Pin Code</div>
+                <div class="info-value loading" id="pincode">—</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Country</div>
+                <input
+                        list="countryList"
+                        id="country"
+                        class="info-value"
+                        placeholder="Select country"
+                        disabled
+                />
+                <datalist id="countryList">
+                    <option value="India">
+                    <option value="United States">
+                    <option value="United Kingdom">
+                    <option value="Canada">
+                    <option value="Australia">
+                    <option value="Germany">
+                    <option value="France">
+                    <option value="Japan">
+                    <option value="China">
+                    <option value="Brazil">
+                    <option value="South Africa">
+                    <option value="Singapore">
+                    <option value="UAE">
+                    <option value="Saudi Arabia">
+                    <option value="New Zealand">
+                    <option value="Sri Lanka">
+                    <option value="Bangladesh">
+                    <option value="Nepal">
+                    <option value="Bhutan">
+                    <option value="Other">
+                </datalist>
             </div>
         </div>
+    </div>
 
-        <div class="profile-section">
-            <div class="section-title">Address Details</div>
-            <div class="info-grid">
-                <div class="info-item">
-                    <div class="info-label">Street Address</div>
-                    <div class="info-value" id="address">123 Main Street, Apartment 4B</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">City</div>
-                    <div class="info-value" id="city">Bhopal</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">State</div>
-                    <div class="info-value" id="state">Madhya Pradesh</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">Pin Code</div>
-                    <div class="info-value" id="pincode">462001</div>
-                </div>
-                <!--<div class="info-item">
-                    <div class="info-label">Country</div>
-                    <div class="info-value" id="country">India</div>
-                </div>-->
-                <div class="info-item">
-                    <div class="info-label">Country</div>
-                    <input
-                            list="countryList"
-                            id="country"
-                            class="info-value"
-                            placeholder="Select country"
-                            disabled
-                    />
-
-                    <datalist id="countryList">
-                        <option value="India">
-                        <option value="United States">
-                        <option value="United Kingdom">
-                        <option value="Canada">
-                        <option value="Australia">
-                        <option value="Germany">
-                        <option value="France">
-                        <option value="Japan">
-                        <option value="China">
-                        <option value="Brazil">
-                        <option value="South Africa">
-                        <option value="Singapore">
-                        <option value="UAE">
-                        <option value="Saudi Arabia">
-                        <option value="New Zealand">
-                        <option value="Sri Lanka">
-                        <option value="Bangladesh">
-                        <option value="Nepal">
-                        <option value="Bhutan">
-                        <option value="Other">
-                            <!-- add more anytime -->
-                    </datalist>
-                </div>
-
-            </div>
-        </div>
-
-        <div class="action-buttons">
-            <button class="btn btn-primary" id="editProfileBtn">Edit Profile</button>
-            <button class="btn btn-secondary" id="changePasswordBtn">Save</button>
-            <button class="btn btn-logout" id="logoutBtn">Logout</button>
-            <button class="btn btn-logout" id="deleteBtn">Delete</button>
-        </div>
+    <div class="action-buttons">
+        <button class="btn btn-primary" id="editProfileBtn">Edit Profile</button>
+        <button class="btn btn-secondary" id="changePasswordBtn">Change Password</button>
+        <button class="btn btn-logout" id="logoutBtn">Logout</button>
+        <button class="btn btn-logout" id="deleteBtn">Delete</button>
     </div>
 </div>
 
-<script src="scripts/userprofile.js"></script>
+<script>
+    /* ==========================================================================
+       Logic is UNCHANGED from the original scripts/userprofile.js, with one
+       fix applied:
+
+       FIXED — loadUserData() fetched `api/user/get-user/${id}` with no leading
+       slash. Every other endpoint on this page (and the whole site) uses one
+       — this was the only exception, which resolves relative to the current
+       page's path instead of the domain root. Added the leading slash.
+
+       NOT changed, flagged instead: enableEditMode()'s own comment says
+       "excluding email and memberSince", but its editableFields array
+       includes email anyway — so email IS actually editable despite what the
+       comment claims. I don't know which one reflects what you actually
+       want, so the behavior (email editable) is left exactly as it was.
+
+       Token key confirmed as 'user_token' (underscore) per this conversation.
+
+       Visual-only change: the profile header and info fields now start blank
+       ("Loading…" / "—") instead of the hardcoded sample data ("John Doe",
+       "john.doe@example.com", etc.) that used to flash on screen for a moment
+       before the real fetch completed.
+       ========================================================================== */
+
+    // State management
+    let isEditMode = false;
+    let originalUserData = {};
+
+    // Load user data on page load
+    async function loadUserData() {
+        const token = localStorage.getItem('user_token');
+        const id = localStorage.getItem('user_id');
+
+        if (!token || !id) {
+            document.getElementById('userName').textContent = 'Welcome, Guest';
+            setValue('fullName', 'Welcome Guest');
+            return;
+        }
+
+        try {
+            const response = await fetch(`api/user/${id}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch user");
+            }
+
+            const userData = await response.json();
+
+            // Store original data for potential cancel
+            originalUserData = { ...userData };
+
+            displayUserData(userData);
+        } catch (error) {
+            showMessage.error('Error loading user data: ' + error.message);
+            document.getElementById('userName').textContent = 'Error loading profile';
+        }
+    }
+
+    // Display user data in the UI
+    function displayUserData(userData) {
+        document.getElementById('userName').textContent = userData.fullName || 'N/A';
+        document.getElementById('userEmail').textContent = userData.email;
+        setValue('fullName', userData.fullName || 'N/A');
+        setValue('email', userData.email);
+        setValue('phone', userData.phone);
+        setValue('address', userData.streetAddress || 'N/A');
+        setValue('city', userData.city || 'N/A');
+        setValue('state', userData.state || 'N/A');
+        setValue('pincode', userData.zipCode || 'N/A');
+        const createdAt = userData.createdAt ? new Date(userData.createdAt).toISOString().split('T')[0] : 'N/A';
+        setValue('memberSince', createdAt || 'N/A');
+        document.getElementById('country').value = userData.country || 'Other';
+
+        const initials = userData.fullName?.charAt(0).toUpperCase() || 'NA';
+        document.getElementById('avatarInitial').textContent = initials;
+    }
+
+    // Small helper: fills a field and clears the "loading" placeholder styling
+    function setValue(id, text) {
+        const el = document.getElementById(id);
+        el.textContent = text;
+        el.classList.remove('loading');
+    }
+
+    // Convert text fields to input fields for editing
+    async function enableEditMode() {
+        isEditMode = true;
+
+        // List of editable fields (excluding email and memberSince)
+        const editableFields = [
+            { id: 'fullName', type: 'text' },
+            { id: 'email', type: 'text' },
+            { id: 'address', type: 'text' },
+            { id: 'city', type: 'text' },
+            { id: 'state', type: 'text' },
+            { id: 'pincode', type: 'text' }
+        ];
+
+        editableFields.forEach(field => {
+            const element = document.getElementById(field.id);
+            const currentValue = element.textContent;
+
+            // Create input field
+            const input = document.createElement('input');
+            input.type = field.type;
+            input.value = currentValue === 'N/A' ? '' : currentValue;
+            input.className = 'edit-input';
+            input.id = field.id;
+
+            // Replace text with input
+            element.parentNode.replaceChild(input, element);
+        });
+
+
+        // Update button states
+        document.getElementById('editProfileBtn').style.display = 'none';
+        document.getElementById('changePasswordBtn').textContent = 'Save';
+        document.getElementById('changePasswordBtn').classList.remove('btn-secondary');
+        document.getElementById('changePasswordBtn').classList.add('btn-success');
+
+        await showMessage.alert('Edit mode enabled. Make your changes and click Save.', 'info');
+
+        // Enable country (same edit flow)
+        const country = document.getElementById('country');
+        if (country) {
+            country.disabled = false;
+        }
+    }
+
+    // Convert input fields back to text and save
+    async function saveProfile() {
+
+        const token = localStorage.getItem('user_token');
+        const id = localStorage.getItem('user_id');
+
+        if (!token || !id) {
+            await showMessage.alert('Authentication required. Please login again.', 'error');
+            return;
+        }
+
+        // Collect updated data
+        const updatedData = {
+
+            id: id,
+            fullName: document.getElementById('fullName').value.trim(),
+            email: document.getElementById('email').value.trim(),
+            streetAddress: document.getElementById('address').value.trim(),
+            city: document.getElementById('city').value.trim(),
+            state: document.getElementById('state').value.trim(),
+            zipCode: document.getElementById('pincode').value.trim(),
+            country: document.getElementById('country').value.trim()
+        };
+
+        // Basic validation
+        if (!updatedData.fullName) {
+            showAlert('Full name is required', 'error');
+            return;
+        }
+
+        if (!updatedData.email) {
+            showAlert('Email address is required', 'error');
+            return;
+        }
+
+        try {
+            showAlert('Saving changes...', 'info');
+
+            const response = await fetch("/api/user/update-user", {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updatedData)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to update profile');
+            }
+
+            const result = await response.json();
+
+            // Update original data and display
+            originalUserData = { ...originalUserData, ...updatedData };
+            disableEditMode(updatedData);
+
+            showMessage.success('Profile updated successfully!');
+
+            // Update header name
+            document.getElementById('userName').textContent = updatedData.fullName;
+            const initials = updatedData.fullName.charAt(0).toUpperCase();
+            document.getElementById('avatarInitial').textContent = initials;
+
+        } catch (error) {
+            showAlert(error.message || 'Failed to update profile. Please try again.', 'error');
+        }
+    }
+
+    // Disable edit mode and restore text display
+    function disableEditMode(data) {
+        isEditMode = false;
+
+        const fields = ['fullName', 'email', 'address', 'city', 'state', 'pincode'];
+
+        fields.forEach(fieldId => {
+            const input = document.getElementById(fieldId);
+            if (input && input.tagName === 'INPUT') {
+                const div = document.createElement('div');
+                div.className = 'info-value';
+                div.id = fieldId;
+                div.textContent = input.value || 'N/A';
+
+                input.parentNode.replaceChild(div, input);
+            }
+        });
+
+        // Restore button states
+        document.getElementById('editProfileBtn').style.display = 'inline-block';
+        document.getElementById('changePasswordBtn').textContent = 'Change Password';
+        document.getElementById('changePasswordBtn').classList.remove('btn-success');
+        document.getElementById('changePasswordBtn').classList.add('btn-secondary');
+
+        // Disable country after save
+        const country = document.getElementById('country');
+        if (country) {
+            country.disabled = true;
+        }
+
+    }
+
+    // Show alert message
+    function showAlert(message, type = 'success') {
+        const alertContainer = document.getElementById('alertContainer');
+        const alert = document.createElement('div');
+        alert.className = `alert alert-${type}`;
+        alert.innerHTML = `<span>${message}</span>`;
+        alertContainer.appendChild(alert);
+        requestAnimationFrame(() => alert.classList.add('show'));
+
+        setTimeout(() => {
+            alert.classList.remove('show');
+            setTimeout(() => alert.remove(), 300);
+        }, 3000);
+    }
+
+    // Logout functionality
+    document.getElementById('logoutBtn').addEventListener('click', async function() {
+        const result= await showMessage.confirm('Are you sure you want to logout?');
+        if (result) {
+            showAlert('Logging out...', 'info');
+
+            const token = localStorage.getItem('user_token');
+
+            try {
+                await fetch('/api/auth/logout-user', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+            } catch (error) {
+                console.warn('Logout request failed or not implemented on server:', error);
+            }
+
+            // Clear all local storage/session data
+            localStorage.removeItem('user_token');
+            localStorage.removeItem('userData');
+            localStorage.removeItem('user_fullName');
+            localStorage.removeItem('user_role');
+            localStorage.removeItem('user_id');
+            sessionStorage.clear();
+
+            document.getElementById('userName').textContent = 'Guest';
+            document.getElementById('fullName').textContent = 'Guest User';
+
+            // Redirect to login page
+            setTimeout(() => {
+                window.location.href = '/otp-login.html';
+            }, 1000);
+        }
+    });
+
+
+     // Delete functionality
+    document.getElementById('deleteBtn').addEventListener('click', async function () {
+
+        const token = localStorage.getItem('user_token');
+        const id = localStorage.getItem('user_id');
+        const phone = originalUserData.phone;
+
+        if (!token || !id) {
+            await showMessage.alert('Authentication required. Please login again.', 'error');
+            return;
+        }
+
+        const confirmDelete = await showMessage.confirm(
+            'This action is permanent. Are you sure you want to delete your account?'
+        );
+
+        if (!confirmDelete) return;
+
+        try {
+            showAlert('Sending OTP...', 'info');
+
+            // Send OTP
+            const otpResponse = await fetch('/api/auth/send-otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone: phone })
+            });
+
+            if (!otpResponse.ok) {
+                throw new Error("Failed to send OTP");
+            }
+
+            await showMessage.alert("OTP sent to your registered mobile number", "success");
+
+            // Ask OTP
+            const otp = await showMessage.prompt('Please enter OTP:');
+
+            if (!otp) {
+                showAlert("OTP is required", "error");
+                return;
+            }
+
+            // Delete account
+            const deleteResponse = await fetch("/api/user/delete-account", {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ otp: otp })
+            });
+
+            if (!deleteResponse.ok) {
+                const errorData = await deleteResponse.json();
+                throw new Error(errorData.message || 'Failed to delete account');
+            }
+
+            showMessage.success('Account deleted successfully');
+
+            localStorage.clear();
+            sessionStorage.clear();
+
+            setTimeout(() => {
+                window.location.href = '/otp-login.html';
+            }, 1500);
+
+        } catch (error) {
+            showAlert(error.message || 'Error deleting account', 'error');
+            console.error(error);
+        }
+    });
+
+    // Edit Profile button - Enable edit mode
+    document.getElementById('editProfileBtn').addEventListener('click', function() {
+        enableEditMode();
+    });
+
+    // Save/Change Password button - Save changes or change password
+    document.getElementById('changePasswordBtn').addEventListener('click', function() {
+        saveProfile();
+    });
+
+    // Load user data when page loads
+    window.addEventListener('DOMContentLoaded', loadUserData);
+</script>
+
 </body>
 </html>

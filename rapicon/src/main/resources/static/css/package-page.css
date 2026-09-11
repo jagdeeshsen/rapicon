@@ -1,230 +1,68 @@
-        * {
-          margin: 0;
-          padding: 0;
-          box-sizing: border-box;
-        }
+/* ==========================================================================
+   Rapicon — Construction packages page only
+   Load AFTER base.css. Deliberately no full site nav (matches the
+   original's stripped-down, distraction-free layout for a mid-funnel
+   pricing page) — just a minimal bar with the logo and a call-us line.
+   ========================================================================== */
 
-        body {
-          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-          background: #f1eef4;
-          min-height: 100vh;
-          padding: 20px;
-        }
+.rc-pkg-topbar {
+  border-bottom: 1px solid var(--border);
+  padding: 16px 24px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.rc-pkg-topbar .rc-brand { display: flex; align-items: center; gap: 10px; }
+.rc-pkg-call { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+.rc-pkg-call svg { color: var(--gold); }
+.rc-pkg-call a { color: var(--ink); font-weight: 600; }
 
-        .container {
-          max-width: 1600px;
-          margin: 0 auto;
-        }
+.rc-pkg-hero { text-align: center; padding: 56px 24px 40px; }
+.rc-pkg-hero h1 { font-size: clamp(26px, 3.5vw, 38px); font-weight: 700; margin: 0 0 12px; }
+.rc-pkg-hero p { font-size: 14px; color: var(--muted); max-width: 480px; margin: 0 auto; }
 
-        .header {
-          text-align: center;
-          color: white;
-          padding: 40px 20px;
-          margin-bottom: 40px;
-        }
+.rc-pkg-grid {
+  max-width: 1280px; margin: 0 auto;
+  padding: 0 24px 80px;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
+}
+@media (max-width: 1100px) { .rc-pkg-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 640px) { .rc-pkg-grid { grid-template-columns: 1fr; } }
 
-        .header h1 {
-          font-size: 3em;
-          margin-bottom: 15px;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-        }
+.rc-pkg-card {
+  position: relative;
+  background: #fff; border: 1px solid var(--border);
+  padding: 28px 24px; display: flex; flex-direction: column;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.rc-pkg-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+.rc-pkg-card.popular { border-color: var(--gold); border-width: 2px; }
 
-        .header p {
-          font-size: 1.3em;
-          opacity: 0.95;
-          color: #764ba2;
-        }
+.rc-pkg-badge {
+  position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+  background: var(--gold); color: var(--ink);
+  font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+  padding: 5px 14px;
+}
 
-        .contact-info {
-          position: fixed;
-          top: 20px;
-          right: 20px;
-          background: white;
-          padding: 12px 20px;
-          border-radius: 50px;
-          box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          z-index: 1000;
-        }
+.rc-pkg-header { text-align: center; padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
+.rc-pkg-name { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+.rc-pkg-price { font-size: 32px; font-weight: 800; }
+.rc-pkg-unit { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
 
-        .contact-info::before {
-          content: "📞";
-          font-size: 1.2em;
-        }
+.rc-pkg-desc { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 20px; }
 
-        .contact-info span {
-          font-weight: 600;
-          color: #667eea;
-        }
+.rc-pkg-highlights { flex: 1; margin-bottom: 24px; }
+.rc-pkg-highlights-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gold); margin-bottom: 12px; }
+.rc-pkg-highlight-item { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; color: var(--muted); line-height: 1.6; margin-bottom: 8px; }
+.rc-pkg-highlight-item::before { content: "✓"; color: var(--gold); font-weight: 700; flex: none; }
 
-        .packages-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-          gap: 30px;
-          padding: 20px;
-        }
+.rc-pkg-footer { display: flex; flex-direction: column; gap: 8px; }
+.rc-pkg-footer button { width: 100%; }
 
-        .package-card {
-          background: white;
-          border-radius: 20px;
-          overflow: hidden;
-          box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-          transition: transform 0.3s, box-shadow 0.3s;
-          position: relative;
-        }
-
-        .package-card:hover {
-          transform: translateY(-10px);
-          box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-
-        .package-badge {
-          position: absolute;
-          top: 20px;
-          right: -35px;
-          background: #f4c430;
-          color: #333;
-          padding: 8px 40px;
-          font-weight: bold;
-          transform: rotate(45deg);
-          box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-          z-index: 10;
-        }
-
-        .package-header {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          padding: 30px;
-          text-align: center;
-          color: white;
-        }
-
-        .package-card.popular .package-header {
-          background: linear-gradient(135deg, #f4c430 0%, #f39c12 100%);
-        }
-
-        .package-name {
-          font-size: 2em;
-          margin-bottom: 10px;
-          font-weight: bold;
-        }
-
-        .package-price {
-          font-size: 2.5em;
-          font-weight: bold;
-          margin-bottom: 5px;
-        }
-
-        .package-unit {
-          font-size: 1.2em;
-          opacity: 0.9;
-        }
-
-        .package-description {
-          padding: 25px;
-          color: #555;
-          line-height: 1.6;
-          border-bottom: 2px solid #f0f0f0;
-        }
-
-        .package-highlights {
-          padding: 25px;
-        }
-
-        .highlights-title {
-          color: #667eea;
-          font-weight: bold;
-          font-size: 0.9em;
-          text-transform: uppercase;
-          letter-spacing: 1px;
-          margin-bottom: 15px;
-        }
-
-        .highlight-item {
-          display: flex;
-          align-items: start;
-          gap: 12px;
-          margin-bottom: 12px;
-          padding: 10px;
-          background: #f8f9fa;
-          border-radius: 8px;
-          transition: background 0.3s;
-        }
-
-        .highlight-item:hover {
-          background: #e9ecef;
-        }
-
-        .highlight-item::before {
-          content: "✓";
-          color: #28a745;
-          font-weight: bold;
-          font-size: 1.2em;
-          flex-shrink: 0;
-        }
-
-        .package-footer {
-          padding: 25px;
-          display: flex;
-          gap: 15px;
-          flex-direction: column;
-        }
-
-        .btn {
-          padding: 15px 30px;
-          border: none;
-          border-radius: 10px;
-          font-size: 1.1em;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.3s;
-          text-align: center;
-          text-decoration: none;
-          display: block;
-        }
-
-        .btn-buy {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
-          box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-buy:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 8px 30px rgba(102, 126, 234, 0.6);
-        }
-
-        .btn-learn {
-          background: white;
-          color: #667eea;
-          border: 2px solid #667eea;
-        }
-
-        .btn-learn:hover {
-          background: #667eea;
-          color: white;
-        }
-
-        @media (max-width: 768px) {
-          .header h1 {
-            font-size: 2em;
-          }
-
-          .header p {
-            font-size: 1em;
-          }
-
-          .packages-grid {
-            grid-template-columns: 1fr;
-          }
-
-          .contact-info {
-            position: static;
-            margin: 0 auto 20px;
-            width: fit-content;
-          }
-        }
+.rc-notification {
+  position: fixed; top: 20px; right: 20px; z-index: 9999;
+  padding: 12px 18px; font-size: 14px; font-weight: 600;
+  color: #fff; box-shadow: var(--shadow-md);
+  transition: opacity 0.5s ease; opacity: 1;
+}
+.rc-notification.success { background: #2F7A4D; }
+.rc-notification.error { background: #B23A3A; }

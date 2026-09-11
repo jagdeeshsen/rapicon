@@ -1,186 +1,51 @@
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+/* ==========================================================================
+   Rapicon — Register page only
+   Load AFTER base.css.
+   ========================================================================== */
 
-        body {
-            font-family: 'Arial', sans-serif;
-            background: #f5f5f5; /* linear-gradient(135deg, #667eea 0%, #764ba2 100%); */
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
+.rc-register-page {
+  min-height: calc(100vh - 64px);
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg-light);
+  padding: 40px 24px;
+}
+.rc-register-card {
+  width: 100%; max-width: 420px;
+  background: #fff; border: 1px solid var(--border);
+  padding: 44px 36px;
+}
+.rc-register-logo { text-align: center; margin-bottom: 32px; }
+.rc-register-logo .rc-brand-mark { margin: 0 auto 14px; width: 40px; height: 40px; font-size: 15px; }
+.rc-register-logo h1 { font-size: 20px; font-weight: 800; margin: 0 0 4px; }
+.rc-register-logo p { font-size: 12px; color: var(--muted); margin: 0; }
 
-        .register-container {
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 500px;
-        }
+.rc-register-field { margin-bottom: 20px; }
+.rc-register-field label { display: block; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+.rc-register-field label .req { color: var(--gold); }
+.rc-register-field input {
+  width: 100%; padding: 13px 16px; border: 1px solid var(--border);
+  background: var(--bg-light); font-size: 14px; color: var(--ink);
+  font-family: inherit;
+}
+.rc-register-field input:focus { outline: none; border-color: var(--gold); }
 
-        .logo {
-            text-align: center;
-            margin-bottom: 30px;
-        }
+.checkbox-group { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 24px; }
+.checkbox-group input { width: 16px; height: 16px; margin-top: 2px; accent-color: var(--gold); flex: none; }
+.checkbox-group label { font-size: 12px; color: var(--muted); line-height: 1.6; }
+.checkbox-group label a { color: var(--gold); font-weight: 600; }
+.checkbox-group label a:hover { text-decoration: underline; }
 
-        .logo h1 {
-            color: #333;
-            font-size: 28px;
-            margin-bottom: 5px;
-        }
+.register-btn { width: 100%; }
+.register-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
-        .logo p {
-            color: #666;
-            font-size: 14px;
-        }
+.error-message, .success-message {
+  display: none;
+  margin-top: 14px; padding: 10px 14px;
+  font-size: 13px;
+}
+.error-message { background: #FEF2F2; border: 1px solid #FECACA; color: #B91C1C; }
+.success-message { background: #ECFDF5; border: 1px solid #A7F3D0; color: #065F46; }
 
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group.full-width {
-            grid-column: 1 / -1;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: #333;
-            font-weight: 500;
-            font-size: 16px;
-        }
-
-        input[type="text"],
-        input[type="email"],
-        input[type="password"],
-        input[type="tel"],
-        select,
-        textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: border-color 0.3s;
-        }
-
-        input:focus,
-        select:focus,
-        textarea:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        textarea {
-            height: 80px;
-            resize: vertical;
-        }
-
-        .register-btn {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        .register-btn:hover {
-            transform: translateY(-2px);
-        }
-
-        .register-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .error-message {
-            color: #e74c3c;
-            font-size: 14px;
-            margin-top: 10px;
-            display: none;
-        }
-
-        .success-message {
-            color: #27ae60;
-            font-size: 14px;
-            margin-top: 10px;
-            display: none;
-        }
-
-        .login-link {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 14px;
-        }
-
-        .login-link a {
-            color: #667eea;
-            text-decoration: none;
-        }
-
-        .login-link a:hover {
-            text-decoration: underline;
-        }
-
-        .vendor-fields {
-            display: none;
-            animation: fadeIn 0.3s ease-in-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .password-strength {
-            margin-top: 5px;
-            font-size: 12px;
-        }
-
-        .strength-weak { color: #e74c3c; }
-        .strength-medium { color: #f39c12; }
-        .strength-strong { color: #27ae60; }
-
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .checkbox-group input[type="checkbox"] {
-            width: auto;
-        }
-
-        .checkbox-group label {
-            margin-bottom: 0;
-            font-weight: normal;
-            cursor: pointer;
-        }
-
-        @media (max-width: 600px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-
-            .register-container {
-                padding: 30px 20px;
-            }
-        }
+.rc-login-link { text-align: center; margin-top: 24px; font-size: 13px; color: var(--muted); }
+.rc-login-link a { color: var(--gold); font-weight: 600; }
+.rc-login-link a:hover { text-decoration: underline; }
