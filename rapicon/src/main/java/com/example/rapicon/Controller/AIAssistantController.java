@@ -21,7 +21,7 @@ public class AIAssistantController {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    @Value("${fast-api.chatbot.url}") // e.g. http://localhost:8000 or internal service URL
+    @Value("${fast-api.chatbot.url}")
     private String fastApiUrl;
 
     @PostMapping(value = "/chatbot", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -55,7 +55,7 @@ public class AIAssistantController {
                 new HttpEntity<>(body, headers);
 
         ResponseEntity<String> response = restTemplate.postForEntity(
-                fastApiUrl + "/chat",   // ✅ matches @app.post("/chat") exactly, no trailing slash
+                fastApiUrl + "/chat",   // matches @app.post("/chat") exactly, no trailing slash
                 requestEntity,
                 String.class
         );
@@ -67,7 +67,7 @@ public class AIAssistantController {
 
     @GetMapping("/session/{sessionId}")
     public ResponseEntity<String> getSession(@PathVariable String sessionId) {
-        String url = fastApiUrl + "/session/" + sessionId; // ✅ matches @app.get("/session/{session_id}")
+        String url = fastApiUrl + "/session/" + sessionId; // matches @app.get("/session/{session_id}")
 
         try {
             ResponseEntity<String> response =

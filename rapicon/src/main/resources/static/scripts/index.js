@@ -1,5 +1,7 @@
-const RC_API_URL = "/api/admin/approved";
+const RC_API_URL = "/api/admin";
 const RC_TOKEN_KEY = "user_token";
+const page = 0;
+const size = 8;
 
 function rcGetToken() { return localStorage.getItem(RC_TOKEN_KEY); }
 function rcIsLoggedIn() { return !!rcGetToken(); }
@@ -22,9 +24,12 @@ async function rcFetchDesigns() {
 
   try {
     const token = rcGetToken();
-    const res = await fetch(RC_API_URL, {
-      headers: token ? { Authorization: `Bearer ${token}` } : {}
-    });
+    const res = await fetch(
+      `${RC_API_URL}/designs/approved?status=APPROVED&page=${page}&size=${size}`,
+      {
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      }
+    );
 
     if (res.status === 401) {
       // Session expired — send to login rather than showing a raw error.
@@ -32,8 +37,8 @@ async function rcFetchDesigns() {
       return;
     }
     if (!res.ok) throw new Error("Failed to load designs");
-
-    rcAllDesigns = await res.json();
+    const data = await res.json();
+    rcAllDesigns = data.content;
     loadingEl.style.display = "none";
     rcApplyFilters();
   } catch (err) {
