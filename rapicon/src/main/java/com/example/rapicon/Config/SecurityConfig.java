@@ -72,12 +72,12 @@ public class SecurityConfig {
                         // 2. Static/public frontend pages
                         .requestMatchers(
                                 "/", "/index.html", "/designinfo.html", "/payment.html",
-                                "/cart.html", "/userprofile.html", "/otp-login.html",
+                                "/cart.html", "/profile.html", "/otp-login.html",
                                 "/loan-form.html", "/about-us.html", "/sitemap.xml",
                                 "/privacy-policy.html", "/register-now.html",
                                 "/otp-verification.html", "/terms-privacy.html",
                                 "/reset-password.html", "/reset-password.html/**",
-                                "/FAQ.html", "/vendor-landing.html", "/package-page.html",
+                                "/FAQ.html", "/vendor-landing.html", "/package.html",
                                 "/vendor-dashboard.html", "/forgot-password.html",
                                 "/contact.html", "/login.html", "/installment-payment.html",
                                 "/register.html", "/designs.html", "/admin.html",

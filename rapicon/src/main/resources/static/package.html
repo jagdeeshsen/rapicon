@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Our Construction Packages - Rapicon</title>
     <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" href="css/package-page.css">
+    <link rel="stylesheet" href="css/package.css">
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" defer></script>
 </head>
 <body>
@@ -40,7 +40,7 @@
 
        FIXED — handleBuy() computed `packagePrice *= builtUpArea` and then
        never used the result anywhere — only the package NAME was persisted to
-       sessionStorage, so /addtocard.html had no way to receive the calculated
+       sessionStorage, so /cart.html had no way to receive the calculated
        total. Now stored as sessionStorage 'selectedPackageTotal'.
 
        FIXED — addToCart()'s Authorization header read
@@ -198,13 +198,13 @@
           packageName: pkgName,
           totalInstallments: 10
         };
-        console.log("Data:", data);
+
         try {
           const response = await fetch("/api/cart/addItem", {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${localStorage.getItem('user-token')}` // FIXED: was 'user_token'
+              'Authorization': `Bearer ${localStorage.getItem('user_token')}`
             },
             body: JSON.stringify(data)
           });
@@ -228,7 +228,7 @@
        packagePrice *= builtUpArea;
        sessionStorage.setItem('selectedPackage', packageName);
        sessionStorage.setItem('selectedPackageTotal', packagePrice); // FIXED: was computed and discarded
-       window.location.href = '/addtocard.html';
+       window.location.href = '/cart.html';
     }
 
     function showNotification(message, type = 'success') {
@@ -247,20 +247,6 @@
     // Initialize page
     document.addEventListener('DOMContentLoaded', renderPackages);
 </script>
-
-<!--Start of Tawk.to Script-->
-<script type="text/javascript">
-    var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-    (function(){
-    var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-    s1.async=true;
-    s1.src='https://embed.tawk.to/693fc8ec0fb01c197d24c6fa/1jcgihnff';
-    s1.charset='UTF-8';
-    s1.setAttribute('crossorigin','*');
-    s0.parentNode.insertBefore(s1,s0);
-    })();
-</script>
-<!--End of Tawk.to Script-->
 
 </body>
 </html>
