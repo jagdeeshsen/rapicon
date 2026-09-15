@@ -126,3 +126,41 @@
 .rc-plans-body .rc-designs-grid { grid-template-columns: repeat(3, 1fr); }
 @media (max-width: 1200px) { .rc-plans-body .rc-designs-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 560px) { .rc-plans-body .rc-designs-grid { grid-template-columns: 1fr; } }
+
+/* ==========================================================================
+   ADD THIS to the end of your existing css/designs.css.
+   Covers: image-protection deterrents + watermark, and the infinite-scroll
+   load-more/end-of-results states. Nothing else in designs.css needs to
+   change.
+   ========================================================================== */
+
+/* Image protection — deterrents only. No CSS/JS can block an actual
+   screenshot; this blocks the easy "right-click > Save Image As" and
+   drag-out paths, and disables selecting the image as text/content. */
+.rc-protected-media {
+  position: relative;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none; /* blocks the iOS long-press "Save Image" menu */
+}
+.rc-protected-media img {
+  -webkit-user-drag: none;
+  user-drag: none;
+  pointer-events: none; /* clicks pass through to the card, which still opens the design */
+}
+
+/* Watermark overlay — the one protection here that actually survives a
+   real screenshot, since it's baked into what's rendered on screen. */
+.rc-watermark-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  mix-blend-mode: overlay;
+  background-repeat: repeat;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='90'%3E%3Ctext x='0' y='50' font-size='14' fill='%23ffffff' font-family='sans-serif' transform='rotate(-18 90 45)'%3ERAPICON%3C/text%3E%3C/svg%3E");
+}
+
+/* Infinite scroll states */
+#rcScrollSentinel { height: 1px; }
+#rcLoadMoreError .rc-retry-btn { margin: 0 auto; }

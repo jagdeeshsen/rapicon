@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Design Details — Rapicon</title>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/details.css">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" defer></script>
+</head>
+<body>
+
+<!-- Header (same as other pages) -->
+<header class="rc-header">
+  <div class="rc-header-inner">
+    <a href="/" class="rc-brand">
+      <span class="rc-brand-mark">R</span>
+      <span>
+        <span class="rc-brand-name" style="display:block;">RAPICON</span>
+        <span class="rc-brand-sub">Infrastructure</span>
+      </span>
+    </a>
+    <ul class="rc-nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="designs.html">Designs</a></li>
+      <li><a href="about-us.html">About</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <div class="rc-header-actions">
+      <a href="otp-login.html" class="rc-icon-btn" aria-label="Account"><i data-lucide="user" width="16" height="16"></i></a>
+      <a href="vendor-landing.html" class="rc-nav-cta">Start Selling</a>
+    </div>
+    <button class="rc-nav-toggle" aria-label="Open menu">☰</button>
+  </div>
+</header>
+
+<!-- Empty state: shown if there's no selectedDesign in sessionStorage -->
+<div id="rcDetailEmpty" class="rc-wrap rc-detail-empty" style="display:none;">
+  <div>
+    <i data-lucide="alert-circle" width="32" height="32"></i>
+    <p style="font-size:14px; color:var(--muted); margin:0 0 16px;">No design selected.</p>
+    <a href="designs.html" class="btn-ink" style="display:inline-block;">Browse Designs</a>
+  </div>
+</div>
+
+<!-- Main content: hidden until a design is loaded -->
+<div id="rcDetailRoot" style="display:none;">
+
+  <!-- Breadcrumb -->
+  <div class="rc-detail-crumb">
+    <div class="rc-wrap rc-detail-crumb-inner">
+      <a href="/"><i data-lucide="arrow-left" width="12" height="12"></i> Home</a>
+      <span>/</span>
+      <span id="rcCrumbType">Designs</span>
+      <span>/</span>
+      <span class="current" id="rcCrumbCategory">—</span>
+    </div>
+  </div>
+
+  <div class="rc-wrap">
+    <div class="rc-detail-layout">
+
+      <!-- Gallery -->
+      <div>
+        <div class="rc-gallery-main">
+          <img id="rcMainImage" src="" alt="" style="display:none;">
+          <div id="rcGalleryEmpty" class="rc-gallery-empty">🏠</div>
+          <button class="rc-gallery-nav prev" id="rcPrevImg" style="display:none;"><i data-lucide="arrow-left" width="16" height="16"></i></button>
+          <button class="rc-gallery-nav next" id="rcNextImg" style="display:none;"><i data-lucide="arrow-right" width="16" height="16"></i></button>
+          <span class="rc-gallery-badge" id="rcGalleryBadge">Residential</span>
+          <span class="rc-gallery-count" id="rcGalleryCount" style="display:none;"></span>
+        </div>
+        <div class="rc-gallery-thumbs" id="rcGalleryThumbs"></div>
+      </div>
+
+      <!-- Info panel -->
+      <div>
+        <div class="rc-detail-info">
+          <h1 class="rc-detail-title" id="rcTitle">—</h1>
+
+          <div class="rc-specs-mini-grid" id="rcSpecsMini"></div>
+
+          <div class="rc-price-box">
+            <div class="label">Starting from</div>
+            <div class="price" id="rcPrice">₹0</div>
+            <div class="sub" id="rcPriceSub">—</div>
+            <div class="stack">
+              <button class="btn-gold" id="rcViewPackages">View Package Options →</button>
+            </div>
+          </div>
+
+          <div class="rc-secondary-actions">
+            <button id="rcAskQuestion">Ask a Question</button>
+            <button id="rcShare"><i data-lucide="share-2" width="13" height="13"></i> Share</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="rc-tabs" id="rcTabs">
+      <button class="rc-tab active" data-tab="overview">Design Overview</button>
+      <button class="rc-tab" data-tab="floorplan">2D Floor Plans</button>
+      <button class="rc-tab" data-tab="specs">Specifications</button>
+      <button class="rc-tab" data-tab="floors">Floor Details</button>
+    </div>
+
+    <div class="rc-tab-panel active" id="rcPanelOverview">
+      <div style="max-width:760px;">
+        <p style="font-size:14px; color:var(--muted); line-height:1.7;" id="rcDescription"></p>
+        <div class="rc-overview-grid" id="rcOverviewGrid"></div>
+      </div>
+    </div>
+
+    <div class="rc-tab-panel" id="rcPanelFloorplan">
+      <div class="rc-plan-grid" id="rcPlanGrid"></div>
+      <p id="rcNoPlans" style="font-size:13px; color:var(--muted); display:none;">2D floor plans are included with your purchase.</p>
+    </div>
+
+    <div class="rc-tab-panel" id="rcPanelSpecs">
+      <div class="rc-specs-table" id="rcSpecsTable"></div>
+    </div>
+
+    <div class="rc-tab-panel" id="rcPanelFloors">
+      <div class="rc-floors-list" id="rcFloorsList"></div>
+      <p id="rcNoFloors" style="font-size:13px; color:var(--muted); display:none;">No floor details available.</p>
+    </div>
+
+    <!-- What's included -->
+    <div class="rc-included">
+      <h2>What's Included</h2>
+      <div class="rc-included-grid">
+        <div><i data-lucide="check-circle" width="15" height="15"></i><span>AutoCAD 2D floor plans (all floors)</span></div>
+        <div><i data-lucide="check-circle" width="15" height="15"></i><span>3D exterior renders (multiple views)</span></div>
+        <div><i data-lucide="check-circle" width="15" height="15"></i><span>Elevation drawings (all sides)</span></div>
+        <div><i data-lucide="check-circle" width="15" height="15"></i><span>Section drawings</span></div>
+        <div><i data-lucide="check-circle" width="15" height="15"></i><span>Site plan layout</span></div>
+        <div><i data-lucide="check-circle" width="15" height="15"></i><span>Room dimension schedule</span></div>
+        <div><i data-lucide="check-circle" width="15" height="15"></i><span>Area calculation sheet</span></div>
+        <div><i data-lucide="check-circle" width="15" height="15"></i><span>Vastu compliance notes</span></div>
+      </div>
+      <div class="rc-included-note">All files delivered digitally within 24 hours of purchase confirmation.</div>
+    </div>
+  </div>
+
+  <!-- Mobile sticky purchase bar -->
+  <div class="rc-mobile-bar">
+    <div class="price-block">
+      <div class="price" id="rcMobilePrice">₹0</div>
+      <div class="label">Starting price</div>
+    </div>
+    <button class="btn-gold" id="rcMobilePackages" style="background:var(--gold); color:var(--ink); flex:1;">View Packages</button>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="rc-footer">
+  <div class="rc-wrap">
+    <div class="rc-footer-grid">
+      <div>
+        <div class="rc-footer-brand-row">
+          <span class="rc-brand-mark">R</span>
+          <div>
+            <div style="font-size:13px; font-weight:700;">RAPICON</div>
+            <div style="font-size:10px; color:rgba(255,255,255,0.4); text-transform:uppercase; letter-spacing:0.15em;">Infrastructure</div>
+          </div>
+        </div>
+        <p class="rc-footer-tagline">"Virtuality to Reality"</p>
+        <p class="rc-footer-desc">A premium architectural design marketplace connecting homeowners and professionals across India.</p>
+        <div class="rc-footer-contact">
+          <div><i data-lucide="map-pin" width="12" height="12"></i><span>29, Bhagwandeen Nagar, Behind Sapna Sangeeta, Indore, M.P. PIN-452001</span></div>
+          <div><i data-lucide="phone" width="12" height="12"></i><a href="tel:+917314342979">+91 73143 42979</a></div>
+          <div><i data-lucide="mail" width="12" height="12"></i><a href="mailto:rapiconinfra@gmail.com">rapiconinfra@gmail.com</a></div>
+        </div>
+      </div>
+      <div>
+        <div class="rc-footer-heading">Explore</div>
+        <div class="rc-footer-links">
+          <a href="designs.html?type=house">House Designs</a>
+          <a href="designs.html?type=duplex">Duplex Designs</a>
+          <a href="designs.html?type=villa">Villa Designs</a>
+          <a href="designs.html?type=commercial">Commercial Designs</a>
+        </div>
+      </div>
+      <div>
+        <div class="rc-footer-heading">Company</div>
+        <div class="rc-footer-links">
+          <a href="about-us.html">About Us</a>
+          <a href="vendor-landing.html">Start Selling</a>
+          <a href="FAQ.html">FAQ</a>
+          <a href="contact.html">Contact Us</a>
+        </div>
+      </div>
+      <div>
+        <div class="rc-footer-heading">Support</div>
+        <div class="rc-footer-links">
+          <a href="contact.html">Contact</a>
+          <a href="terms-privacy.html">Terms &amp; Conditions</a>
+          <a href="privacy-policy.html">Privacy Policy</a>
+        </div>
+      </div>
+    </div>
+    <div class="rc-footer-bottom">
+      <span>&copy; 2025 Rapicon Infrastructure LLP. All rights reserved.</span>
+      <span>Designed with care in Indore, India.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="scripts/details.js"></script>
+
+</body>
+</html>

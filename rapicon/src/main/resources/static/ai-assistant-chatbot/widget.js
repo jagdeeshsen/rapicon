@@ -8,8 +8,8 @@
 
     window.AIArchitectWidgetLoaded = true;
 
-    const API_URL = "/api/chat/chatbot";          // "http://127.0.0.1:8000/chat";
-    const SESSION_URL = "/api/chat/session";  // "http://127.0.0.1:8000/session";
+    const API_URL = "http://127.0.0.1:8000/chat";
+    const SESSION_URL = "http://127.0.0.1:8000/session";
     const SESSION_STORAGE_KEY = "rapicon_ai_session_id";
 
     let sessionId = null;
@@ -58,7 +58,7 @@
             bottom: 100px;
             width: 390px;
             max-width: calc(100vw - 32px);
-            height: 600px;
+            height: 650px;
             max-height: calc(100vh - 130px);
             background: white;
             border-radius: 18px;
@@ -405,27 +405,69 @@
             background: #f7f9fb;
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 768px) {
 
-            #ai-architect-widget {
-                right: 10px;
-                bottom: 85px;
-                width: calc(100vw - 20px);
-                height: calc(100vh - 110px);
-            }
+        #ai-architect-widget {
+            right: 8px;
+            left: 8px;
+            bottom: 76px;
 
-            #ai-architect-button {
-                right: 16px;
-                bottom: 16px;
-            }
+            width: auto;
+            max-width: none;
 
-            .architect-new-chat {
-                padding: 7px 8px;
-            }
+            height: min(
+                650px,
+                calc(100dvh - 90px)
+            );
+
+            max-height: calc(100dvh - 90px);
+
+            border-radius: 14px;
         }
+
+        #ai-architect-widget.ai-keyboard-open {
+            top: 8px;
+            bottom: 8px;
+
+            height: calc(100dvh - 16px);
+            max-height: calc(100dvh - 16px);
+
+            border-radius: 12px;
+        }
+
+        #ai-architect-button {
+            right: 16px;
+            bottom: 16px;
+        }
+
+        .architect-header {
+            flex-shrink: 0;
+            min-height: 52px;
+        }
+
+        .architect-chat {
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .architect-input-area {
+            flex-shrink: 0;
+        }
+
+        .architect-input {
+            font-size: 16px;
+        }
+
+        .architect-new-chat {
+            padding: 7px 8px;
+        }
+    }
     `;
 
     document.head.appendChild(style);
+
 
     // --------------------------------------------------
     // FLOATING BUTTON
@@ -594,6 +636,67 @@
     document.body.appendChild(widget);
 
     // --------------------------------------------------
+    // MOBILE KEYBOARD / VIEWPORT
+    // --------------------------------------------------
+
+    (function setupResponsiveViewport() {
+
+        const root = document.documentElement;
+
+        function updateViewport() {
+
+            const vv = window.visualViewport;
+
+        if (!vv) {
+            return;
+        }
+
+        const visibleHeight = vv.height;
+        const viewportTop = vv.offsetTop;
+
+        const keyboardOpen =
+            window.innerWidth <= 768 &&
+            (window.innerHeight - visibleHeight) > 120;
+
+        root.style.setProperty(
+            "--ai-visible-height",
+            `${visibleHeight}px`
+        );
+
+        root.style.setProperty(
+            "--ai-viewport-top",
+            `${viewportTop}px`
+        );
+
+        widget.classList.toggle(
+            "ai-keyboard-open",
+            keyboardOpen
+        );
+    }
+
+    updateViewport();
+
+    if (window.visualViewport) {
+
+        window.visualViewport.addEventListener(
+            "resize",
+            updateViewport
+        );
+
+        window.visualViewport.addEventListener(
+            "scroll",
+            updateViewport
+        );
+    }
+
+    window.addEventListener(
+        "resize",
+        updateViewport
+    );
+
+})();
+
+    // --------------------------------------------------
     // ELEMENTS
     // --------------------------------------------------
 
@@ -722,7 +825,9 @@
         if (isOpen) {
             button.innerHTML = "×";
             button.setAttribute("aria-label", "Close AI Architect");
-            input.focus();
+            if (window.innerWidth > 768){
+                input.onfocus();
+            }
         } else {
             button.innerHTML = "🏠";
             button.setAttribute("aria-label", "Open AI Architect");
@@ -1510,5 +1615,18 @@
     // --------------------------------------------------
 
     restoreSession();
+
+    // --------------------------------------------------
+    // PUBLIC API (for auto-open + external button triggers)
+    // --------------------------------------------------
+
+    window.AIArchitectWidget = {
+        open: function () { setWidgetOpen(true); },
+        close: function () { setWidgetOpen(false); },
+        toggle: function () {
+            const isOpen = widget.style.display === "flex";
+            setWidgetOpen(!isOpen);
+        }
+    };
 
 })();

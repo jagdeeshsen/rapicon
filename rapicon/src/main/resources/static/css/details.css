@@ -163,7 +163,27 @@
 .rc-detail-empty { min-height: 60vh; display: flex; align-items: center; justify-content: center; text-align: center; color: var(--muted); }
 .rc-detail-empty svg { color: var(--gold); margin-bottom: 12px; }
 
-// floor plan blur css
+/* floor plan blur css */
 .rc-plan-card img.rc-plan-blur {
   filter: blur(20px) !important;
+}
+
+@media (max-width: 600px) {
+  .rc-gallery-main { height: 260px; }
+  .rc-specs-mini-grid { grid-template-columns: repeat(2, 1fr); }
+  .rc-price-box .price { font-size: 28px; }
+  .rc-price-box { padding: var(--space-4); }
+}
+
+/* Prevent easy saving/dragging of protected images */
+.rc-gallery-main img,
+.rc-gallery-thumb img,
+.rc-plan-card img {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  user-drag: none;
+  -webkit-touch-callout: none; /* blocks the iOS long-press "Save Image" menu */
+  pointer-events: auto;
 }

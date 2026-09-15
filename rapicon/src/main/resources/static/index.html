@@ -28,7 +28,7 @@
             <li><a href="contact.html">Contact</a></li>
         </ul>
         <div class="rc-header-actions">
-            <a href="cart.html" class="rc-icon-btn" aria-label="Cart"><i data-lucide="shopping-cart" width="16" height="16"></i></a>
+            <a href="cart.html" class="rc-icon-btn" id="rcCartLink" aria-label="Cart"><i data-lucide="shopping-cart" width="16" height="16"></i></a>
             <button class="rc-icon-btn" id="rcAccountBtn" aria-label="Account"><i data-lucide="user" width="16" height="16"></i></button>
             <a href="vendor-landing.html" class="rc-nav-cta">Start Selling</a>
         </div>
@@ -61,7 +61,7 @@
             <h1 class="rc-hero-title">Design Your Space.<br><span>Build Your Vision.</span></h1>
             <p class="rc-hero-sub">Discover professionally crafted 2D plans, 3D designs, house plans and architectural concepts created for modern living.</p>
             <div class="rc-hero-actions">
-                <button class="btn-gold" onclick="document.getElementById('designs-section').scrollIntoView({behavior:'smooth'})">Explore Designs</button>
+                <button class="btn-gold" id="chatbot-open-btn">Generate with AI</button>
                 <a href="vendor-landing.html" class="btn-outline-light">Start Selling</a>
             </div>
             <div class="rc-hero-meta">
@@ -169,54 +169,54 @@
         <div class="rc-eyebrow">Quick Discovery</div>
         <h2 style="font-size:clamp(24px,3vw,34px); font-weight:700; margin:0 0 24px;">Find Designs by Plot Size</h2>
         <div class="rc-plots-grid" id="rcPlotsGrid">
-            <div class="rc-plot-card" data-val="50X30">
+            <a href="designs.html?plot=50X30" class="rc-plot-card">
                 <div class="rc-plot-dim">50 × 30 ft</div>
                 <div class="rc-plot-area">1,500 sq ft</div>
                 <div class="rc-plot-count">— designs</div>
                 <div class="rc-plot-link">Explore <i data-lucide="arrow-right" width="12" height="12"></i></div>
-            </div>
-            <div class="rc-plot-card" data-val="50X20">
+            </a>
+            <a href="designs.html?plot=50X20" class="rc-plot-card">
                 <div class="rc-plot-dim">50 × 20 ft</div>
                 <div class="rc-plot-area">1,000 sq ft</div>
                 <div class="rc-plot-count">— designs</div>
                 <div class="rc-plot-link">Explore <i data-lucide="arrow-right" width="12" height="12"></i></div>
-            </div>
-            <div class="rc-plot-card" data-val="40X20">
+            </a>
+            <a href="designs.html?plot=40X20" class="rc-plot-card">
                 <div class="rc-plot-dim">40 × 20 ft</div>
                 <div class="rc-plot-area">800 sq ft</div>
                 <div class="rc-plot-count">— designs</div>
                 <div class="rc-plot-link">Explore <i data-lucide="arrow-right" width="12" height="12"></i></div>
-            </div>
-            <div class="rc-plot-card" data-val="60X60">
+            </a>
+            <a href="designs.html?plot=60X60" class="rc-plot-card">
                 <div class="rc-plot-dim">60 × 60 ft</div>
                 <div class="rc-plot-area">3,600 sq ft</div>
                 <div class="rc-plot-count">— designs</div>
                 <div class="rc-plot-link">Explore <i data-lucide="arrow-right" width="12" height="12"></i></div>
-            </div>
-            <div class="rc-plot-card" data-val="54X21">
+            </a>
+            <a href="designs.html?plot=54X21" class="rc-plot-card">
                 <div class="rc-plot-dim">54 × 21 ft</div>
                 <div class="rc-plot-area">1,134 sq ft</div>
                 <div class="rc-plot-count">— designs</div>
                 <div class="rc-plot-link">Explore <i data-lucide="arrow-right" width="12" height="12"></i></div>
-            </div>
-            <div class="rc-plot-card" data-val="30X40">
+            </a>
+            <a href="designs.html?plot=30X40" class="rc-plot-card">
                 <div class="rc-plot-dim">30 × 40 ft</div>
                 <div class="rc-plot-area">1,200 sq ft</div>
                 <div class="rc-plot-count">— designs</div>
                 <div class="rc-plot-link">Explore <i data-lucide="arrow-right" width="12" height="12"></i></div>
-            </div>
-            <div class="rc-plot-card" data-val="40X60">
+            </a>
+            <a href="designs.html?plot=40X60" class="rc-plot-card">
                 <div class="rc-plot-dim">40 × 60 ft</div>
                 <div class="rc-plot-area">2,400 sq ft</div>
                 <div class="rc-plot-count">— designs</div>
                 <div class="rc-plot-link">Explore <i data-lucide="arrow-right" width="12" height="12"></i></div>
-            </div>
-            <div class="rc-plot-card" data-val="25X40">
+            </a>
+            <a href="designs.html?plot=25X40" class="rc-plot-card">
                 <div class="rc-plot-dim">25 × 40 ft</div>
                 <div class="rc-plot-area">1,000 sq ft</div>
                 <div class="rc-plot-count">— designs</div>
                 <div class="rc-plot-link">Explore <i data-lucide="arrow-right" width="12" height="12"></i></div>
-            </div>
+            </a>
         </div>
     </div>
 </section>
@@ -438,6 +438,7 @@
         </div>
     </div>
 </footer>
+<script src="scripts/common.js"></script>
 <script src="ai-assistant-chatbot/widget.js"></script>
 <script src="scripts/index.js"></script>
 

@@ -1,14 +1,8 @@
 const RC_API_URL = "/api/admin";
-const RC_TOKEN_KEY = "user_token";
 const page = 0;
 const size = 8;
 
-function rcGetToken() { return localStorage.getItem(RC_TOKEN_KEY); }
-function rcIsLoggedIn() { return !!rcGetToken(); }
-
-// ---------- State ----------
 let rcAllDesigns = [];
-let rcFilters = { plot: "" };
 
 // ---------- Fetch ----------
 async function rcFetchDesigns() {
@@ -40,21 +34,11 @@ async function rcFetchDesigns() {
     const data = await res.json();
     rcAllDesigns = data.content;
     loadingEl.style.display = "none";
-    rcApplyFilters();
+    rcRenderGrid(rcAllDesigns);
   } catch (err) {
     loadingEl.style.display = "none";
     errorEl.style.display = "flex";
   }
-}
-
-// ---------- Filtering ----------
-function rcApplyFilters() {
-  const result = rcAllDesigns.filter((d) => {
-    const plotSize = `${d.length}X${d.width}`;
-    return !rcFilters.plot || plotSize === rcFilters.plot;
-  });
-
-  rcRenderGrid(result);
 }
 
 // ---------- Rendering ----------
@@ -129,21 +113,10 @@ function rcHandleView(id, designs) {
     return;
   }
   sessionStorage.setItem("selectedDesign", JSON.stringify(design));
-  window.location.href = "designinfo.html";
+  window.location.href = "details.html";
 }
 
 document.getElementById("rcRetryBtn").addEventListener("click", rcFetchDesigns);
-
-// Plot-size cards: filter the grid internally and scroll to it.
-document.querySelectorAll("#rcPlotsGrid .rc-plot-card").forEach((card) => {
-  card.addEventListener("click", () => {
-    document.querySelectorAll("#rcPlotsGrid .rc-plot-card").forEach((c) => c.classList.remove("active"));
-    card.classList.add("active");
-    rcFilters.plot = card.dataset.val;
-    rcApplyFilters();
-    document.getElementById("designs-section").scrollIntoView({ behavior: "smooth" });
-  });
-});
 
 // FAQ accordion
 document.querySelectorAll(".rc-faq-item").forEach((item) => {
@@ -182,3 +155,33 @@ document.getElementById("rcLogoutBtn").addEventListener("click", () => {
 // Kick off
 rcFetchDesigns();
 window.addEventListener("load", () => { if (window.lucide) lucide.createIcons(); });
+
+
+// Auto-open chatbot on page load
+window.addEventListener("load", () => {
+  const tryOpen = () => {
+    if (window.AIArchitectWidget) {
+      window.AIArchitectWidget.open();
+    } else {
+      setTimeout(tryOpen, 200); // retry until widget.js finishes initializing
+    }
+  };
+  tryOpen();
+});
+
+// Connect your existing button
+document.getElementById("chatbot-open-btn").addEventListener("click", () => {
+  if (window.AIArchitectWidget) window.AIArchitectWidget.open();
+});
+
+// Route the cart icon to cart.html if logged in, otherwise login page
+const cartLink = document.getElementById("rcCartLink");
+if (cartLink) {
+  if (rcIsLoggedIn()) {
+    cartLink.href = "cart.html";
+    cartLink.setAttribute("aria-label", "My cart");
+  } else {
+    cartLink.href = "otp-login.html";
+    cartLink.setAttribute("aria-label", "Log In");
+  }
+}
