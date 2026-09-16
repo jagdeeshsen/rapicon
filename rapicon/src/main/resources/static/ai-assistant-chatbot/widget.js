@@ -8,8 +8,8 @@
 
     window.AIArchitectWidgetLoaded = true;
 
-    const API_URL = "http://127.0.0.1:8000/chat";
-    const SESSION_URL = "http://127.0.0.1:8000/session";
+    const API_URL = "/api/chat/chatbot";
+    const SESSION_URL = "/api/chat/session";
     const SESSION_STORAGE_KEY = "rapicon_ai_session_id";
 
     let sessionId = null;
