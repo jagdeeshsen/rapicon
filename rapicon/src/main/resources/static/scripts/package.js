@@ -24,7 +24,7 @@ async function loadPackages() {
 
     const data = await response.json();
     console.log(data);
-    packages = data;
+    packages = data.content || [];
     renderPackages()
 
   } catch (error) {
@@ -65,8 +65,8 @@ function renderPackages() {
       </div>
 
       <div class="rc-pkg-footer">
-        <button class="btn-gold" onclick="handleBuy('${pkg.name}', '${pkg.price}')">Buy Now</button>
-        <button class="btn-outline-ink" onclick="addToCart('${pkg.name}', '${pkg.price}')">Add To Cart</button>
+        <button class="btn-gold" onclick="handleBuy('${pkg.name}', '${pkg.packageAmount}')">Buy Now</button>
+        <button class="btn-outline-ink" onclick="addToCart('${pkg.name}', '${pkg.packageAmount}')">Add To Cart</button>
       </div>
     `;
 
