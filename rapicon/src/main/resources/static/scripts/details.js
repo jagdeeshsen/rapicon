@@ -237,7 +237,7 @@ const RC_TOKEN_KEY = "user_token";
   });
 
   function rcHandlePackages() {
-    window.location.href = "package.html";
+    window.location.href = "/package-details.html";
   }
 
   // Block right-click "Save image as", drag-to-desktop, and long-press save

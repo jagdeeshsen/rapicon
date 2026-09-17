@@ -77,7 +77,7 @@ public class SecurityConfig {
                                 "/privacy-policy.html", "/register-now.html",
                                 "/otp-verification.html", "/terms-privacy.html",
                                 "/reset-password.html", "/reset-password.html/**",
-                                "/FAQ.html", "/vendor-landing.html", "/package.html",
+                                "/FAQ.html", "/vendor-landing.html", "/package-details.html",
                                 "/vendor-dashboard.html", "/forgot-password.html",
                                 "/contact.html", "/login.html", "/installment-payment.html",
                                 "/register.html", "/designs.html", "/admin.html",
