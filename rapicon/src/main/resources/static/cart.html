@@ -204,6 +204,7 @@
             }
 
             cartList = await response.json();
+            console.log(cartList);
             cartBadge.textContent = `${cartList.length} Items`;
 
             if (cartList.length === 0) {
