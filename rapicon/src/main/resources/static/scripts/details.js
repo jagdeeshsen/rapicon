@@ -237,6 +237,11 @@ const RC_TOKEN_KEY = "user_token";
   });
 
   function rcHandlePackages() {
+    // Persist area values so package-details.html can compute per-sqft pricing
+    if (design) {
+      sessionStorage.setItem("totalArea", design.totalArea || "");
+      sessionStorage.setItem("builtUpArea", design.builtUpArea || "");
+    }
     window.location.href = "/package-details.html";
   }
 
