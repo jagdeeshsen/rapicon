@@ -6,12 +6,13 @@ let packages = [];
 
 async function loadPackages() {
   try {
+    const token = localStorage.getItem('user_token');
     const response = await fetch("/api/v1/packages", {
       method: "GET",
       headers: {
-        "Authorization": `Bearer ${rcGetToken()}`,
-        "Content-Type": "application/json"
-      }
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
     });
 
     if (!response.ok) {
@@ -24,7 +25,7 @@ async function loadPackages() {
 
     const data = await response.json();
     console.log(data);
-    packages = data.content || [];
+    packages = data;
     renderPackages()
 
   } catch (error) {
@@ -102,11 +103,12 @@ async function addToCart(pkgName, pkgPrice) {
     };
 
     try {
+      const token = localStorage.getItem('user_token');
       const response = await fetch("/api/cart/addItem", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${rcGetToken()}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(data)
       });
