@@ -12,6 +12,11 @@
     const SESSION_URL = "/api/chat/session";
     const SESSION_STORAGE_KEY = "rapicon_ai_session_id";
 
+    // NEW: auth + upload endpoints
+    const TOKEN_KEY = "user_token";
+    const LOGIN_URL = "/otp-login.html";
+    const UPLOAD_URL = "/api/ai/design";
+
     let sessionId = null;
     let currentImageBlob = null;
     let currentImageUrl = null;
@@ -783,6 +788,90 @@
     }
 
     // --------------------------------------------------
+    // AUTH HELPERS
+    // --------------------------------------------------
+
+    function getToken() {
+        try {
+            return localStorage.getItem(TOKEN_KEY);
+        } catch (error) {
+            console.warn("RAPICON: localStorage unavailable.", error);
+            return null;
+        }
+    }
+
+    function redirectToLogin() {
+        window.location.href = LOGIN_URL;
+    }
+
+    // Returns true if the user is logged in. If not, redirects to
+    // the login page and returns false so the caller can bail out.
+    function requireAuth() {
+        const token = getToken();
+        const userId = getStoredUserId();
+
+        if (!token || !userId) {
+            redirectToLogin();
+            return false;
+        }
+
+        return true;
+    }
+
+    // --------------------------------------------------
+    // UPLOAD GENERATED FILE TO SERVER / S3
+    // --------------------------------------------------
+
+    // Pulls the fields the backend DTO expects (userId, sessionId, files)
+    // out of storage. userId is only present once the user has logged in.
+    function getStoredUserId() {
+        try {
+            return localStorage.getItem("user_id") || "";
+        } catch (error) {
+            console.warn("RAPICON: Could not read user id.", error);
+            return "";
+        }
+    }
+
+    // Uploads a generated image/PDF blob to the backend, which is
+    // responsible for pushing it to S3 and saving a record against
+    // the current chat session. Throws on failure so callers can
+    // decide how to handle it (e.g. still allow local download).
+    async function uploadGeneratedFile(blob, fileName) {
+
+        if (!blob) {
+            return null;
+        }
+
+        const token = getToken();
+        const userId = getStoredUserId();
+
+        const formData = new FormData();
+        formData.append("userId", userId);
+        formData.append("sessionId", sessionId || "");
+        formData.append("files", blob, fileName);
+
+        const response = await fetch(UPLOAD_URL, {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            },
+            body: formData
+        });
+
+        if (response.status === 401) {
+            redirectToLogin();
+            throw new Error("Unauthorized");
+        }
+
+        if (!response.ok) {
+            throw new Error(`Upload failed: ${response.status}`);
+        }
+
+        return response.json();
+    }
+
+    // --------------------------------------------------
     // STORAGE HELPERS
     // --------------------------------------------------
 
@@ -1346,7 +1435,34 @@
         download.className = "architect-action download-btn";
         download.textContent = "Download BOQ PDF";
 
-        download.addEventListener("click", function () {
+        // Check login -> upload to S3 / save on server -> then download.
+        download.addEventListener("click", async function () {
+
+            if (!requireAuth()) {
+                return;
+            }
+
+            const originalLabel = download.textContent;
+
+            download.disabled = true;
+            download.textContent = "Saving...";
+
+            try {
+                await uploadGeneratedFile(
+                    blob,
+                    "rapicon-preliminary-boq.pdf"
+                );
+            } catch (error) {
+                console.error(
+                    "RAPICON: Failed to save generated BOQ PDF.",
+                    error
+                );
+                // Non-fatal: still let the user download their file locally.
+            } finally {
+                download.disabled = false;
+                download.textContent = originalLabel;
+            }
+
             const link = document.createElement("a");
             link.href = pdfUrl;
             link.download = "rapicon-preliminary-boq.pdf";
@@ -1490,9 +1606,35 @@
             "architect-action update-btn";
         update.textContent = "Update";
 
+        // Check login -> upload to S3 / save on server -> then download.
         download.addEventListener(
             "click",
-            function () {
+            async function () {
+
+                if (!requireAuth()) {
+                    return;
+                }
+
+                const originalLabel = download.textContent;
+
+                download.disabled = true;
+                download.textContent = "Saving...";
+
+                try {
+                    await uploadGeneratedFile(
+                        blob,
+                        "ai-architecture-plan.png"
+                    );
+                } catch (error) {
+                    console.error(
+                        "RAPICON: Failed to save generated image.",
+                        error
+                    );
+                    // Non-fatal: still let the user download their file locally.
+                } finally {
+                    download.disabled = false;
+                    download.textContent = originalLabel;
+                }
 
                 const link =
                     document.createElement("a");

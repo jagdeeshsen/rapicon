@@ -95,7 +95,7 @@ function renderPackages() {
 async function addToCart(pkgName, pkgPrice, pkgInstallments) {
     const design = JSON.parse(sessionStorage.getItem('selectedDesign') || '{}');
     const userId = rcGetUserId();
-    const totalAmount = pkgPrice * totalArea;
+    const totalAmount = pkgPrice * builtUpArea;
 
     if (!userId) {
       alert('Please log in to save your design.');

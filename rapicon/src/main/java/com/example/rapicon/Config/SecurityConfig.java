@@ -92,6 +92,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/customer/**").permitAll()
                         .requestMatchers("/api/payment/phonePe/**").permitAll()
                         .requestMatchers("/api/chat/**").permitAll()
+                        .requestMatchers("/api/ai/**").permitAll()
 
                         // 4. Role-protected endpoints (MOST SPECIFIC first)
                         .requestMatchers("/api/admin/**").permitAll()
