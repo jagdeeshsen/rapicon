@@ -11,6 +11,8 @@
     const API_URL = "/api/chat/chatbot";
     const SESSION_URL = "/api/chat/session";
     const SESSION_STORAGE_KEY = "rapicon_ai_session_id";
+    const PENDING_DOWNLOAD_KEY = "rapicon_pending_download";
+    const PENDING_UPLOAD_KEY = "rapicon_pending_upload";
 
     // NEW: auth + upload endpoints
     const TOKEN_KEY = "user_token";
@@ -532,16 +534,6 @@
             class="architect-chat"
             id="architect-chat"
         >
-
-            <div class="architect-message architect-ai">
-
-                Hi! I'm your AI Architect.
-
-                Tell me about your plot and what
-                kind of building you want.
-
-            </div>
-
         </div>
 
         <div class="architect-input-area">
@@ -727,6 +719,13 @@
     const UPDATE_PLACEHOLDER =
         "What would you like to change?";
 
+    const GREETING_MESSAGE =
+        "Hey! I'm your AI Architect — ready to turn your plot into a plan.\n\nShare your plot size, BHK requirements, and floor count, and I'll generate your design in minutes.";
+
+    // Rendered through addMessage() rather than hardcoded HTML so it's
+    // guaranteed to look identical to every other message in the chat.
+    addMessage(GREETING_MESSAGE, "ai");
+
     const statusText =
         document.getElementById("architect-status-text");
 
@@ -801,16 +800,79 @@
     }
 
     function redirectToLogin() {
-        window.location.href = LOGIN_URL;
+        const returnUrl = encodeURIComponent(window.location.href);
+        window.location.href = `${LOGIN_URL}?redirect=${returnUrl}`;
     }
 
-    // Returns true if the user is logged in. If not, redirects to
-    // the login page and returns false so the caller can bail out.
-    function requireAuth() {
+    // Remembers which file the user tried to download before being sent
+    // to log in, so it can be auto-downloaded once they're back.
+    function savePendingDownload(type) {
+        try {
+            sessionStorage.setItem(PENDING_DOWNLOAD_KEY, type);
+        } catch (error) {
+            console.warn("RAPICON: Could not save pending download.", error);
+        }
+    }
+
+    function takePendingDownload() {
+        try {
+            const type = sessionStorage.getItem(PENDING_DOWNLOAD_KEY);
+            sessionStorage.removeItem(PENDING_DOWNLOAD_KEY);
+            return type;
+        } catch (error) {
+            return null;
+        }
+    }
+
+    // Remembers that a generated file's upload failed (most likely
+    // because the user wasn't logged in yet), so it can be retried
+    // automatically once they come back authenticated.
+    function savePendingUpload(type) {
+        try {
+            sessionStorage.setItem(PENDING_UPLOAD_KEY, type);
+        } catch (error) {
+            console.warn("RAPICON: Could not save pending upload.", error);
+        }
+    }
+
+    function takePendingUpload() {
+        try {
+            const type = sessionStorage.getItem(PENDING_UPLOAD_KEY);
+            sessionStorage.removeItem(PENDING_UPLOAD_KEY);
+            return type;
+        } catch (error) {
+            return null;
+        }
+    }
+
+    function clearPendingUpload() {
+        try {
+            sessionStorage.removeItem(PENDING_UPLOAD_KEY);
+        } catch (error) {
+            // Ignore.
+        }
+    }
+
+    function triggerDownload(url, filename) {
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+    }
+
+    // Returns true if the user is logged in. If not, optionally remembers
+    // which file they were trying to download, then redirects to login
+    // and returns false so the caller can bail out.
+    function requireAuth(pendingDownloadType) {
         const token = getToken();
         const userId = getStoredUserId();
 
         if (!token || !userId) {
+            if (pendingDownloadType) {
+                savePendingDownload(pendingDownloadType);
+            }
             redirectToLogin();
             return false;
         }
@@ -851,24 +913,42 @@
         formData.append("sessionId", sessionId || "");
         formData.append("files", blob, fileName);
 
+        const headers = {};
+        if (token) {
+            headers["Authorization"] = `Bearer ${token}`;
+        }
+
         const response = await fetch(UPLOAD_URL, {
             method: "POST",
-            headers: {
-                "Authorization": `Bearer ${token}`
-            },
+            headers,
             body: formData
         });
-
-        if (response.status === 401) {
-            redirectToLogin();
-            throw new Error("Unauthorized");
-        }
 
         if (!response.ok) {
             throw new Error(`Upload failed: ${response.status}`);
         }
 
         return response.json();
+    }
+
+    // Fires an upload automatically whenever a file is generated, no
+    // click required, and regardless of whether the user is logged in.
+    // This never redirects to login itself — that gate only applies to
+    // the Download button, per requireAuth().
+    function autoUploadGeneratedFile(blob, fileName, type) {
+        uploadGeneratedFile(blob, fileName)
+            .then(() => {
+                // Succeeded — nothing left to retry.
+                clearPendingUpload();
+            })
+            .catch((error) => {
+                console.error("RAPICON: Auto-upload failed.", error);
+                // Most likely cause: the user wasn't logged in yet.
+                // Remember to retry once they come back authenticated.
+                if (type) {
+                    savePendingUpload(type);
+                }
+            });
     }
 
     // --------------------------------------------------
@@ -1066,20 +1146,22 @@
             if (data.last_output_type === "boq" && data.last_boq_pdf) {
 
                 displayGeneratedBOQ(
-                    data.last_boq_pdf
+                    data.last_boq_pdf,
+                    true
                 );
 
             } else if (data.last_image) {
 
                 displayGeneratedImage(
-                    data.last_image
+                    data.last_image,
+                    true
                 );
             }
 
             if (!data.messages || data.messages.length === 0) {
 
                 addMessage(
-                    "Hi! I'm your AI Architect.\n\nTell me about your plot and what kind of building you want.",
+                    GREETING_MESSAGE,
                     "ai"
                 );
             }
@@ -1363,7 +1445,7 @@
         return `data:application/pdf;base64,${cleaned}`;
     }
 
-    function displayGeneratedBOQ(base64) {
+    function displayGeneratedBOQ(base64, isRestore) {
 
         const pdfData = normalizeBase64Pdf(base64);
 
@@ -1405,6 +1487,12 @@
         currentBqPdfBlob = blob;
         currentBqPdfUrl = pdfUrl;
 
+        // Upload happens the moment the file is freshly generated, not
+        // when we're just redisplaying it from a restored session.
+        if (!isRestore) {
+            autoUploadGeneratedFile(blob, "rapicon-preliminary-boq.pdf", "boq");
+        }
+
         const card = document.createElement("div");
         card.className = "architect-boq-card";
 
@@ -1435,40 +1523,13 @@
         download.className = "architect-action download-btn";
         download.textContent = "Download BOQ PDF";
 
-        // Check login -> upload to S3 / save on server -> then download.
-        download.addEventListener("click", async function () {
+        download.addEventListener("click", function () {
 
-            if (!requireAuth()) {
+            if (!requireAuth("boq")) {
                 return;
             }
 
-            const originalLabel = download.textContent;
-
-            download.disabled = true;
-            download.textContent = "Saving...";
-
-            try {
-                await uploadGeneratedFile(
-                    blob,
-                    "rapicon-preliminary-boq.pdf"
-                );
-            } catch (error) {
-                console.error(
-                    "RAPICON: Failed to save generated BOQ PDF.",
-                    error
-                );
-                // Non-fatal: still let the user download their file locally.
-            } finally {
-                download.disabled = false;
-                download.textContent = originalLabel;
-            }
-
-            const link = document.createElement("a");
-            link.href = pdfUrl;
-            link.download = "rapicon-preliminary-boq.pdf";
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
+            triggerDownload(pdfUrl, "rapicon-preliminary-boq.pdf");
         });
 
         actions.appendChild(viewPreview);
@@ -1503,7 +1564,7 @@
         return `data:image/png;base64,${cleaned}`;
     }
 
-    function displayGeneratedImage(base64) {
+    function displayGeneratedImage(base64, isRestore) {
 
         const imageData =
             normalizeBase64Image(base64);
@@ -1546,6 +1607,12 @@
         // Keep the newest image for the Update workflow/download state.
         currentImageBlob = blob;
         currentImageUrl = imageUrl;
+
+        // Upload happens the moment the file is freshly generated, not
+        // when we're just redisplaying it from a restored session.
+        if (!isRestore) {
+            autoUploadGeneratedFile(blob, "ai-architecture-plan.png", "image");
+        }
 
         const card =
             document.createElement("div");
@@ -1606,46 +1673,15 @@
             "architect-action update-btn";
         update.textContent = "Update";
 
-        // Check login -> upload to S3 / save on server -> then download.
         download.addEventListener(
             "click",
-            async function () {
+            function () {
 
-                if (!requireAuth()) {
+                if (!requireAuth("image")) {
                     return;
                 }
 
-                const originalLabel = download.textContent;
-
-                download.disabled = true;
-                download.textContent = "Saving...";
-
-                try {
-                    await uploadGeneratedFile(
-                        blob,
-                        "ai-architecture-plan.png"
-                    );
-                } catch (error) {
-                    console.error(
-                        "RAPICON: Failed to save generated image.",
-                        error
-                    );
-                    // Non-fatal: still let the user download their file locally.
-                } finally {
-                    download.disabled = false;
-                    download.textContent = originalLabel;
-                }
-
-                const link =
-                    document.createElement("a");
-
-                link.href = imageUrl;
-                link.download =
-                    "ai-architecture-plan.png";
-
-                document.body.appendChild(link);
-                link.click();
-                link.remove();
+                triggerDownload(imageUrl, "ai-architecture-plan.png");
             }
         );
 
@@ -1711,7 +1747,7 @@
         stopStatusAnimation();
 
         addMessage(
-            "Hi! I'm your AI Architect.\n\nTell me about your plot and what kind of building you want.",
+            GREETING_MESSAGE,
             "ai"
         );
 
@@ -1756,7 +1792,64 @@
     // RESTORE ON INITIAL LOAD
     // --------------------------------------------------
 
-    restoreSession();
+    restoreSession().then(function () {
+
+        const token = getToken();
+        const userId = getStoredUserId();
+        const isLoggedIn = Boolean(token && userId);
+
+        // Retry a generated file's upload if it failed earlier (most
+        // likely because the user wasn't logged in at generation time).
+        const pendingUploadType = takePendingUpload();
+
+        if (pendingUploadType && isLoggedIn) {
+
+            if (pendingUploadType === "image" && currentImageBlob) {
+                autoUploadGeneratedFile(
+                    currentImageBlob,
+                    "ai-architecture-plan.png",
+                    "image"
+                );
+            } else if (pendingUploadType === "boq" && currentBqPdfBlob) {
+                autoUploadGeneratedFile(
+                    currentBqPdfBlob,
+                    "rapicon-preliminary-boq.pdf",
+                    "boq"
+                );
+            } else {
+                // The matching blob wasn't restored this time around —
+                // keep the flag so it can be retried again later.
+                savePendingUpload(pendingUploadType);
+            }
+
+        } else if (pendingUploadType) {
+            // Still not logged in — keep the flag for next time.
+            savePendingUpload(pendingUploadType);
+        }
+
+        const pendingType = takePendingDownload();
+
+        if (!pendingType) {
+            return;
+        }
+
+        // The user may have just returned from the login redirect. If
+        // they're logged in now and the file they wanted is loaded
+        // (either freshly restored or already in memory), download it
+        // immediately without requiring another click.
+        if (!requireAuth()) {
+            // Still not logged in for some reason — keep the flag so
+            // this can be retried the next time they do log in.
+            savePendingDownload(pendingType);
+            return;
+        }
+
+        if (pendingType === "image" && currentImageUrl) {
+            triggerDownload(currentImageUrl, "ai-architecture-plan.png");
+        } else if (pendingType === "boq" && currentBqPdfUrl) {
+            triggerDownload(currentBqPdfUrl, "rapicon-preliminary-boq.pdf");
+        }
+    });
 
     // --------------------------------------------------
     // PUBLIC API (for auto-open + external button triggers)

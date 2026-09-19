@@ -20,10 +20,9 @@ public class AIGeneratedDesign {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
     private Long userId;
 
-    @Column
+    @Column(nullable = false)
     private String sessionId;
 
     @Column(nullable = false)

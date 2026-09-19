@@ -12,7 +12,6 @@ import java.util.ArrayList;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AIGeneratedDesignRequest {
-    @NotNull
     @Positive
     private Long userId;
     @NotBlank
