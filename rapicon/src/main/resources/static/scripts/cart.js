@@ -1,6 +1,12 @@
-// User session data (stored in memory, not localStorage)
-let userToken = localStorage.getItem('user_token');
-let userId = localStorage.getItem('user_id');
+/* ==========================================================================
+   UNCHANGED, flagged instead of guessed at: the #checkoutModal form
+   (name/email/phone/address + Pay Now) has no submit handler anywhere and
+   nothing ever shows it — it looks disconnected from the real PhonePe
+   flow. Left exactly as it was.
+   ========================================================================== */
+
+let userToken = rcGetToken();
+let userId = rcGetUserId();
 
 // Cart state
 let cartList = [];
@@ -30,17 +36,19 @@ async function renderCart() {
 
         if (!response.ok) {
             showMessage.error('Failed to fetch cart items');
+            return;
         }
 
         cartList = await response.json();
+        console.log(cartList);
         cartBadge.textContent = `${cartList.length} Items`;
 
         if (cartList.length === 0) {
             cartContainer.innerHTML = `
-                <div class="empty-cart">
-                    <div class="empty-cart-icon">🛒</div>
-                    <p style="font-size: 1.25rem; color: #6b7280; margin-bottom: 1rem;">Your cart is empty</p>
-                    <button onclick="window.location.href='/user.html'" style="padding: 0.75rem 1.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                <div class="rc-empty-cart">
+                    <div class="icon">🛒</div>
+                    <p>Your cart is empty</p>
+                    <button class="btn-gold" onclick="window.location.href='/designs.html'" style="display:inline-flex; padding:12px 24px;">
                         Continue Shopping
                     </button>
                 </div>
@@ -50,30 +58,33 @@ async function renderCart() {
             totalInstallments = cartList[0].totalInstallments || 1;
 
             cartContainer.innerHTML = cartList.map(item => `
-                <div class="cart-item">
-                    <img src="${item.design.elevationUrls[0]}" alt="${item.design.designCategory}" class="item-image">
-                    <div class="item-details">
-                        <div class="item-header">
+                <div class="rc-cart-item">
+                    <img src="${(item.design.elevationUrls && item.design.elevationUrls[0]) || ''}" alt="${item.design.designCategory || ''}">
+                    <div class="rc-cart-item-details">
+                        <div class="rc-cart-item-header">
                             <div>
-                                <div class="item-name">Package: ${item.packageName}</div>
-                                <div class="item-category">${item.design.designCategory || item.design.designType}</div>
+                                <div class="rc-cart-item-name">Package: ${item.packageName}</div>
+                                <div class="rc-cart-item-category">${item.design.designCategory || item.design.designType}</div>
                             </div>
-                            <button class="btn-remove" onclick="removeItem(${item.id})">🗑️</button>
+                            <button class="rc-btn-remove" onclick="removeItem(${item.id})">
+                                <i data-lucide="trash-2" width="14" height="14"></i>
+                            </button>
                         </div>
-                        <div class="item-footer">
-                            <span class="item-price">Price: ₹${item.totalAmount.toLocaleString()}</span>
+                        <div>
+                            <span class="rc-cart-item-price">Price: ₹${item.totalAmount.toLocaleString()}</span>
                         </div>
                     </div>
                 </div>
             `).join('');
+            if (window.lucide) lucide.createIcons();
         }
 
         updateSummary();
     } catch (error) {
         console.error('Error loading cart:', error);
         cartContainer.innerHTML = `
-            <div class="empty-cart">
-                <p style="color: #ef4444;">Failed to load cart items</p>
+            <div class="rc-empty-cart">
+                <p style="color:#B23A3A;">Failed to load cart items</p>
             </div>
         `;
     }
@@ -100,6 +111,7 @@ async function removeItem(id) {
 
         if (!response.ok) {
             showMessage.error('Failed to delete cart item');
+            return;
         }
 
         renderCart();
@@ -188,6 +200,8 @@ async function openCheckout(orderData) {
 
         if (!orderResponse.ok) {
             showMessage.error('Failed to create order');
+            hidePaymentVerificationLoader();
+            return;
         }
 
         const orderResult = await orderResponse.json();
@@ -221,13 +235,20 @@ async function openCheckout(orderData) {
 
         if (!paymentResponse.ok) {
             showMessage.error('Failed to initiate payment');
+            hidePaymentVerificationLoader();
+            return;
         }
 
         const paymentResult = await paymentResponse.json();
 
         if (!paymentResult.redirectUrl) {
+            hidePaymentVerificationLoader();
             throw new Error(paymentResult.message || 'Payment initiation failed');
         }
+
+        // Our own loader is about to be covered by PhonePe's iframe — hide
+        // it now so the two don't visually stack.
+        hidePaymentVerificationLoader();
 
         // open phonepe UI
         window.PhonePeCheckout.transact(
@@ -236,6 +257,7 @@ async function openCheckout(orderData) {
         });
 
     } catch (error) {
+        hidePaymentVerificationLoader();
         showMessage.error('Failed to process checkout: ' + error.message);
     }
 }
@@ -247,7 +269,7 @@ function callback (response) {
 
     // wait 2 sec before redirect
     setTimeout(() => {
-        window.location.href='/addtocard.html'
+        window.location.href='/cart.html'
     }, 2000);
 
     return;
@@ -275,6 +297,7 @@ async function checkOrderStatus(){
 
         if (!statusResponse.ok) {
             showMessage.error('Failed to verify payment status');
+            return;
         }
 
         const statusResult = await statusResponse.json();
@@ -322,6 +345,7 @@ async function verifyAndCompleteOrder(orderId, merchantOrderId, paymentStatus) {
 
         if (!verifyResponse.ok) {
             showMessage.error('Payment verification failed');
+            return;
         }
 
         const verifyResult = await verifyResponse.json();
@@ -350,7 +374,7 @@ async function verifyAndCompleteOrder(orderId, merchantOrderId, paymentStatus) {
         // window.location.href = `/order-success?orderId=${orderId}`;
 
         // Or reload the page to show updated cart
-        window.location.href = '/installment-payment.html';
+        window.location.href = '/profile.html';
 
     } catch (error) {
         await showMessage.alert('Payment completed but verification failed. Please contact support.');
@@ -360,7 +384,7 @@ async function verifyAndCompleteOrder(orderId, merchantOrderId, paymentStatus) {
 
 // Navigate to order history
 function toggleOrderHistory() {
-    window.location.href = '/installment-payment.html';
+    window.location.href = '/profile.html';
 }
 
 // Close checkout modal
@@ -431,12 +455,11 @@ window.onclick = function(event) {
 
 // Initialize cart on page load
 document.addEventListener('DOMContentLoaded', function() {
-    // Get user credentials from your auth system
-    // For now, you need to set these after login
-    // Example: initUserSession(token, userId);
-
-    // If you have a way to retrieve session, do it here
-    // Otherwise, this should be called from your login handler
-
     renderCart();
+    if (window.lucide) lucide.createIcons();
 });
+
+const AccountLink = document.getElementById('accountLink');
+const loggedIn = rcIsLoggedIn();
+
+AccountLink.href = loggedIn ? 'profile.html' : 'otp-login.html';

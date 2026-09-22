@@ -4,181 +4,114 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rapicon - Frequently Asked Questions</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f1eef4;
-            min-height: 100vh;
-            padding: 40px 20px;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .header {
-            text-align: center;
-            color: #8a2be2;
-            margin-bottom: 50px;
-        }
-
-        h1 {
-            font-size: 2.8em;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-            color: #7b68ee;
-        }
-
-        .subtitle {
-            font-size: 1.1em;
-            opacity: 0.95;
-        }
-
-        .faq-container {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-
-        .faq-item {
-            border-bottom: 1px solid #e9ecef;
-            padding: 20px 0;
-        }
-
-        .faq-item:last-child {
-            border-bottom: none;
-        }
-
-        .faq-question {
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            user-select: none;
-            transition: all 0.3s;
-        }
-
-        .faq-question:hover .question-text {
-            color: #667eea;
-        }
-
-        .question-text {
-            font-size: 1.15em;
-            font-weight: 600;
-            color: #333;
-            flex: 1;
-            padding-right: 20px;
-            transition: color 0.3s;
-        }
-
-        .icon {
-            width: 32px;
-            height: 32px;
-            background: #667eea;
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.6em;
-            font-weight: 300;
-            transition: transform 0.3s, background 0.3s;
-            flex-shrink: 0;
-        }
-
-        .faq-question:hover .icon {
-            background: #764ba2;
-        }
-
-        .icon.active {
-            transform: rotate(45deg);
-            background: #764ba2;
-        }
-
-        .faq-answer {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.4s ease;
-        }
-
-        .faq-answer.active {
-            max-height: 800px;
-        }
-
-        .answer-content {
-            padding: 15px 0 5px 0;
-            color: #555;
-            line-height: 1.7;
-            font-size: 1em;
-        }
-
-        .answer-content ul {
-            margin: 10px 0;
-            padding-left: 20px;
-        }
-
-        .answer-content li {
-            margin: 5px 0;
-        }
-
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2.2em;
-            }
-
-            .subtitle {
-                font-size: 1em;
-            }
-
-            .faq-container {
-                padding: 20px;
-            }
-
-            .question-text {
-                font-size: 1.05em;
-            }
-
-            .faq-item {
-                padding: 15px 0;
-            }
-        }
-
-        @media (max-width: 480px) {
-            h1 {
-                font-size: 1.8em;
-            }
-
-            .container {
-                padding: 0 10px;
-            }
-
-            .faq-container {
-                padding: 15px;
-            }
-        }
-    </style>
+    <meta name="description" content="FAQs for architects, interior designers and students joining Rapicon as a creator to sell their designs.">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/faq.css">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" defer></script>
 </head>
 <body>
-<div class="container">
-    <div class="header">
-        <h1>Rapicon FAQs</h1>
-        <p class="subtitle">Everything you need to know about joining and earning</p>
-    </div>
 
-    <div class="faq-container" id="faqContainer">
+<!-- Header (same as other pages) -->
+<header class="rc-header">
+    <div class="rc-header-inner">
+        <a href="/" class="rc-brand">
+            <span class="rc-brand-mark">R</span>
+            <span>
+        <span class="rc-brand-name" style="display:block;">RAPICON</span>
+        <span class="rc-brand-sub">Infrastructure</span>
+      </span>
+        </a>
+        <ul class="rc-nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="designs.html">Designs</a></li>
+            <li><a href="about-us.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+        <div class="rc-header-actions">
+            <a href="#" id="cartLink" class="rc-icon-btn" aria-label="Cart"><i data-lucide="shopping-cart" width="16" height="16"></i></a>
+            <a href="#" id="accountLink" class="rc-icon-btn" aria-label="Account"><i data-lucide="user" width="16" height="16"></i></a>
+            <a href="vendor-landing.html" class="rc-nav-cta">Start Selling</a>
+        </div>
+        <button class="rc-nav-toggle" aria-label="Open menu">☰</button>
+    </div>
+</header>
+
+<div class="rc-faq-hero">
+    <h1>Rapicon FAQs</h1>
+    <p>Everything you need to know about joining and earning as a Rapicon creator</p>
+</div>
+
+<div class="rc-faq-body">
+    <div class="rc-faq2-list" id="faqContainer">
         <!-- FAQs will be dynamically inserted here -->
     </div>
 </div>
 
+<!-- Footer (same as other pages) -->
+<footer class="rc-footer">
+    <div class="rc-wrap">
+        <div class="rc-footer-grid">
+            <div>
+                <div class="rc-footer-brand-row">
+                    <span class="rc-brand-mark">R</span>
+                    <div>
+                        <div style="font-size:13px; font-weight:700;">RAPICON</div>
+                        <div style="font-size:10px; color:rgba(255,255,255,0.4); text-transform:uppercase; letter-spacing:0.15em;">Infrastructure</div>
+                    </div>
+                </div>
+                <p class="rc-footer-tagline">"Virtuality to Reality"</p>
+                <p class="rc-footer-desc">A premium architectural design marketplace connecting homeowners and professionals across India.</p>
+                <div class="rc-footer-contact">
+                    <div><i data-lucide="map-pin" width="12" height="12"></i><span>29, Bhagwandeen Nagar, Behind Sapna Sangeeta, Indore, M.P. PIN-452001</span></div>
+                    <div><i data-lucide="phone" width="12" height="12"></i><a href="tel:+917314342979">+91 73143 42979</a></div>
+                    <div><i data-lucide="mail" width="12" height="12"></i><a href="mailto:rapiconinfra@gmail.com">rapiconinfra@gmail.com</a></div>
+                </div>
+            </div>
+            <div>
+                <div class="rc-footer-heading">Explore</div>
+                <div class="rc-footer-links">
+                    <a href="designs.html?type=house">House Designs</a>
+                    <a href="designs.html?type=duplex">Duplex Designs</a>
+                    <a href="designs.html?type=villa">Villa Designs</a>
+                    <a href="designs.html?type=commercial">Commercial Designs</a>
+                </div>
+            </div>
+            <div>
+                <div class="rc-footer-heading">Company</div>
+                <div class="rc-footer-links">
+                    <a href="about-us.html">About Us</a>
+                    <a href="vendor-landing.html">Start Selling</a>
+                    <a href="FAQ.html">FAQ</a>
+                    <a href="contact.html">Contact Us</a>
+                </div>
+            </div>
+            <div>
+                <div class="rc-footer-heading">Support</div>
+                <div class="rc-footer-links">
+                    <a href="contact.html">Contact</a>
+                    <a href="terms-privacy.html">Terms &amp; Conditions</a>
+                    <a href="privacy-policy.html">Privacy Policy</a>
+                </div>
+            </div>
+        </div>
+        <div class="rc-footer-bottom">
+            <span>&copy; 2025 Rapicon Infrastructure LLP. All rights reserved.</span>
+            <span>Designed with care in Indore, India.</span>
+        </div>
+    </div>
+</footer>
+<script src="scripts/common.js"></script>
 <script>
+    /* ==========================================================================
+       Logic is UNCHANGED from the original inline script: same faqs array
+       (all 27 entries, same wording/HTML in the answers), same renderFAQs()/
+       addEventListeners() approach, same toggle behavior (multiple items can
+       be open at once — no accordion single-open constraint, matching how the
+       homepage's own FAQ section already behaves). Only the generated class
+       names changed, to match this page's new stylesheet instead of the old
+       inline <style> block.
+       ========================================================================== */
+
     const faqs = [
         {
             question: "What exactly is Rapicon?",
@@ -290,20 +223,21 @@
         }
     ];
 
+
     function renderFAQs() {
         const container = document.getElementById('faqContainer');
 
         faqs.forEach((faq, index) => {
             const faqItem = document.createElement('div');
-            faqItem.className = 'faq-item';
+            faqItem.className = 'rc-faq2-item';
 
             faqItem.innerHTML = `
-                <div class="faq-question" data-index="${index}">
-                    <span class="question-text">${faq.question}</span>
-                    <div class="icon">+</div>
-                </div>
-                <div class="faq-answer">
-                    <div class="answer-content">${faq.answer}</div>
+                <button class="rc-faq2-q" data-index="${index}">
+                    <span>${faq.question}</span>
+                    <span class="icon"><i data-lucide="plus" width="14" height="14"></i></span>
+                </button>
+                <div class="rc-faq2-a">
+                    <div class="rc-faq2-a-inner">${faq.answer}</div>
                 </div>
             `;
 
@@ -311,23 +245,31 @@
         });
 
         addEventListeners();
+        if (window.lucide) lucide.createIcons();
     }
 
     function addEventListeners() {
-        const questions = document.querySelectorAll('.faq-question');
+        const questions = document.querySelectorAll('.rc-faq2-q');
 
         questions.forEach(question => {
             question.addEventListener('click', () => {
-                const answer = question.nextElementSibling;
-                const icon = question.querySelector('.icon');
-
-                answer.classList.toggle('active');
-                icon.classList.toggle('active');
+                question.closest('.rc-faq2-item').classList.toggle('open');
             });
         });
     }
 
     renderFAQs();
+    window.addEventListener('load', () => { if (window.lucide) lucide.createIcons(); });
+
+    const AccountLink = document.getElementById('accountLink');
+    const CartLink = document.getElementById('cartLink');
+
+    const loggedIn = rcIsLoggedIn();
+
+    AccountLink.href = loggedIn ? 'profile.html' : 'otp-login.html';
+    CartLink.href = loggedIn ? 'cart.html' : 'otp-login.html';
+
 </script>
+
 </body>
 </html>

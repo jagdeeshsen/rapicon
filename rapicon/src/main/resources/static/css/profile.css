@@ -1,9 +1,175 @@
 /* ==========================================================================
+   Rapicon — Profile dashboard (Profile + Orders merged)
+   Load AFTER base.css.
+   ========================================================================== */
+
+.rc-dash-layout {
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: 260px 1fr; gap: var(--space-7);
+  padding: 40px 24px 80px; align-items: start;
+}
+@media (max-width: 900px) { .rc-dash-layout { grid-template-columns: 1fr; } }
+
+/* ---------- Sidebar ---------- */
+.rc-dash-sidebar {
+  position: sticky; top: 88px;
+  border: 1px solid var(--border); background: #fff;
+}
+@media (max-width: 900px) { .rc-dash-sidebar { position: static; } }
+
+.rc-profile-mini {
+  padding: 28px 20px; text-align: center; border-bottom: 1px solid var(--border);
+}
+.rc-profile-avatar {
+  width: 56px; height: 56px; margin: 0 auto 12px;
+  background: var(--gold); color: var(--ink); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 19px; font-weight: 800;
+}
+.rc-profile-name { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+.rc-profile-email { font-size: 12px; color: var(--muted); word-break: break-word; }
+
+.rc-dash-nav { padding: 12px; display: flex; flex-direction: column; gap: 2px; }
+@media (max-width: 900px) { .rc-dash-nav { flex-direction: row; overflow-x: auto; } }
+.rc-dash-nav-link {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 14px; font-size: 13px; font-weight: 600; color: var(--muted);
+  background: none; border: none; text-align: left; cursor: pointer;
+  white-space: nowrap;
+}
+.rc-dash-nav-link:hover { background: var(--bg-light); color: var(--ink); }
+.rc-dash-nav-link.active { background: rgba(196,168,130,0.12); color: var(--ink); }
+.rc-dash-nav-link svg { color: var(--gold); flex: none; }
+.rc-dash-nav-divider { border: none; border-top: 1px solid var(--border); margin: 8px 12px; }
+.rc-dash-nav-link.logout { color: #B23A3A; }
+.rc-dash-nav-link.logout svg { color: #B23A3A; }
+.rc-dash-nav-link.logout:hover { background: #FEF2F2; }
+
+/* ---------- Content panels ---------- */
+.rc-dash-panel { display: none; }
+.rc-dash-panel.active { display: block; }
+.rc-dash-panel-title { font-size: 20px; font-weight: 700; margin: 0 0 20px; }
+
+#alertContainer { margin-bottom: 20px; }
+.alert {
+  padding: 12px 16px; margin-bottom: 10px; font-size: 13px;
+  opacity: 0; transform: translateY(-6px); transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.alert.show { opacity: 1; transform: translateY(0); }
+.alert-success { background: #ECFDF5; border: 1px solid #A7F3D0; color: #065F46; }
+.alert-error { background: #FEF2F2; border: 1px solid #FECACA; color: #B91C1C; }
+.alert-info { background: rgba(196,168,130,0.12); border: 1px solid rgba(196,168,130,0.35); color: var(--ink); }
+
+.stats-container { display: flex; gap: 16px; margin-bottom: 32px; }
+.stat-card {
+  border: 1px solid var(--border); background: #fff; padding: 20px 28px;
+  cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-sm); }
+.stat-number { font-size: 26px; font-weight: 800; }
+.stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 4px; }
+
+.profile-section { margin-bottom: 32px; }
+.section-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gold); margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+
+.info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+@media (max-width: 600px) { .info-grid { grid-template-columns: 1fr; } }
+.info-item { border: 1px solid var(--border); padding: 14px 16px; background: #fff; }
+.info-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+.info-value { font-size: 14px; font-weight: 600; min-height: 20px; }
+.info-value.loading { color: var(--border); font-weight: 400; font-style: italic; }
+
+.edit-input, input.info-value {
+  width: 100%; border: 1px solid var(--border); background: var(--bg-light);
+  padding: 6px 8px; font-size: 14px; font-weight: 600; color: var(--ink);
+  font-family: inherit;
+}
+.edit-input:focus, input.info-value:not(:disabled):focus { outline: none; border-color: var(--gold); }
+input.info-value:disabled { border: none; background: none; padding: 0; font-weight: 600; color: var(--ink); }
+
+.action-buttons { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+.btn { padding: 12px 24px; font-size: 13px; font-weight: 600; border: none; cursor: pointer; }
+.btn-primary { background-image: linear-gradient(135deg, var(--gold), var(--gold-hover)); color: var(--ink); }
+.btn-primary:hover { filter: brightness(1.05); }
+.btn-secondary { background: none; border: 1px solid var(--ink); color: var(--ink); }
+.btn-secondary:hover { background: var(--ink); color: #fff; }
+.btn-success { background: #2F7A4D; color: #fff; }
+.btn-success:hover { background: #256640; }
+.btn-logout { background: none; border: 1px solid #B23A3A; color: #B23A3A; }
+.btn-logout:hover { background: #B23A3A; color: #fff; }
+
+/* ---------- Orders table ---------- */
+.rc-orders-table-wrap { border: 1px solid var(--border); overflow-x: auto; }
+.rc-orders-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 720px; }
+.rc-orders-table thead th {
+  text-align: left; padding: 12px 16px; background: var(--bg-light);
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--muted); border-bottom: 1px solid var(--border); white-space: nowrap;
+}
+.rc-order-row td { padding: 14px 16px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.rc-order-row:hover { background: var(--bg-light); }
+.rc-order-row .order-num { font-weight: 700; }
+.rc-order-row .order-date { color: var(--muted); font-size: 12px; }
+.rc-order-row .badges { display: flex; flex-direction: column; gap: 4px; }
+
+.badge { display: inline-block; padding: 3px 10px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; width: fit-content; }
+.badge-green { background: #ECFDF5; color: #065F46; }
+.badge-yellow { background: #FFFBEB; color: #92400E; }
+.badge-red { background: #FEF2F2; color: #B91C1C; }
+
+.toggle-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: none; border: 1px solid var(--border); padding: 6px 12px;
+  font-size: 12px; font-weight: 600; color: var(--ink); cursor: pointer; white-space: nowrap;
+}
+.toggle-btn:hover { border-color: var(--gold); }
+
+.rc-order-detail-row td { padding: 0; border-bottom: 1px solid var(--border); }
+.installments { display: none; padding: 20px; background: var(--bg-light); }
+.installments.show { display: block; }
+
+.rc-order-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+@media (max-width: 700px) { .rc-order-detail-grid { grid-template-columns: 1fr; } }
+.rc-info-box { border: 1px solid var(--border); background: #fff; padding: 14px 16px; }
+.rc-info-box h3 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--gold); margin: 0 0 8px; }
+.rc-info-box p { font-size: 13px; color: var(--muted); margin: 0 0 4px; }
+.rc-info-box p strong { color: var(--ink); }
+
+.rc-installments-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 8px; }
+.installment-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px; border: 1px solid var(--border); background: #fff;
+  font-size: 13px; margin-bottom: 6px;
+}
+.pay-now-btn {
+  background-image: linear-gradient(135deg, var(--gold), var(--gold-hover));
+  color: var(--ink); border: none; padding: 7px 14px;
+  font-size: 12px; font-weight: 700; cursor: pointer;
+}
+.pay-now-btn:hover { filter: brightness(1.05); }
+
+.rc-orders-empty { text-align: center; padding: 60px 20px; color: var(--muted); }
+.rc-orders-empty .icon { font-size: 40px; margin-bottom: 12px; }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ==========================================================================
    Rapicon — User profile page only
    Load AFTER base.css.
    ========================================================================== */
 
-.rc-profile-header {
+/*.rc-profile-header {
   background: var(--ink);
   background-image:
     linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),

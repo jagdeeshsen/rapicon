@@ -720,8 +720,13 @@
         "What would you like to change?";
 
     const GREETING_MESSAGE =
-        "Hey! I'm your AI Architect — ready to turn your plot into a plan.\n\nShare your plot size, BHK requirements, and floor count, and I'll generate your design in minutes.";
-
+        "Hey! I'm your AI Architect — ready to turn your plot into a plan.\n\n" +
+        "Please provide your house requirements:\n" +
+        "1. Plot Size: _ × _ ft (e.g. 40 × 60 ft)\n" +
+        "2. BHK: _ BHK (e.g. 4 BHK = 4 Bedrooms + Hall + Kitchen)\n" +
+        "3. Floors: G+_ (e.g. G+2 = 3 floors)\n" +
+        "4. Parking: Yes / No (e.g. 2 Cars + Bikes)\n" +
+        "5. Additional Requirements: Guest Room, Study Room, Pooja Room, Store, Balcony, etc.";
     // Rendered through addMessage() rather than hardcoded HTML so it's
     // guaranteed to look identical to every other message in the chat.
     addMessage(GREETING_MESSAGE, "ai");
