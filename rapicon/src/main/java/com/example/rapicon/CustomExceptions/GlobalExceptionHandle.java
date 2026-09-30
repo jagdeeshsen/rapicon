@@ -62,6 +62,21 @@ public class GlobalExceptionHandle {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message","Resource not found."));
     }
 
+    @ExceptionHandler(PromoInvalidException.class)
+    public ResponseEntity<?> handleInvalidPromo(PromoInvalidException e){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message",e.getMessage()));
+    }
+
+    @ExceptionHandler(PromoExpiredException.class)
+    public ResponseEntity<?> handleExpiredPromo(PromoExpiredException e){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+    }
+
+    @ExceptionHandler(PromoAlreadyUsedException.class)
+    public ResponseEntity<?> handleUsedPromo(PromoAlreadyUsedException e){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+    }
+
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGeneric(Exception e) {

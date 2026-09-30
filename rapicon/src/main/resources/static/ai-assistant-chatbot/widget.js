@@ -14,7 +14,7 @@
     const PENDING_DOWNLOAD_KEY = "rapicon_pending_download";
     const PENDING_UPLOAD_KEY = "rapicon_pending_upload";
 
-    // NEW: auth + upload endpoints
+    // Auth + upload endpoints
     const TOKEN_KEY = "user_token";
     const LOGIN_URL = "/otp-login.html";
     const UPLOAD_URL = "/api/ai/design";
@@ -28,6 +28,13 @@
     let isRestoring = false;
     const imagePreviewUrls = new Set();
     const pdfPreviewUrls = new Set();
+
+    // Project workflow state (from the project-form flow)
+    let projectGenerationActive = false;
+    let masterFloorPlan = null;
+    let generatedOutputs = new Set();
+    let pendingOutputType = null;
+    let projectForm = null;
 
     try {
         sessionId = localStorage.getItem(SESSION_STORAGE_KEY);
@@ -412,6 +419,157 @@
             background: #f7f9fb;
         }
 
+        /* --------------------------------------------------
+           PROJECT FORM + OUTPUT OPTIONS
+           (moved to top level so they render correctly at
+           every screen size, not just under 600px)
+           -------------------------------------------------- */
+
+        #architect-project-form {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 16px 12px;
+            margin-bottom: 12px;
+            background: linear-gradient(145deg, #f8fafc, #eef3f8);
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+        }
+
+        .architect-project-form-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #172b4d;
+            margin-bottom: 5px;
+        }
+
+        .architect-project-form-subtitle {
+            font-size: 12px;
+            color: #7b8494;
+            margin-bottom: 18px;
+            line-height: 1.5;
+        }
+
+        #architect-project-form-fields {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        #architect-project-form-fields label {
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+            color: #334155;
+            font-size: 12px;
+            font-weight: 700;
+            line-height: 1.4;
+        }
+
+        #architect-project-form-fields input,
+        #architect-project-form-fields select,
+        #architect-project-form-fields textarea {
+            display: block;
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
+            box-sizing: border-box;
+            margin-top: 6px;
+            padding: 11px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            background: #ffffff;
+            color: #0f172a;
+            font-size: 13px;
+            line-height: 1.4;
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        #architect-project-form-fields textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        #architect-project-generate {
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+            margin-top: 8px;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #102a43, #1d4ed8);
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 6px 14px rgba(30, 64, 175, 0.22);
+        }
+
+        .architect-output-options {
+            margin: 16px 0;
+            padding: 14px;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            background: #ffffff;
+        }
+
+        .architect-output-title {
+            margin-bottom: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .architect-output-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .architect-output-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            padding: 13px 14px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            background: #ffffff;
+            color: #1f2937;
+            font-size: 14px;
+            font-weight: 500;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .architect-output-btn:hover {
+            border-color: #2563eb;
+            background: #eff6ff;
+            transform: translateY(-1px);
+        }
+
+        .architect-output-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            border-radius: 9px;
+            background: #eff6ff;
+            font-size: 17px;
+        }
+
+        .architect-output-arrow {
+            margin-left: auto;
+            color: #6b7280;
+            font-size: 18px;
+        }
+
         @media (max-width: 768px) {
 
         #ai-architect-widget {
@@ -720,16 +878,7 @@
         "What would you like to change?";
 
     const GREETING_MESSAGE =
-        "Hey! I'm your AI Architect — ready to turn your plot into a plan.\n\n" +
-        "Please provide your house requirements:\n" +
-        "1. Plot Size: _ × _ ft (e.g. 40 × 60 ft)\n" +
-        "2. BHK: _ BHK (e.g. 4 BHK = 4 Bedrooms + Hall + Kitchen)\n" +
-        "3. Floors: G+_ (e.g. G+2 = 3 floors)\n" +
-        "4. Parking: Yes / No (e.g. 2 Cars + Bikes)\n" +
-        "5. Additional Requirements: Guest Room, Study Room, Pooja Room, Store, Balcony, etc.";
-    // Rendered through addMessage() rather than hardcoded HTML so it's
-    // guaranteed to look identical to every other message in the chat.
-    addMessage(GREETING_MESSAGE, "ai");
+        "Hey! I'm your AI Architect — ready to turn your plot into a plan.";
 
     const statusText =
         document.getElementById("architect-status-text");
@@ -1000,7 +1149,7 @@
             button.innerHTML = "×";
             button.setAttribute("aria-label", "Close AI Architect");
             if (window.innerWidth > 768){
-                input.onfocus();
+                input.focus();
             }
         } else {
             button.innerHTML = "🏠";
@@ -1040,6 +1189,139 @@
         chat.appendChild(message);
 
         chat.scrollTop = chat.scrollHeight;
+    }
+
+    // --------------------------------------------------
+    // PROJECT FORM
+    // --------------------------------------------------
+
+    function mountProjectForm() {
+        if (document.getElementById("architect-project-form")) {
+            return;
+        }
+
+        const wrapper = document.createElement("div");
+
+        wrapper.id = "architect-project-form";
+
+        wrapper.innerHTML = `
+            <div class="architect-project-form-title">
+                Create Your Project
+            </div>
+
+            <div class="architect-project-form-subtitle">
+                Fill details to generate your 2D floor plan
+            </div>
+
+            <form id="architect-project-form-fields">
+
+                <label>
+                    Project Type
+                    <input
+                        type="text"
+                        name="project_type"
+                        placeholder="e.g. Residential house, villa, clinic, office"
+                        required
+                    />
+                </label>
+
+                <label>
+                    Plot Size
+                    <input
+                        name="plot_size"
+                        placeholder="Example: 30x40 ft"
+                        required
+                    />
+                </label>
+
+                <label>
+                    BHK
+                    <input
+                        type="text"
+                        name="bhk"
+                        placeholder="e.g. 3 BHK, 4 bedrooms, 1 guest room"
+                        required
+                    />
+                </label>
+
+                <label>
+                    Floors
+                    <input
+                        type="text"
+                        name="floors"
+                        placeholder="e.g. Ground floor, G+1, G+2"
+                        required
+                    />
+                </label>
+
+                <label>
+                    Facing
+                    <input
+                        type="text"
+                        name="facing"
+                        placeholder="e.g. North, East, road-facing (optional)"
+                    />
+                </label>
+
+                <label>
+                    Parking
+                    <input
+                        type="text"
+                        name="parking"
+                        placeholder="e.g. 1 car, 2 bikes, no parking (optional)"
+                    />
+                </label>
+
+                <label>
+                    Additional Requirements
+                    <textarea
+                        name="additional_requirements"
+                        rows="2"
+                        placeholder="Guest room, study, store, utility..."
+                    ></textarea>
+                </label>
+
+                <button
+                    type="submit"
+                    id="architect-project-generate"
+                >
+                    Generate 2D Floor Plan
+                </button>
+
+            </form>
+        `;
+
+        chat.appendChild(wrapper);
+
+        projectForm = wrapper.querySelector(
+            "#architect-project-form-fields"
+        );
+
+        projectForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            const formData = new FormData(projectForm);
+
+            const details = [
+                `Project Type: ${formData.get("project_type")}`,
+                `Plot Size: ${formData.get("plot_size")}`,
+                `BHK: ${formData.get("bhk")}`,
+                `Floors: ${formData.get("floors")}`,
+                `Facing: ${formData.get("facing")}`,
+                `Parking: ${formData.get("parking")}`,
+                `Additional Requirements: ${
+                    formData.get("additional_requirements") || "None"
+                }`
+            ].join("\n");
+
+            projectGenerationActive = true;
+
+            input.value =
+                "Generate only a 2D floor plan using these requirements:\n" +
+                details;
+
+            send.click();
+        });
     }
 
     // --------------------------------------------------
@@ -1127,6 +1409,11 @@
 
                 stopStatusAnimation();
 
+                addMessage(
+                    "Your previous architectural session is no longer available. Please start a new chat.",
+                    "ai"
+                );
+
                 return;
             }
 
@@ -1148,8 +1435,48 @@
                 );
             }
 
-            if (data.last_output_type === "boq" && data.last_boq_pdf) {
+            // --------------------------------------------------
+            // RESTORE ALL GENERATED RESULTS
+            // --------------------------------------------------
+            const generatedResults = Array.isArray(data.generated_results)
+                ? data.generated_results
+                : [];
 
+            if (generatedResults.length > 0) {
+
+                for (const result of generatedResults) {
+
+                    if (!result || !result.type) {
+                        continue;
+                    }
+
+                    // BOQ PDF
+                    if (result.type === "boq" && result.pdf) {
+                        displayGeneratedBOQ(result.pdf, true);
+                        generatedOutputs.add("boq");
+                        continue;
+                    }
+
+                    // All image-based outputs
+                    if (result.image) {
+                        displayGeneratedImage(result.image, true);
+
+                        if (result.type === "elevation") {
+                            generatedOutputs.add("elevation");
+                        }
+                        if (result.type === "working_drawings") {
+                            generatedOutputs.add("working_drawings");
+                        }
+                        if (result.type === "floor_plan") {
+                            masterFloorPlan = result.image;
+                        }
+                    }
+                }
+
+            } else if (data.last_output_type === "boq" && data.last_boq_pdf) {
+
+                // Backward-compatible fallback for older session payloads
+                // that only carried a single last result.
                 displayGeneratedBOQ(
                     data.last_boq_pdf,
                     true
@@ -1184,6 +1511,124 @@
 
         } finally {
             isRestoring = false;
+        }
+    }
+
+    // --------------------------------------------------
+    // OUTPUT OPTIONS (elevation / working drawings / BOQ)
+    // --------------------------------------------------
+
+    function showOutputOptions() {
+        const wrapper = document.createElement("div");
+
+        wrapper.className = "architect-output-options";
+
+        const outputOptions = [
+            {
+                type: "elevation",
+                label: "Generate Elevation",
+                icon: "🏠"
+            },
+            {
+                type: "working_drawings",
+                label: "All Working Drawings",
+                icon: "📐"
+            },
+            {
+                type: "boq",
+                label: "Generate BOQ",
+                icon: "📋"
+            }
+        ];
+
+        const remainingOptions = outputOptions.filter(function (option) {
+            return !generatedOutputs.has(option.type);
+        });
+
+        if (remainingOptions.length === 0) {
+            return;
+        }
+
+        wrapper.innerHTML = `
+            <div class="architect-output-title">
+                What would you like to generate next?
+            </div>
+
+            <div class="architect-output-grid">
+                ${remainingOptions.map(function (option) {
+                    return `
+                        <button
+                            type="button"
+                            class="architect-output-btn"
+                            data-output="${option.type}"
+                        >
+                            <span class="architect-output-icon">
+                                ${option.icon}
+                            </span>
+
+                            <span>
+                                ${option.label}
+                            </span>
+
+                            <span class="architect-output-arrow">
+                                →
+                            </span>
+                        </button>
+                    `;
+                }).join("")}
+            </div>
+        `;
+
+        chat.appendChild(wrapper);
+
+        wrapper.querySelectorAll(".architect-output-btn")
+            .forEach(function (button) {
+
+                button.addEventListener("click", function () {
+                    const outputType = button.dataset.output;
+
+                    generatedOutputs.add(outputType);
+
+                    pendingOutputType = outputType;
+
+                    let message = "";
+
+                    if (outputType === "elevation") {
+                        message =
+                            "Generate elevation only using the master floor plan. Do not regenerate the floor plan.";
+                    }
+
+                    if (outputType === "working_drawings") {
+                        message =
+                            "Generate all working drawings using the master floor plan. Do not regenerate the floor plan.";
+                    }
+
+                    if (outputType === "boq") {
+                        message =
+                            "Generate BOQ using the master floor plan. Do not regenerate the floor plan.";
+                    }
+
+                    wrapper.remove();
+
+                    input.value = message;
+
+                    send.click();
+                });
+            });
+
+        chat.scrollTop = chat.scrollHeight;
+    }
+
+    function showNextOutputOptionsIfNeeded() {
+        if (
+            pendingOutputType &&
+            !projectGenerationActive
+        ) {
+            pendingOutputType = null;
+
+            setTimeout(function () {
+                showOutputOptions();
+            }, 500);
         }
     }
 
@@ -1257,20 +1702,39 @@
             if (!response.ok) {
 
                 let serverMessage =
-                    `Server error: ${response.status}`;
+                    "The architectural service could not process your request.";
 
                 try {
                     const errorData =
                         await response.json();
 
-                    if (errorData.detail) {
+                    if (errorData.message) {
+                        serverMessage = errorData.message;
+
+                    } else if (errorData.detail) {
                         serverMessage =
                             typeof errorData.detail === "string"
                                 ? errorData.detail
                                 : serverMessage;
                     }
+
                 } catch (_) {
-                    // Ignore non-JSON error response.
+
+                    if (response.status === 400) {
+
+                        serverMessage =
+                            "The request could not be processed. Please check your requirements and try again.";
+
+                    } else if (response.status === 413) {
+
+                        serverMessage =
+                            "The uploaded file is too large. Please upload a smaller file.";
+
+                    } else if (response.status >= 500) {
+
+                        serverMessage =
+                            "The architectural service encountered a processing problem. Please try again.";
+                    }
                 }
 
                 throw new Error(serverMessage);
@@ -1279,6 +1743,19 @@
             const data = await response.json();
 
             saveSessionId(data.session_id);
+
+            if (data.type === "error") {
+                addMessage(
+                    data.message ||
+                        "The requested architectural output could not be generated. Please try again.",
+                    "ai"
+                );
+                stopStatusAnimation();
+                clearSelectedFile();
+                input.placeholder = DEFAULT_PLACEHOLDER;
+
+                return;
+            }
 
             // BOQ is a PDF workflow, not an image workflow.
             if (data.type === "boq") {
@@ -1295,6 +1772,8 @@
                 if (data.pdf) {
                     displayGeneratedBOQ(data.pdf);
                 }
+
+                showNextOutputOptionsIfNeeded();
 
                 stopStatusAnimation();
                 clearSelectedFile();
@@ -1345,6 +1824,20 @@
                     );
                 }
 
+                if (projectGenerationActive) {
+                    projectGenerationActive = false;
+
+                    masterFloorPlan = data.image;
+                    generatedOutputs = new Set();
+
+                    setTimeout(function () {
+                        showOutputOptions();
+                    }, 500);
+
+                } else {
+                    showNextOutputOptionsIfNeeded();
+                }
+
                 stopStatusAnimation();
                 clearSelectedFile();
                 input.placeholder = DEFAULT_PLACEHOLDER;
@@ -1357,9 +1850,42 @@
                 error
             );
 
+            const errorText = String(
+                error?.message || ""
+            ).toLowerCase();
+
+            let userMessage =
+                "The architectural request could not be processed right now. Please try again.";
+
+            if (
+                errorText.includes("load failed") ||
+                errorText.includes("failed to fetch") ||
+                errorText.includes("networkerror") ||
+                errorText.includes("network error")
+            ) {
+
+                userMessage =
+                    "The architectural service could not be reached right now. Please check your connection and try again.";
+
+            } else if (
+                errorText.includes("timeout") ||
+                errorText.includes("timed out")
+            ) {
+
+                userMessage =
+                    "The architectural service took too long to respond. Please try again.";
+
+            } else if (
+                errorText.includes("500") ||
+                errorText.includes("internal server error")
+            ) {
+
+                userMessage =
+                    "The architectural service encountered a processing problem. Please try again.";
+            }
+
             addMessage(
-                error.message ||
-                    "Sorry, something went wrong while processing the plan.",
+                userMessage,
                 "ai"
             );
 
@@ -1455,6 +1981,10 @@
         const pdfData = normalizeBase64Pdf(base64);
 
         if (!pdfData) {
+            addMessage(
+                "The BOQ was generated, but the PDF data was empty. Please try generating the BOQ again.",
+                "ai"
+            );
             return;
         }
 
@@ -1465,10 +1995,17 @@
                 pdfData.split(",", 2)[1]
             );
         } catch (error) {
+
             console.error(
                 "RAPICON: Invalid BOQ PDF data.",
                 error
             );
+
+            addMessage(
+                "The BOQ was generated, but the PDF data could not be displayed. Please try generating the BOQ again.",
+                "ai"
+            );
+
             return;
         }
 
@@ -1575,6 +2112,10 @@
             normalizeBase64Image(base64);
 
         if (!imageData) {
+            addMessage(
+                "The architectural image could not be displayed because the image data was empty. Please try generating it again.",
+                "ai"
+            );
             return;
         }
 
@@ -1585,10 +2126,17 @@
                 imageData.split(",", 2)[1]
             );
         } catch (error) {
+
             console.error(
                 "RAPICON: Invalid generated image data.",
                 error
             );
+
+            addMessage(
+                "The architectural image was generated, but the image data could not be displayed. Please try generating it again.",
+                "ai"
+            );
+
             return;
         }
 
@@ -1726,6 +2274,11 @@
 
         clearSessionId();
 
+        projectGenerationActive = false;
+        masterFloorPlan = null;
+        generatedOutputs = new Set();
+        pendingOutputType = null;
+
         // New Chat removes the current conversation, so revoke all
         // object URLs created by its image/PDF cards.
         imagePreviewUrls.forEach((url) => {
@@ -1755,6 +2308,8 @@
             GREETING_MESSAGE,
             "ai"
         );
+
+        mountProjectForm();
 
         input.focus();
     }
@@ -1794,8 +2349,18 @@
     );
 
     // --------------------------------------------------
-    // RESTORE ON INITIAL LOAD
+    // INITIAL LOAD
     // --------------------------------------------------
+
+    // Rendered through addMessage() rather than hardcoded HTML so it's
+    // guaranteed to look identical to every other message in the chat.
+    addMessage(GREETING_MESSAGE, "ai");
+
+    // Appended below the greeting. If a previous session is restored
+    // below, restoreSession() clears the chat (including this form) —
+    // which is intentional: once there's an existing conversation, the
+    // fresh-start form should not reappear.
+    mountProjectForm();
 
     restoreSession().then(function () {
 

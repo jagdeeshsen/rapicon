@@ -15,7 +15,7 @@ public class PromoCode {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String code;
 
     private String description;
@@ -29,7 +29,7 @@ public class PromoCode {
 
     private boolean active;
 
-    private GrantType grantType = GrantType.FREE_GENERATION;
+    private GrantType grantType;
     private int grantValue;
 
     private LocalDateTime createdAt;
