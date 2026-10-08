@@ -8,7 +8,7 @@ import javax.validation.constraints.NotBlank;
 @Data
 public class UserRegistrationRequest {
 
-    private String fullName;
+    private String person;
 
     @Email
     private String email;

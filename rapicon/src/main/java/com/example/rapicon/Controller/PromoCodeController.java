@@ -39,8 +39,6 @@ public class PromoCodeController {
                     .body(Map.of("message", "Promo code redeem successfully"));
         } catch (RuntimeException e) {
             throw new RuntimeException(e);
-            //log.error(e.getMessage());
-            //return ResponseEntity.ok(Map.of("message", "Failed to redeem promo code"));
         }
     }
 }

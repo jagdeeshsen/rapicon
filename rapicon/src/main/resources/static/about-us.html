@@ -2,529 +2,642 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Us – Rapicon</title>
-    <meta name="description" content="Rapicon is a next-generation architecture and construction platform in India designed to connect architects, interior designers, builders, contractors, vendors, and developers in one unified digital ecosystem.">
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>About Us – Rapicon Infrastructure LLP</title>
+    <meta name="description" content="Rapicon Infrastructure LLP plans and builds homes, commercial buildings and service buildings in Indore and beyond, from drawings and 3D/VR walkthroughs to a finished turnkey project.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 
-        :root {
-          --navy: #0B1E3D;
-          --green: #1B7A4A;
-          --green-light: #2CA06A;
-          --accent: #F4B942;
-          --off-white: #F7F5F0;
-          --mid: #E8E4DC;
-          --text: #1A1A1A;
-          --muted: #6B7280;
+        /* Design tokens: change these once to restyle the whole page.
+           Use the same values on every page of the site. */
+        :root{
+          --primary:#0B1E3D;        /* navy */
+          --secondary:#1B7A4A;      /* green */
+          --secondary-light:#2CA06A;
+          --sand:#DDD6A3;           /* cream from the company profile */
+          --bg:#F7F5F0;
+          --line:#E3DFD3;
+          --text:#1A1A1A;
+          --muted:#5F6672;
+          --white:#fff;
+          --radius:16px;
+          --max:1180px;
+          box-sizing:border-box;
+          padding-top:env(safe-area-inset-top,0px);
+          padding-bottom:env(safe-area-inset-bottom,0px);
         }
-
-        body {
-          font-family: 'DM Sans', sans-serif;
-          background: var(--off-white);
-          color: var(--text);
-          overflow-x: hidden;
-        }
+        html{scroll-behavior:smooth;scroll-padding-top:84px}
+        body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
+        h1,h2,h3{font-family:'Fraunces',Georgia,serif;color:var(--primary);line-height:1.12;letter-spacing:-.01em}
+        a{color:inherit}
+        img,svg{max-width:100%}
+        :focus-visible{outline:3px solid var(--secondary-light);outline-offset:3px;border-radius:6px}
+        .wrap{max-width:var(--max);margin:0 auto;padding:0 28px}
+        section{padding:88px 0}
+        .sec-head{max-width:640px;margin-bottom:44px}
+        .sec-head h2{font-size:clamp(28px,4vw,42px);font-weight:800;margin-bottom:12px}
+        .sec-head p{color:var(--muted);font-size:17px}
+        .on-dark h2{color:#fff}.on-dark .sec-head p{color:rgba(255,255,255,.7)}
 
         /* NAV */
-        nav {
-          position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-          display: flex; align-items: center; justify-content: space-between;
-          padding: 18px 56px;
-          background: rgba(247,245,240,0.92);
-          backdrop-filter: blur(12px);
-          border-bottom: 1px solid var(--mid);
-        }
-        .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-        .logo-mark {
-          width: 36px; height: 36px; background: var(--navy); border-radius: 6px;
-          display: grid; place-items: center;
-          color: #fff; font-family: 'Fraunces', serif; font-weight: 900; font-size: 18px;
-        }
-        .logo-text { font-family: 'Fraunces', serif; font-weight: 700; font-size: 20px; color: var(--navy); }
-        .nav-links { display: flex; gap: 32px; list-style: none; }
-        .nav-links a { text-decoration: none; color: var(--muted); font-size: 14px; font-weight: 500; transition: color 0.2s; }
-        .nav-links a:hover, .nav-links a.active { color: var(--navy); }
-        .nav-cta {
-          background: var(--navy); color: #fff; border: none; padding: 10px 22px;
-          border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer;
-          font-family: 'DM Sans', sans-serif; transition: background 0.2s;
-        }
-        .nav-cta:hover { background: var(--green); }
+        nav{position:fixed;top:0;left:0;right:0;z-index:50;background:rgba(247,245,240,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
+        .nav-in{max-width:var(--max);margin:0 auto;padding:14px 28px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+        .logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+        .logo-mark{width:36px;height:36px;background:var(--primary);color:#fff;border-radius:8px;display:grid;place-items:center;font-family:'Fraunces',serif;font-weight:800;font-size:19px}
+        .logo-text{font-family:'Fraunces',serif;font-weight:800;font-size:20px;color:var(--primary)}
+        .nav-links{display:flex;gap:28px;list-style:none}
+        .nav-links a{text-decoration:none;color:var(--muted);font-size:14px;font-weight:500;padding:6px 0;border-bottom:2px solid transparent;transition:color .2s,border-color .2s}
+        .nav-links a:hover,.nav-links a[aria-current="page"]{color:var(--primary);border-color:var(--secondary)}
+        .btn{display:inline-block;text-decoration:none;font-weight:600;font-size:15px;padding:13px 26px;border-radius:10px;border:2px solid var(--primary);cursor:pointer;font-family:inherit;transition:background .2s,color .2s,border-color .2s}
+        .btn-solid{background:var(--primary);color:#fff}.btn-solid:hover{background:var(--secondary);border-color:var(--secondary)}
+        .btn-line{background:transparent;color:var(--primary)}.btn-line:hover{background:var(--primary);color:#fff}
+        .btn-sm{padding:9px 20px;font-size:14px}
+        .nav-toggle{display:none;background:none;border:0;cursor:pointer;color:var(--primary);padding:6px}
+        .nav-toggle svg{width:26px;height:26px;display:block}
 
-        /* HERO */
-        .hero {
-          min-height: 100vh;
-          display: grid; grid-template-columns: 1fr 1fr; align-items: center;
-          padding: 120px 56px 80px;
-          gap: 60px;
-          position: relative;
-          overflow: hidden;
-        }
-        .hero::before {
-          content: '';
-          position: absolute; inset: 0;
-          background: radial-gradient(ellipse 60% 80% at 100% 50%, rgba(27,122,74,0.08) 0%, transparent 70%);
-        }
-        .hero-tag {
-          display: inline-flex; align-items: center; gap: 8px;
-          background: rgba(27,122,74,0.1); border: 1px solid rgba(27,122,74,0.2);
-          color: var(--green); border-radius: 100px; padding: 6px 14px;
-          font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
-          margin-bottom: 24px;
-        }
-        .hero-tag::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--green-light); }
-        .hero h1 {
-          font-family: 'Fraunces', serif;
-          font-size: clamp(40px, 5vw, 64px);
-          font-weight: 900;
-          line-height: 1.08;
-          color: var(--navy);
-          margin-bottom: 24px;
-        }
-        .hero h1 em { font-style: normal; color: var(--green); }
-        .hero p {
-          font-size: 17px; line-height: 1.7; color: var(--muted);
-          max-width: 440px; margin-bottom: 40px;
-        }
-        .hero-btns { display: flex; gap: 14px; flex-wrap: wrap; }
-        .btn-primary {
-          background: var(--navy); color: #fff; padding: 14px 28px;
-          border-radius: 10px; font-weight: 600; font-size: 15px;
-          border: 2px solid var(--navy); cursor: pointer;
-          font-family: 'DM Sans', sans-serif; transition: all 0.2s; text-decoration: none;
-          display: inline-block;
-        }
-        .btn-primary:hover { background: var(--green); border-color: var(--green); }
-        .btn-outline {
-          background: transparent; color: var(--navy); padding: 14px 28px;
-          border-radius: 10px; font-weight: 600; font-size: 15px;
-          border: 2px solid var(--navy); cursor: pointer;
-          font-family: 'DM Sans', sans-serif; transition: all 0.2s; text-decoration: none;
-          display: inline-block;
-        }
-        .btn-outline:hover { background: var(--navy); color: #fff; }
+        /* HERO: blueprint that draws itself into a building */
+        .hero{padding:140px 0 80px;background:var(--primary);color:#fff;position:relative;overflow:hidden}
+        .hero::before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px);background-size:40px 40px;mask-image:radial-gradient(ellipse 80% 90% at 70% 50%,#000 30%,transparent 80%);-webkit-mask-image:radial-gradient(ellipse 80% 90% at 70% 50%,#000 30%,transparent 80%)}
+        .hero-grid{position:relative;display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
+        .hero h1{color:#fff;font-size:clamp(40px,5.6vw,68px);font-weight:800;margin-bottom:20px}
+        .hero .tagline{font-family:'Fraunces',serif;font-style:italic;font-size:clamp(20px,2.4vw,26px);color:var(--sand);margin-bottom:18px}
+        .hero p.lead{color:rgba(255,255,255,.78);font-size:18px;max-width:520px;margin-bottom:32px}
+        .hero .btn-solid{background:var(--sand);color:var(--primary);border-color:var(--sand)}
+        .hero .btn-solid:hover{background:#fff;border-color:#fff}
+        .hero .btn-line{color:#fff;border-color:rgba(255,255,255,.5)}
+        .hero .btn-line:hover{background:#fff;color:var(--primary);border-color:#fff}
+        .hero-btns{display:flex;gap:14px;flex-wrap:wrap}
+        .bp{width:100%;height:auto;display:block}
+        .bp .ln{fill:none;stroke:var(--sand);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1}
+        .bp .ln.fine{stroke:rgba(255,255,255,.55);stroke-width:1.2}
+        .bp .fill{fill:rgba(44,160,106,.0);animation:fillIn 1s 3.2s forwards}
+        .bp text{font-family:'DM Sans',sans-serif;font-size:11px;fill:rgba(255,255,255,.6);opacity:0;animation:fade .6s 3s forwards}
+        .bp .ln{animation:draw 2.6s cubic-bezier(.6,.1,.2,1) forwards}
+        .bp .d1{animation-delay:.2s}.bp .d2{animation-delay:.7s}.bp .d3{animation-delay:1.2s}.bp .d4{animation-delay:1.7s}
+        @keyframes draw{to{stroke-dashoffset:0}}
+        @keyframes fade{to{opacity:1}}
+        @keyframes fillIn{to{fill:rgba(44,160,106,.22)}}
 
-        /* HERO IMAGE SIDE */
-        .hero-visual {
-          position: relative; border-radius: 20px; overflow: hidden;
-          height: 520px;
-        }
-        .hero-img {
-          width: 100%; height: 100%; object-fit: cover;
-          filter: brightness(0.85) saturate(1.1);
-        }
-        .hero-img-placeholder {
-          width: 100%; height: 100%;
-          background: linear-gradient(135deg, var(--navy) 0%, #1B4F72 50%, var(--green) 100%);
-          display: flex; flex-direction: column; align-items: center; justify-content: center;
-          color: rgba(255,255,255,0.3);
-          gap: 16px;
-        }
-        .hero-img-placeholder svg { width: 80px; height: 80px; }
-        .hero-img-placeholder span { font-size: 14px; }
-        .hero-badge {
-          position: absolute; bottom: 24px; left: 24px;
-          background: rgba(255,255,255,0.95); backdrop-filter: blur(8px);
-          border-radius: 14px; padding: 16px 20px;
-          box-shadow: 0 8px 32px rgba(0,0,0,0.15);
-        }
-        .hero-badge .num { font-family: 'Fraunces', serif; font-size: 32px; font-weight: 900; color: var(--navy); }
-        .hero-badge .label { font-size: 12px; color: var(--muted); font-weight: 500; }
-        .hero-badge2 {
-          position: absolute; top: 24px; right: 24px;
-          background: var(--green); border-radius: 14px; padding: 14px 18px;
-          color: #fff;
-        }
-        .hero-badge2 .num { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 900; }
-        .hero-badge2 .label { font-size: 11px; font-weight: 500; opacity: 0.85; }
+        /* FACTS STRIP */
+        .facts{background:var(--sand);padding:0}
+        .facts-in{display:grid;grid-template-columns:repeat(4,1fr)}
+        .fact{padding:30px 24px;border-right:1px solid rgba(11,30,61,.15)}
+        .fact:last-child{border-right:0}
+        .fact b{display:block;font-family:'Fraunces',serif;font-size:34px;font-weight:800;color:var(--primary);line-height:1}
+        .fact span{font-size:14px;color:#3c4350}
 
-        /* MISSION VISION */
-        .mv-section {
-          padding: 80px 56px;
-          display: grid; grid-template-columns: 1fr 1fr; gap: 32px;
-        }
-        .mv-card {
-          background: #fff; border-radius: 20px; padding: 44px 40px;
-          border: 1px solid var(--mid);
-          position: relative; overflow: hidden;
-          transition: transform 0.3s, box-shadow 0.3s;
-        }
-        .mv-card:hover { transform: translateY(-4px); box-shadow: 0 20px 60px rgba(11,30,61,0.1); }
-        .mv-card::after {
-          content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 4px;
-          background: linear-gradient(90deg, var(--green), var(--green-light));
-          transform: scaleX(0); transition: transform 0.3s;
-          transform-origin: left;
-        }
-        .mv-card:hover::after { transform: scaleX(1); }
-        .mv-icon {
-          width: 56px; height: 56px; border-radius: 14px;
-          background: rgba(27,122,74,0.1);
-          display: grid; place-items: center;
-          margin-bottom: 24px;
-        }
-        .mv-icon svg { width: 28px; height: 28px; color: var(--green); }
-        .mv-card h2 { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 700; color: var(--navy); margin-bottom: 14px; }
-        .mv-card p { color: var(--muted); line-height: 1.7; font-size: 15px; }
+        /* ABOUT */
+        .about-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:56px;align-items:start}
+        .about-copy p{color:var(--muted);font-size:17px;margin-bottom:18px;max-width:62ch}
+        .about-copy p:first-of-type{color:var(--text);font-size:19px}
+        .trust{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+        .trust div{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px 20px;display:flex;flex-direction:column;gap:10px}
+        .trust svg{width:28px;height:28px;color:var(--secondary)}
+        .trust strong{font-family:'Fraunces',serif;font-size:18px;color:var(--primary);line-height:1.2}
 
-        /* PILLARS */
-        .pillars {
-          padding: 80px 56px;
-          background: var(--navy);
-          position: relative; overflow: hidden;
-        }
-        .pillars::before {
-          content: ''; position: absolute;
-          width: 600px; height: 600px; border-radius: 50%;
-          background: radial-gradient(circle, rgba(27,122,74,0.25) 0%, transparent 70%);
-          top: -200px; right: -100px;
-        }
-        .section-label {
-          text-align: center; margin-bottom: 56px;
-        }
-        .section-label .eyebrow {
-          font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
-          color: var(--green-light); margin-bottom: 12px;
-        }
-        .section-label h2 {
-          font-family: 'Fraunces', serif; font-size: clamp(28px, 4vw, 44px);
-          font-weight: 900; color: #fff; line-height: 1.1;
-        }
-        .pillars-grid {
-          display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
-          position: relative; z-index: 1;
-        }
-        .pillar-card {
-          background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
-          border-radius: 20px; padding: 40px 32px;
-          transition: background 0.3s, transform 0.3s;
-        }
-        .pillar-card:hover { background: rgba(255,255,255,0.1); transform: translateY(-4px); }
-        .pillar-icon {
-          width: 52px; height: 52px; border-radius: 12px; background: rgba(27,122,74,0.3);
-          display: grid; place-items: center; margin-bottom: 20px;
-        }
-        .pillar-icon svg { width: 26px; height: 26px; color: #6EE7A0; }
-        .pillar-card h3 { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 12px; }
-        .pillar-card p { color: rgba(255,255,255,0.6); font-size: 14px; line-height: 1.7; }
+        /* HOW IT WORKS */
+        .how{background:#fff;border-block:1px solid var(--line)}
+        .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:0;counter-reset:s;list-style:none;position:relative}
+        .steps li{padding:0 24px 0 0;position:relative}
+        .steps li::before{counter-increment:s;content:counter(s);width:44px;height:44px;border-radius:50%;background:var(--primary);color:#fff;display:grid;place-items:center;font-family:'Fraunces',serif;font-weight:800;font-size:18px;margin-bottom:18px;position:relative;z-index:1}
+        .steps li:not(:last-child)::after{content:"";position:absolute;top:22px;left:44px;right:0;height:2px;background:repeating-linear-gradient(90deg,var(--secondary) 0 8px,transparent 8px 14px)}
+        .steps h3{font-size:20px;margin-bottom:6px}
+        .steps p{color:var(--muted);font-size:15px}
+
+        /* PRODUCTS + SERVICES */
+        .prod-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+        .prod{border-top:3px solid var(--secondary);background:#fff;padding:26px 22px 28px;border-radius:0 0 var(--radius) var(--radius);border-inline:1px solid var(--line);border-bottom:1px solid var(--line)}
+        .prod h3{font-size:21px;margin-bottom:8px}
+        .prod p{font-size:14.5px;color:var(--muted)}
+        .services{margin-top:48px;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
+        .services h3{font-size:24px;margin-bottom:6px}
+        .services > div:first-child p{color:var(--muted);max-width:44ch}
+        .tick{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:10px 24px}
+        .tick li{position:relative;padding-left:26px;font-size:15px}
+        .tick li::before{content:"";position:absolute;left:0;top:7px;width:14px;height:8px;border-left:2.5px solid var(--secondary);border-bottom:2.5px solid var(--secondary);transform:rotate(-45deg) scale(.9)}
+        .tick.one{grid-template-columns:1fr}
+
+        /* WHY RAPICON */
+        .why{background:var(--primary);color:#fff;position:relative;overflow:hidden}
+        .why-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:56px;align-items:start}
+        .why .tick li{color:rgba(255,255,255,.88);font-size:16px;padding-block:6px;border-bottom:1px solid rgba(255,255,255,.1)}
+        .why .tick li::before{border-color:var(--sand);top:14px}
+        .why .tick{grid-template-columns:1fr;gap:0}
+        .vr{margin-top:28px;border:1px solid rgba(255,255,255,.18);border-radius:var(--radius);padding:24px;background:rgba(255,255,255,.05)}
+        .vr h3{color:#fff;font-size:20px;margin-bottom:6px}
+        .vr p{color:rgba(255,255,255,.72);font-size:15px}
+
+        /* PROJECTS */
+        .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px}
+        .chip{border:1.5px solid var(--primary);background:transparent;color:var(--primary);padding:8px 18px;border-radius:100px;font:600 14px 'DM Sans',sans-serif;cursor:pointer;transition:background .2s,color .2s}
+        .chip:hover{background:rgba(11,30,61,.08)}
+        .chip[aria-pressed="true"]{background:var(--primary);color:#fff}
+        .proj-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+        .proj{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:26px;display:flex;flex-direction:column;gap:10px}
+        .proj[hidden]{display:none}
+        .proj.wide{grid-column:span 2;background:var(--primary);border-color:var(--primary);color:#fff}
+        .proj.wide h3{color:#fff}.proj.wide p,.proj.wide .meta{color:rgba(255,255,255,.75)}
+        .proj .tag{align-self:flex-start;font-size:12px;font-weight:600;color:var(--secondary);background:rgba(27,122,74,.1);padding:3px 10px;border-radius:100px}
+        .proj.wide .tag{color:var(--sand);background:rgba(221,214,163,.15)}
+        .proj h3{font-size:22px}
+        .proj p{font-size:15px;color:var(--muted)}
+        .meta{display:flex;gap:6px 18px;flex-wrap:wrap;font-size:13.5px;color:var(--muted);margin-top:auto;padding-top:8px;border-top:1px dashed var(--line)}
+        .proj.wide .meta{border-color:rgba(255,255,255,.2)}
+        .meta b{color:inherit;font-weight:600}
+        .all-list{margin-top:44px}
+        .all-list h3{font-size:22px;margin-bottom:14px}
+        .all-list ol{columns:2;column-gap:48px;padding-left:28px;color:var(--muted);font-size:15px}
+        .all-list li{padding:4px 0;break-inside:avoid}
+
+        /* ONGOING */
+        .ongoing{background:#fff;border-block:1px solid var(--line)}
+        .og{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+        .og h2{font-size:clamp(28px,4vw,40px);font-weight:800;margin-bottom:12px}
+        .og p{color:var(--muted);font-size:17px;margin-bottom:18px}
+        .plots{display:flex;gap:12px;flex-wrap:wrap}
+        .plot{border:2px solid var(--secondary);border-radius:6px;padding:14px 18px;font-family:'Fraunces',serif;font-weight:800;color:var(--primary);font-size:20px;background:repeating-linear-gradient(0deg,transparent 0 11px,rgba(27,122,74,.08) 11px 12px)}
+        .plot small{display:block;font:500 12px 'DM Sans',sans-serif;color:var(--muted)}
+        .og-map{background:var(--primary);border-radius:var(--radius);padding:26px}
+        .og-map svg{display:block;width:100%;height:auto}
+
+        /* MISSION / VISION */
+        .mv{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+        .mv div{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:36px}
+        .mv h3{font-size:26px;margin-bottom:10px}
+        .mv p{color:var(--muted)}
 
         /* LEADERSHIP */
-        .leadership { padding: 80px 56px; }
-        .leadership .section-label h2 { color: var(--navy); }
-        .leadership .section-label .eyebrow { color: var(--green); }
-        .leadership-grid {
-          display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px;
-        }
-        .leader-card {
-          background: #fff; border-radius: 20px; overflow: hidden;
-          border: 1px solid var(--mid);
-          transition: transform 0.3s, box-shadow 0.3s;
-        }
-        .leader-card:hover { transform: translateY(-6px); box-shadow: 0 24px 64px rgba(11,30,61,0.12); }
-        .leader-photo {
-          height: 220px;
-          background: linear-gradient(135deg, var(--navy), #1B5E85);
-          display: flex; align-items: center; justify-content: center;
-          position: relative; overflow: hidden;
-        }
-        .leader-photo::after {
-          content: ''; position: absolute; inset: 0;
-          background: linear-gradient(to bottom, transparent 60%, rgba(11,30,61,0.4));
-        }
-        .leader-avatar {
-          width: 90px; height: 90px; border-radius: 50%;
-          background: rgba(255,255,255,0.15);
-          display: flex; align-items: center; justify-content: center;
-          font-family: 'Fraunces', serif; font-size: 36px; font-weight: 900; color: rgba(255,255,255,0.6);
-          border: 3px solid rgba(255,255,255,0.2);
-        }
-        .leader-info { padding: 24px 28px 28px; }
-        .leader-info h3 { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
-        .leader-role { font-size: 13px; font-weight: 600; color: var(--green); margin-bottom: 14px; }
-        .leader-bio { font-size: 13px; color: var(--muted); line-height: 1.65; }
+        .leaders{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+        .leader{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:28px}
+        .avatar{width:64px;height:64px;border-radius:50%;background:var(--primary);color:var(--sand);display:grid;place-items:center;font-family:'Fraunces',serif;font-weight:800;font-size:22px;margin-bottom:16px}
+        .leader h3{font-size:21px}
+        .role{color:var(--secondary);font-weight:600;font-size:14px;margin:2px 0 12px}
+        .leader p{font-size:14.5px;color:var(--muted)}
 
         /* CTA */
-        .cta-section {
-          margin: 0 56px 80px;
-          background: linear-gradient(135deg, var(--navy) 0%, #0F2E55 50%, #1B4530 100%);
-          border-radius: 28px; padding: 80px 72px;
-          display: flex; align-items: center; justify-content: space-between; gap: 40px;
-          position: relative; overflow: hidden;
-        }
-        .cta-section::before {
-          content: '';
-          position: absolute; width: 400px; height: 400px; border-radius: 50%;
-          background: radial-gradient(circle, rgba(110,231,160,0.15) 0%, transparent 70%);
-          right: -100px; top: -100px;
-        }
-        .cta-text h2 {
-          font-family: 'Fraunces', serif; font-size: clamp(26px, 3.5vw, 40px);
-          font-weight: 900; color: #fff; margin-bottom: 12px; line-height: 1.2;
-        }
-        .cta-text p { color: rgba(255,255,255,0.65); font-size: 16px; max-width: 380px; }
-        .cta-btn {
-          background: var(--green-light); color: #fff; padding: 18px 36px;
-          border-radius: 12px; font-weight: 700; font-size: 16px; border: none;
-          cursor: pointer; font-family: 'DM Sans', sans-serif;
-          white-space: nowrap; transition: background 0.2s;
-          text-decoration: none; display: inline-block;
-        }
-        .cta-btn:hover { background: #25C07D; }
+        .cta{padding:0 0 88px}
+        .cta-box{background:var(--primary);border-radius:24px;padding:56px;display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap;position:relative;overflow:hidden}
+        .cta-box::after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;border:2px solid rgba(221,214,163,.35);border-radius:50%}
+        .cta-box h2{color:#fff;font-size:clamp(26px,3.4vw,38px);font-weight:800;max-width:20ch}
+        .cta-box p{color:rgba(255,255,255,.72);margin-top:10px;max-width:46ch}
+        .cta-box .btn{background:var(--sand);color:var(--primary);border-color:var(--sand);position:relative;z-index:1}
+        .cta-box .btn:hover{background:#fff;border-color:#fff}
 
         /* FOOTER */
-        footer {
-          background: var(--navy); padding: 60px 56px 32px;
-        }
-        .footer-top {
-          display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px;
-          padding-bottom: 48px; border-bottom: 1px solid rgba(255,255,255,0.1);
-          margin-bottom: 32px;
-        }
-        .footer-brand .logo-text { color: #fff; }
-        .footer-brand p { color: rgba(255,255,255,0.5); font-size: 13px; line-height: 1.7; margin-top: 14px; max-width: 260px; }
-        .footer-col h4 { color: rgba(255,255,255,0.4); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600; margin-bottom: 16px; }
-        .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
-        .footer-col ul a { color: rgba(255,255,255,0.7); text-decoration: none; font-size: 14px; transition: color 0.2s; }
-        .footer-col ul a:hover { color: #fff; }
-        .footer-bottom { display: flex; justify-content: space-between; align-items: center; }
-        .footer-bottom p { color: rgba(255,255,255,0.35); font-size: 13px; }
+        footer{background:var(--primary);color:#fff;padding:56px 0 28px}
+        .foot{display:grid;grid-template-columns:2fr 1fr 1fr 1.4fr;gap:40px;padding-bottom:36px;border-bottom:1px solid rgba(255,255,255,.12)}
+        footer .logo-text{color:#fff}
+        footer .logo-mark{background:var(--sand);color:var(--primary)}
+        .foot p{color:rgba(255,255,255,.6);font-size:14px;margin-top:14px;max-width:34ch}
+        .foot h4{font:600 14px 'DM Sans',sans-serif;color:var(--sand);margin-bottom:14px}
+        .foot ul{list-style:none;display:grid;gap:9px}
+        .foot a{color:rgba(255,255,255,.75);text-decoration:none;font-size:14.5px}
+        .foot a:hover{color:#fff;text-decoration:underline}
+        .foot-bottom{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:22px;font-size:13px;color:rgba(255,255,255,.5)}
 
-        /* ANIMATIONS */
-        @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(30px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .anim { opacity: 0; animation: fadeUp 0.7s ease forwards; }
-        .anim-d1 { animation-delay: 0.1s; }
-        .anim-d2 { animation-delay: 0.25s; }
-        .anim-d3 { animation-delay: 0.4s; }
-        .anim-d4 { animation-delay: 0.55s; }
+        /* SCROLL REVEAL (one gentle reveal per block) */
+        .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+        .reveal.in{opacity:1;transform:none}
 
-        @media (max-width: 900px) {
-          nav { padding: 16px 24px; }
-          .hero { grid-template-columns: 1fr; padding: 100px 24px 60px; }
-          .mv-section, .pillars-grid, .leadership-grid, .footer-top { grid-template-columns: 1fr; }
-          .pillars, .leadership, .mv-section { padding: 60px 24px; }
-          .cta-section { margin: 0 24px 60px; padding: 48px 32px; flex-direction: column; }
-          footer { padding: 40px 24px 24px; }
-          .hero-visual { height: 360px; }
+        @media (max-width:960px){
+          section{padding:64px 0}
+          .wrap,.nav-in{padding-inline:20px}
+          .hero{padding:112px 0 56px}
+          .hero-grid,.about-grid,.why-grid,.og,.services{grid-template-columns:1fr;gap:36px}
+          .facts-in{grid-template-columns:1fr 1fr}
+          .fact:nth-child(2){border-right:0}
+          .fact:nth-child(-n+2){border-bottom:1px solid rgba(11,30,61,.15)}
+          .steps{grid-template-columns:1fr 1fr;gap:32px 0}
+          .steps li:nth-child(2)::after{display:none}
+          .prod-grid{grid-template-columns:1fr 1fr}
+          .proj-grid{grid-template-columns:1fr 1fr}
+          .leaders,.mv{grid-template-columns:1fr}
+          .foot{grid-template-columns:1fr 1fr}
+          .cta-box{padding:36px 26px}
+          .nav-toggle{display:block}
+          .nav-cta{display:none}
+          .nav-links{position:absolute;top:100%;left:0;right:0;flex-direction:column;gap:0;background:var(--bg);border-bottom:1px solid var(--line);max-height:0;overflow:hidden;transition:max-height .3s}
+          .nav-links.open{max-height:360px}
+          .nav-links a{display:block;padding:14px 20px;border-bottom:0}
+        }
+        @media (max-width:620px){
+          .trust,.tick,.prod-grid,.proj-grid,.steps,.foot{grid-template-columns:1fr}
+          .proj.wide{grid-column:auto}
+          .all-list ol{columns:1}
+          .steps li::after{display:none!important}
+          .facts-in{grid-template-columns:1fr 1fr}
+        }
+        @media (prefers-reduced-motion:reduce){
+          *,*::before,*::after{animation:none!important;transition:none!important}
+          .reveal{opacity:1;transform:none}
+          .bp .ln{stroke-dashoffset:0}.bp text{opacity:1}.bp .fill{fill:rgba(44,160,106,.22)}
+          html{scroll-behavior:auto}
         }
     </style>
 </head>
 <body>
 
-<!-- NAV -->
-<nav>
-    <a class="logo" href="#">
-        <div class="logo-mark">R</div>
-        <span class="logo-text">Rapicon</span>
-    </a>
-    <!--<ul class="nav-links">
-        <li><a href="#">Home</a></li>
-        <li><a href="#" class="active">About Us</a></li>
-        <li><a href="#">Contact us</a></li>
-        <li><a href="#">Blog</a></li>
-    </ul>-->
-    <button class="nav-cta">Join the Network</button>
+<nav aria-label="Main">
+    <div class="nav-in">
+        <a class="logo" href="/" aria-label="Rapicon home"><span class="logo-mark">R</span><span class="logo-text">Rapicon</span></a>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="/">Home</a></li>
+            <li><a href="#projects">Projects</a></li>
+            <li><a href="#services">Services</a></li>
+            <li><a href="#about" aria-current="page">About Us</a></li>
+            <li><a href="#contact">Contact Us</a></li>
+        </ul>
+        <a class="btn btn-solid btn-sm nav-cta" href="#">Browse Plans</a>
+        <button class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="navLinks">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+    </div>
 </nav>
 
-<!-- HERO -->
-<section class="hero">
-    <div class="hero-content">
-        <div class="hero-tag anim anim-d1">India's #1 Construction Platform</div>
-        <h1 class="anim anim-d2">Rapicon: Building India's<br><em>Future Together</em></h1>
-        <p class="anim anim-d3">The trusted platform connecting architects, builders, and contractors for seamless project collaboration. Powered by technology, driven by trust.</p>
-        <div class="hero-btns anim anim-d4">
-            <a href="#" class="btn-primary">Join the Network</a>
-            <a href="#" class="btn-outline">Learn More</a>
-        </div>
-    </div>
-    <div class="hero-visual anim anim-d2">
-        <div class="hero-img-placeholder">
-            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="10" y="40" width="16" height="30" rx="2" fill="currentColor"/>
-                <rect x="32" y="25" width="16" height="45" rx="2" fill="currentColor"/>
-                <rect x="54" y="10" width="16" height="60" rx="2" fill="currentColor"/>
-                <line x1="5" y1="72" x2="75" y2="72" stroke="currentColor" stroke-width="3"/>
-                <!-- crane -->
-                <line x1="60" y1="10" x2="60" y2="2" stroke="currentColor" stroke-width="2"/>
-                <line x1="40" y1="2" x2="70" y2="2" stroke="currentColor" stroke-width="2"/>
-                <line x1="45" y1="2" x2="50" y2="10" stroke="currentColor" stroke-width="1.5"/>
-            </svg>
-            <span>Construction Site · India</span>
-        </div>
-        <div class="hero-badge">
-            <div class="num">10K+</div>
-            <div class="label">Projects Delivered</div>
-        </div>
-        <div class="hero-badge2">
-            <div class="num">500+</div>
-            <div class="label">Partner Firms</div>
-        </div>
-    </div>
-</section>
-
-<!-- MISSION VISION -->
-<section class="mv-section">
-    <div class="mv-card">
-        <div class="mv-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/>
-                <line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/>
-                <line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/>
+<main>
+    <!-- HERO -->
+    <header class="hero">
+        <div class="wrap hero-grid">
+            <div>
+                <p class="tagline">“Virtuality To Reality”</p>
+                <h1>From the first drawing to the finished building</h1>
+                <p class="lead">Rapicon Infrastructure LLP plans, designs and builds homes, commercial buildings and service buildings. You see the finished result in 3D and VR before work starts, and the final amount is locked at the start of the project.</p>
+                <div class="hero-btns">
+                    <a class="btn btn-solid" href="#">Browse Plans</a>
+                    <a class="btn btn-line" href="#projects">See our projects</a>
+                </div>
+            </div>
+            <!-- Blueprint draws itself, then fills in -->
+            <svg class="bp" viewBox="0 0 440 340" role="img" aria-label="A floor plan being drawn">
+                <rect class="fill" x="40" y="40" width="360" height="240" rx="2"/>
+                <g>
+                    <path class="ln d1" pathLength="1" d="M40 40H400V280H40Z"/>
+                    <path class="ln d2" pathLength="1" d="M40 160H200M200 40V160M200 220V280M270 40V130H400M270 190V280M270 190H400"/>
+                    <path class="ln fine d3" pathLength="1" d="M200 160a28 28 0 0 1 28-28M270 130a22 22 0 0 0-22 22M200 220a24 24 0 0 0 24-24"/>
+                    <path class="ln fine d4" pathLength="1" d="M40 306H400M40 298V314M400 298V314M416 40V280M408 40H424M408 280H424"/>
+                </g>
+                <text x="196" y="324" text-anchor="middle">Plan</text>
+                <text x="430" y="164" transform="rotate(90 430 164)" text-anchor="middle">Layout</text>
+                <text x="120" y="104" text-anchor="middle">Bedroom</text>
+                <text x="335" y="90" text-anchor="middle">Living</text>
+                <text x="335" y="240" text-anchor="middle">Kitchen</text>
+                <text x="120" y="230" text-anchor="middle">Bedroom</text>
             </svg>
         </div>
-        <h2>Our Mission</h2>
-        <p>To streamline the construction ecosystem through technology, fostering trust and efficiency in every project. We connect stakeholders, eliminate friction, and build the foundation for India's next chapter of growth.</p>
-    </div>
-    <div class="mv-card">
-        <div class="mv-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-            </svg>
-        </div>
-        <h2>Our Vision</h2>
-        <p>To be the digital backbone of India's infrastructure growth, empowering every stakeholder to build better, faster. We envision a future where every construction project in India runs on a foundation of transparency and innovation.</p>
-    </div>
-</section>
+    </header>
 
-<!-- PILLARS -->
-<section class="pillars">
-    <div class="section-label">
-        <div class="eyebrow">What We Stand For</div>
-        <h2>Driving Growth Through<br>Collaboration</h2>
+    <!-- FACTS -->
+    <div class="facts" aria-label="Rapicon at a glance">
+        <div class="wrap facts-in">
+            <div class="fact"><b>10+ years</b><span>of experience</span></div>
+            <div class="fact"><b>365</b><span>point checklist on every build</span></div>
+            <div class="fact"><b>14</b><span>completed projects listed below</span></div>
+            <div class="fact"><b>1,024</b><span>homes in our Light House project</span></div>
+        </div>
     </div>
-    <div class="pillars-grid">
-        <div class="pillar-card">
-            <div class="pillar-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                    <circle cx="9" cy="7" r="4"/>
-                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+
+    <!-- ABOUT -->
+    <section id="about">
+        <div class="wrap about-grid">
+            <div class="about-copy reveal">
+                <h2 style="font-size:clamp(28px,4vw,42px);font-weight:800;margin-bottom:20px">Owning a home is something permanent</h2>
+                <p>Building your own home means you get exactly what you want, as long as it fits your budget. Rapicon plans and designs around your requirements and delivers the build with a team that works together.</p>
+                <p>Our team brings together engineers, architects, civil engineers, interior designers and software engineers. We work on house construction, building construction and commercial construction, with transparency, assured quality, no delays and safeguards for the customer.</p>
+                <p>Sustainability is part of our long-term plan for growth. Every part of our business is held to professional, high standards.</p>
+            </div>
+            <div class="trust reveal">
+                <div>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    <strong>Professional team work</strong>
+                </div>
+                <div>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5 17 22l-5-3-5 3 1.5-8.5"/></svg>
+                    <strong>10+ years of experience</strong>
+                </div>
+                <div>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 15l2 2 4-4"/></svg>
+                    <strong>Easy paperwork</strong>
+                </div>
+                <div>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                    <strong>Work done on time</strong>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="how" id="how">
+        <div class="wrap">
+            <div class="sec-head reveal"><h2>How it works</h2><p>Pick what you want to build, see it before it exists, and pay on terms that suit you.</p></div>
+            <ol class="steps reveal">
+                <li><h3>Choose a design</h3><p>Browse wide drawings covering planning, layout and structure.</p></li>
+                <li><h3>Choose a package</h3><p>Pick the package that fits your plot and budget.</p></li>
+                <li><h3>Choose a payment option</h3><p>Pick how you want to pay. The final amount is locked at the start.</p></li>
+                <li><h3>Confirm and build</h3><p>See the finished product in 2D, 3D and VR, then we begin.</p></li>
+            </ol>
+        </div>
+    </section>
+
+    <!-- PRODUCTS + SERVICES -->
+    <section id="services">
+        <div class="wrap">
+            <div class="sec-head reveal"><h2>One stop for turnkey projects</h2><p>From a barren plot to a finished building, handled by one team.</p></div>
+            <div class="prod-grid reveal">
+                <div class="prod"><h3>Residential</h3><p>Houses, row houses, villas and apartments.</p></div>
+                <div class="prod"><h3>Customized</h3><p>A well-defined plan built around your idea.</p></div>
+                <div class="prod"><h3>Service buildings</h3><p>Auditoriums, hospitals and public-use buildings.</p></div>
+                <div class="prod"><h3>Commercial</h3><p>Shops, malls and multi-storey commercial buildings.</p></div>
+            </div>
+            <div class="services reveal">
+                <div>
+                    <h3>Services we provide</h3>
+                    <p>Approvals, engineering and construction support, all in one place.</p>
+                </div>
+                <ul class="tick">
+                    <li>Project management consultancy</li>
+                    <li>Chartered engineer</li>
+                    <li>Government tenders</li>
+                    <li>Builders and colonizers</li>
+                    <li>TNCP</li>
+                    <li>Vikas Anumati</li>
+                    <li>RERA</li>
+                    <li>Turnkey, from barren land to finished project</li>
+                    <li>Wide drawings: planning, layout and structure</li>
+                    <li>2D, 3D and virtual reality</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- WHY RAPICON -->
+    <section class="why on-dark" id="why">
+        <div class="wrap why-grid">
+            <div class="reveal">
+                <div class="sec-head" style="margin-bottom:0"><h2>Why people build with Rapicon</h2><p>Clear drawings, a fixed price and engineers who check the work at every stage.</p></div>
+                <div class="vr">
+                    <h3>See it before we build it</h3>
+                    <p>We show the finished product using augmented reality (AR) and virtual reality (VR), so you walk through the result before work starts.</p>
+                </div>
+            </div>
+            <ul class="tick reveal">
+                <li>Wide drawings: planning, layout, structure, 2D, 3D and virtual reality</li>
+                <li>Finished product shown before the project starts</li>
+                <li>Final amount locked at the start of the project</li>
+                <li>365-point checklist on which Rapicon works</li>
+                <li>Material quality checked by engineers at every stage</li>
+                <li>Certified and trained contractors</li>
+                <li>Day-to-day progress checks with strict follow-up</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section id="projects">
+        <div class="wrap">
+            <div class="sec-head reveal"><h2>Projects we have completed</h2><p>Housing, commercial, industrial and civic work, mostly in and around Indore.</p></div>
+            <div class="filters" role="group" aria-label="Filter projects">
+                <button class="chip" data-f="all" aria-pressed="true">All</button>
+                <button class="chip" data-f="residential" aria-pressed="false">Residential</button>
+                <button class="chip" data-f="commercial" aria-pressed="false">Commercial</button>
+                <button class="chip" data-f="industrial" aria-pressed="false">Industrial</button>
+                <button class="chip" data-f="infra" aria-pressed="false">Infrastructure</button>
+            </div>
+            <div class="proj-grid">
+                <article class="proj wide" data-c="residential">
+                    <span class="tag">Residential · Indore</span>
+                    <h3>Light House Project</h3>
+                    <p>A Light House housing project built with a prefabricated sandwich panel system on a pre-engineered steel frame. Rapicon completed 30,000 sq ft of RCC work in just one month.</p>
+                    <div class="meta"><span><b>1,024</b> homes (S+8)</span><span><b>44,798 sq m</b> built-up</span><span>Kanadia Ext., Indore</span></div>
+                </article>
+                <article class="proj" data-c="commercial">
+                    <span class="tag">Commercial · Indore</span>
+                    <h3>Kalyan Mart</h3>
+                    <p>A large retail and entertainment building with four anchor stores, a play zone and a five-screen multiplex.</p>
+                    <div class="meta"><span><b>2 lakh sq ft</b> built-up</span><span>200-car multilevel parking</span></div>
+                </article>
+                <article class="proj" data-c="infra">
+                    <span class="tag">Infrastructure · Indore</span>
+                    <h3>Super Corridor Bridge</h3>
+                    <p>The first six-lane railway overbridge in Madhya Pradesh. Our director supervised the main railway girder casting and launching.</p>
+                </article>
+                <article class="proj" data-c="infra">
+                    <span class="tag">Infrastructure · Indore</span>
+                    <h3>Air pollution control units</h3>
+                    <p>A CSR project of Avantika Gas Limited with Indore Nagar Nigam. Units were installed at 12 major locations across the city.</p>
+                    <div class="meta"><span><b>7 days</b> to install</span></div>
+                </article>
+                <article class="proj" data-c="industrial">
+                    <span class="tag">Industrial · Shirpur</span>
+                    <h3>ARK Flour Mill</h3>
+                    <p>Started with an 18-month target during COVID. Four buildings: main building, warehouse and two silos.</p>
+                    <div class="meta"><span><b>40,000 sq ft</b> built-up</span></div>
+                </article>
+                <article class="proj" data-c="commercial">
+                    <span class="tag">Institutional · Indore</span>
+                    <h3>RRCAT Auditorium</h3>
+                    <p>Delivered as a turnkey project, from drawing and layout selection to the finished auditorium.</p>
+                </article>
+                <article class="proj" data-c="residential">
+                    <span class="tag">Residential · Indore</span>
+                    <h3>Park Heights</h3>
+                    <p>Premium 1BHK apartments delivered as a turnkey project.</p>
+                    <div class="meta"><span><b>20</b> units</span><span><b>10,000 sq ft</b> built-up</span></div>
+                </article>
+                <article class="proj" data-c="residential">
+                    <span class="tag">Plotting · Indore</span>
+                    <h3>Park Green</h3>
+                    <p>A plotting project of 800, 1,000 and 1,200 sq ft plots, completed within the 18-month target.</p>
+                    <div class="meta"><span><b>60</b> plots</span><span><b>1,75,000 sq ft</b></span></div>
+                </article>
+                <article class="proj" data-c="residential">
+                    <span class="tag">Residential · Indore</span>
+                    <h3>Park Villa and Phase 2</h3>
+                    <p>Garden-facing row houses in 1BHK, 2BHK and 3BHK. Phase 2 followed because of high demand.</p>
+                    <div class="meta"><span>Phase 1: <b>10</b> houses, 900 sq ft</span><span>Phase 2: 600 sq ft units</span></div>
+                </article>
+                <article class="proj" data-c="residential commercial">
+                    <span class="tag">Residential and commercial · Indore</span>
+                    <h3>Park Grand</h3>
+                    <p>Row houses on 600 and 750 sq ft plots in 1BHK, 2BHK and 3BHK, with commercial shops on the other side of the project.</p>
+                </article>
+            </div>
+
+            <div class="all-list reveal">
+                <h3>All completed projects</h3>
+                <ol>
+                    <li>C.P.E.A.P (Center for Pavement Excellence Asia Pacific), Australia</li>
+                    <li>Light House Project, Indore</li>
+                    <li>A.R.K. Flour Mill, Shirpur</li>
+                    <li>Air Pollution Unit, Indore</li>
+                    <li>Park Heights, Indore</li>
+                    <li>Park Green, Indore</li>
+                    <li>Park Villa, Indore</li>
+                    <li>Park Villa Phase 2, Indore</li>
+                    <li>Super Corridor Bridge, Indore</li>
+                    <li>Kalyan Mart, Rajendra Nagar, Indore</li>
+                    <li>RR CAT Auditorium, Indore</li>
+                    <li>Maple Hospital, Indore</li>
+                    <li>Kids Village, Indore</li>
+                    <li>ARQ Polymers, Pithampur</li>
+                </ol>
+            </div>
+        </div>
+    </section>
+
+    <!-- ONGOING -->
+    <section class="ongoing" id="ongoing">
+        <div class="wrap og">
+            <div class="reveal">
+                <h2>Now building: Park City, Mhow</h2>
+                <p>400 premium plots in three sizes, laid out along 7.5 m wide roads with green open space.</p>
+                <div class="plots">
+                    <div class="plot">12 × 30 ft<small>plot size</small></div>
+                    <div class="plot">15 × 30 ft<small>plot size</small></div>
+                    <div class="plot">15 × 40 ft<small>plot size</small></div>
+                </div>
+            </div>
+            <div class="og-map reveal" aria-hidden="true">
+                <svg viewBox="0 0 320 220" fill="none" stroke="#DDD6A3" stroke-width="1.4">
+                    <path d="M10 10H310V210H10Z" stroke-opacity=".6"/>
+                    <path d="M10 70H310M10 130H310" stroke-opacity=".6"/>
+                    <g stroke-opacity=".85">
+                        <path d="M40 10V70M70 10V70M100 10V70M130 10V70M160 10V70M190 10V70M220 10V70M250 10V70M280 10V70"/>
+                        <path d="M40 130V210M70 130V210M100 130V210M130 130V210M160 130V210M190 130V210M220 130V210M250 130V210M280 130V210"/>
+                    </g>
+                    <path d="M10 70V130H310V70" stroke="#2CA06A" stroke-width="2"/>
                 </svg>
             </div>
-            <h3>Trusted Partnerships</h3>
-            <p>To nurture partnerships and through technology, trust and efficiency in every project. We build relationships that outlast any single project.</p>
         </div>
-        <div class="pillar-card">
-            <div class="pillar-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <ellipse cx="12" cy="5" rx="9" ry="3"/>
-                    <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
-                    <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
-                </svg>
-            </div>
-            <h3>Structured Innovation</h3>
-            <p>To be the digital backbone of India's infrastructure growth, empowering every stakeholder. We invest in tools that make complex processes simple.</p>
-        </div>
-        <div class="pillar-card">
-            <div class="pillar-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
-                    <line x1="8" y1="21" x2="16" y2="21"/>
-                    <line x1="12" y1="17" x2="12" y2="21"/>
-                </svg>
-            </div>
-            <h3>Infrastructure-Tech</h3>
-            <p>Connected tech onsen are Infrastructure and every stakeholder to build better, faster. Marrying deep domain expertise with cutting-edge technology.</p>
-        </div>
-    </div>
-</section>
+    </section>
 
-<!-- LEADERSHIP -->
-<section class="leadership">
-    <div class="section-label">
-        <div class="eyebrow">The People Behind Rapicon</div>
-        <h2>Meet the Leadership</h2>
-    </div>
-    <div class="leadership-grid">
-        <div class="leader-card">
-            <div class="leader-photo" style="background: linear-gradient(135deg, #0B2D5E, #1B7A4A);">
-                <div class="leader-avatar">AS</div>
-            </div>
-            <div class="leader-info">
-                <h3>Anuj Agrawal</h3>
-                <div class="leader-role">CEO & Co-founder</div>
-                <p class="leader-bio">Growth-focused visionary with deep roots in India's construction landscape. Aarav has spent over a decade building institutional frameworks for large-scale infrastructure projects.</p>
+    <!-- MISSION / VISION -->
+    <section>
+        <div class="wrap">
+            <div class="mv reveal">
+                <div><h3>Our mission</h3><p>To give you a well-defined plan for your idea and deliver it with transparency, assured quality and no delays.</p></div>
+                <div><h3>Our vision</h3><p>To turn virtual designs into real buildings, so every customer sees the result before they commit to it.</p></div>
             </div>
         </div>
-        <div class="leader-card">
-            <div class="leader-photo" style="background: linear-gradient(135deg, #1B3A5E, #2C5F8A);">
-                <div class="leader-avatar">PD</div>
-            </div>
-            <div class="leader-info">
-                <h3>Jagdeesh Sen</h3>
-                <div class="leader-role">CTO</div>
-                <p class="leader-bio">An architect of digital transformation with a passion for scalable systems. Priya leads the technology vision that makes Rapicon the most reliable platform in the industry.</p>
-            </div>
-        </div>
-        <div class="leader-card">
-            <div class="leader-photo" style="background: linear-gradient(135deg, #1B4A2E, #2A7A4A);">
-                <div class="leader-avatar">VS</div>
-            </div>
-            <div class="leader-info">
-                <h3>Pradhyumn Kuril</h3>
-                <div class="leader-role">Head of Operations</div>
-                <p class="leader-bio">Operations expert with hands-on experience across residential and constructive industries. Vikram ensures every partnership is executed with precision and care.</p>
-            </div>
-        </div>
-    </div>
-</section>
+    </section>
 
-<!-- CTA -->
-<div class="cta-section">
-    <div class="cta-text">
-        <h2>Ready to Transform Your Projects?<br>Partner with Rapicon Today.</h2>
-        <p>Join thousands of architects, builders, and contractors already building better with Rapicon.</p>
-    </div>
-    <a href="#" class="cta-btn">Get Started →</a>
-</div>
+    <!-- LEADERSHIP -->
+    <section id="team" style="padding-top:0">
+        <div class="wrap">
+            <div class="sec-head reveal"><h2>The people behind Rapicon</h2></div>
+            <div class="leaders reveal">
+                <article class="leader">
+                    <div class="avatar" aria-hidden="true">AA</div>
+                    <h3>Er. Anuj Agrawal</h3>
+                    <p class="role">Director and Co-founder</p>
+                    <p>Hands-on with site work, including supervising the main railway girder casting and launching on the Super Corridor Bridge in Indore.</p>
+                </article>
+                <article class="leader">
+                    <div class="avatar" aria-hidden="true">JS</div>
+                    <h3>Jagdeesh Sen</h3>
+                    <p class="role">CTO</p>
+                    <p>Leads the technology behind Rapicon, from the plans store to the mobile app.</p>
+                </article>
+                <article class="leader">
+                    <div class="avatar" aria-hidden="true">PK</div>
+                    <h3>Pradhyumn Kuril</h3>
+                    <p class="role">Head of Operations</p>
+                    <p>Keeps every order and project on schedule and on spec.</p>
+                </article>
+            </div>
+        </div>
+    </section>
 
-<!-- FOOTER -->
+    <!-- CTA -->
+    <div class="cta" id="contact">
+        <div class="wrap">
+            <div class="cta-box reveal">
+                <div>
+                    <h2>Have a plot and an idea? Let’s plan it.</h2>
+                    <p>Tell us what you want to build. We will show you the finished design before work begins.</p>
+                </div>
+                <a class="btn" href="mailto:rapiconinfra@gmail.com">Talk to our team</a>
+            </div>
+        </div>
+    </div>
+</main>
+
 <footer>
-    <div class="footer-top">
-        <div class="footer-brand">
-            <div class="logo">
-                <div class="logo-mark">R</div>
-                <span class="logo-text">Rapicon</span>
+    <div class="wrap">
+        <div class="foot">
+            <div>
+                <a class="logo" href="/"><span class="logo-mark">R</span><span class="logo-text">Rapicon</span></a>
+                <p>Rapicon Infrastructure LLP. “Virtuality To Reality”.</p>
             </div>
-            <p>B2B architecture and construction collaboration platform in India. Building India's future through trusted technology.</p>
+            <div>
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="#about">About Us</a></li>
+                    <li><a href="#projects">Projects</a></li>
+                    <li><a href="#team">Team</a></li>
+                    <li><a href="#contact">Contact Us</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Use</a></li>
+                    <li><a href="#">Cookie Policy</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Contact</h4>
+                <ul>
+                    <li><a href="tel:+917314342979">+91 731 434 2979</a></li>
+                    <li><a href="mailto:Anuj02Agrawal@gmail.com">rapiconinfra@gmail.com</a></li>
+                    <li><a href="https://www.rapiconinfra.com">www.rapiconinfra.com</a></li>
+                </ul>
+            </div>
         </div>
-        <div class="footer-col">
-            <h4>Contact</h4>
-            <ul>
-                <li><a href="#">About Us</a></li>
-                <li><a href="#">Contact Us</a></li>
-                <li><a href="#">Community</a></li>
-                <li><a href="#">Directs</a></li>
-            </ul>
-        </div>
-        <div class="footer-col">
-            <h4>Links</h4>
-            <ul>
-                <li><a href="#">About</a></li>
-                <li><a href="#">Resource</a></li>
-                <li><a href="#">Team</a></li>
-                <li><a href="#">Support</a></li>
-            </ul>
-        </div>
-        <div class="footer-col">
-            <h4>Legal</h4>
-            <ul>
-                <li><a href="#">Privacy Policy</a></li>
-                <li><a href="#">Terms of Use</a></li>
-                <li><a href="#">Cookie Policy</a></li>
-            </ul>
-        </div>
-    </div>
-    <div class="footer-bottom">
-        <p>© 2025 Rapicon. All rights reserved.</p>
-        <p>📞 +91 731 434 2979</p>
+        <div class="foot-bottom"><span>© 2026 Rapicon Infrastructure LLP. All rights reserved.</span></div>
     </div>
 </footer>
 
+<script>
+    // Mobile menu
+    (function(){
+      var t=document.querySelector('.nav-toggle'),l=document.getElementById('navLinks');
+      t.addEventListener('click',function(){
+        var open=l.classList.toggle('open');
+        t.setAttribute('aria-expanded',open);
+        t.setAttribute('aria-label',open?'Close menu':'Open menu');
+      });
+      l.addEventListener('click',function(e){if(e.target.tagName==='A'){l.classList.remove('open');t.setAttribute('aria-expanded','false');}});
+    })();
+
+    // Project filters
+    (function(){
+      var chips=document.querySelectorAll('.chip'),cards=document.querySelectorAll('.proj');
+      chips.forEach(function(c){
+        c.addEventListener('click',function(){
+          chips.forEach(function(x){x.setAttribute('aria-pressed','false')});
+          c.setAttribute('aria-pressed','true');
+          var f=c.dataset.f;
+          cards.forEach(function(card){
+            card.hidden=!(f==='all'||card.dataset.c.split(' ').indexOf(f)>-1);
+          });
+        });
+      });
+    })();
+
+    // Reveal on scroll
+    (function(){
+      var els=document.querySelectorAll('.reveal');
+      if(!('IntersectionObserver' in window)){els.forEach(function(e){e.classList.add('in')});return;}
+      var io=new IntersectionObserver(function(es){
+        es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+      },{threshold:.12});
+      els.forEach(function(e){io.observe(e)});
+    })();
+</script>
 </body>
 </html>

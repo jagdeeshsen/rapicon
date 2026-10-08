@@ -36,7 +36,7 @@ public class UserService {
 
         User user= new User();
 
-        String fullName = request.getFullName();
+        String fullName = request.getPerson();
 
         user.setFullName((fullName == null || fullName.isBlank()) ? "Guest": fullName.trim());
         user.setEmail(request.getEmail());
