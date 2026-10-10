@@ -74,7 +74,7 @@
 
 .info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
 @media (max-width: 600px) { .info-grid { grid-template-columns: 1fr; } }
-.info-item { border: 1px solid var(--border); padding: 14px 16px; background: #fff; }
+.info-item { border: 1px solid var(--border); padding: 10px 16px; background: #fff; }
 .info-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
 .info-value { font-size: 14px; font-weight: 600; min-height: 20px; }
 .info-value.loading { color: var(--border); font-weight: 400; font-style: italic; }

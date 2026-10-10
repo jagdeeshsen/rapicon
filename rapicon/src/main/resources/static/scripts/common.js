@@ -193,13 +193,46 @@
     }
   }
 
+    // --------------------------------------------------
+    // MOBILE NAV TOGGLE
+    // --------------------------------------------------
+
+    function rcInitMobileNav() {
+      const header = document.querySelector(".rc-header");
+      const toggle = document.querySelector(".rc-nav-toggle");
+      const links = document.querySelector(".rc-nav-links");
+      if (!header || !toggle || !links) return;
+
+      function setOpen(open) {
+        header.classList.toggle("rc-nav-open", open);
+        toggle.setAttribute("aria-expanded", String(open));
+        toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+        toggle.textContent = open ? "✕" : "☰";
+      }
+
+      setOpen(false);
+      toggle.addEventListener("click", function () {
+        setOpen(!header.classList.contains("rc-nav-open"));
+      });
+      links.addEventListener("click", function (e) {
+        if (e.target.closest("a")) setOpen(false);
+      });
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") setOpen(false);
+      });
+      window.addEventListener("resize", function () {
+        if (window.innerWidth > 900) setOpen(false);
+      });
+    }
+
   // --------------------------------------------------
   // AUTO-INIT ON EVERY PAGE
   // --------------------------------------------------
 
-  document.addEventListener("DOMContentLoaded", function () {
-    rcWireAccountLink();
-  });
+    document.addEventListener("DOMContentLoaded", function () {
+      rcWireAccountLink();
+      rcInitMobileNav();
+    });
 
   // --------------------------------------------------
   // EXPOSE PUBLIC API

@@ -81,7 +81,7 @@ public class SecurityConfig {
                                 "/vendor-dashboard.html", "/forgot-password.html",
                                 "/contact.html", "/login.html", "/installment-payment.html",
                                 "/register.html", "/designs.html", "/admin.html",
-                                "/css/**", "/images/**", "/favicon.ico", "/scripts/**","ai-assistant-chatbot/**", "/robots.txt"
+                                "/css/**", "/images/**", "/favicon.ico", "/scripts/**","ai-assistant-chatbot/**", "/robots.txt", "/franchise.html"
                         ).permitAll()
 
                         // 3. Public API endpoints

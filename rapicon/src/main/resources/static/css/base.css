@@ -101,9 +101,46 @@ button { font-family: inherit; cursor: pointer; }
 .rc-nav-cta:hover { background: var(--gold-hover); }
 .rc-nav-toggle { display: none; background: none; border: none; color: #fff; font-size: 1.3rem; }
 
+/* after */
 @media (max-width: 900px) {
-  .rc-nav-links, .rc-nav-cta { display: none; }
-  .rc-nav-toggle { display: block; margin-left: auto; }
+  .rc-header-inner { gap: var(--space-4); padding: 0 16px; }
+  .rc-header-actions { margin-left: auto; gap: var(--space-3); }
+  .rc-nav-cta { display: none; }
+
+  .rc-nav-toggle {
+    display: flex;              /* was "none", this is the bug */
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 40px;
+    height: 40px;
+    margin-left: 0;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.5rem;
+    font-family: system-ui, sans-serif;  /* ☰ and ✕ aren't in Plus Jakarta Sans */
+    line-height: 1;
+  }
+
+  .rc-nav-links {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin: 0;
+    flex-direction: column;
+    gap: 0;
+    background: var(--ink);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    padding: var(--space-2) 24px var(--space-4);
+    box-shadow: 0 16px 24px rgba(0,0,0,0.25);
+  }
+  .rc-nav-links a { display: block; padding: 14px 0; font-size: 14px; }
+  .rc-nav-links li + li { border-top: 1px solid rgba(255,255,255,0.06); }
+  .rc-header.rc-nav-open .rc-nav-links { display: flex; }
 }
 
 /* ---------- Buttons (shared: used on home + detail pages) ---------- */
