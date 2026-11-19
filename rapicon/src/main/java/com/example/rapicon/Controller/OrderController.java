@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -31,27 +32,25 @@ public class OrderController {
         try {
             BigDecimal amount;
             if(requestData.getTotalInstallments()>1){
-                amount= requestData.getInstallmentAmount();
+                amount = requestData.getInstallmentAmount();
             }else {
-                amount= requestData.getTotalAmount();
+                amount = requestData.getTotalAmount();
             }
-            BigDecimal amountInPasse= amount.multiply(new BigDecimal(100));
+            BigDecimal amountInPasse = amount.multiply(new BigDecimal(100));
 
             // 5. SAVE ONLY ONCE
             Order savedOrder = orderService.createOrder(requestData);
 
-
-            Map<String, Object> response = new HashMap<>();
-            response.put("id", savedOrder.getId());  // Your internal DB order ID
-            response.put("merchantOrderId", savedOrder.getMerchantOrderId());     // Order ID for PhonePe
-            response.put("amount", amountInPasse);
-            response.put("userId", savedOrder.getUserId());
-            response.put("customerName", savedOrder.getCustomerName());
-            response.put("customerEmail", savedOrder.getCustomerEmail());
-            response.put("customerPhone", savedOrder.getCustomerPhone());
-            response.put("status", "CREATED");
-
-            return ResponseEntity.ok(response);
+            return ResponseEntity.status(HttpStatus.CREATED).body(
+                    Map.of("id", savedOrder.getId(),
+                            "merchantOrderId", savedOrder.getMerchantOrderId(),
+                            "amount", amountInPasse,
+                            "userId", savedOrder.getUserId(),
+                            "customerName", savedOrder.getCustomerName(),
+                            "customerEmail", savedOrder.getCustomerEmail(),
+                            "customerPhone", savedOrder.getCustomerPhone(),
+                            "status", "CREATED")
+            );
 
         } catch (Exception e) {
             log.error("Failed to create order", e);

@@ -81,7 +81,9 @@ public class SecurityConfig {
                                 "/vendor-dashboard.html", "/forgot-password.html",
                                 "/contact.html", "/login.html", "/installment-payment.html",
                                 "/register.html", "/designs.html", "/admin.html",
-                                "/css/**", "/images/**", "/favicon.ico", "/scripts/**","ai-assistant-chatbot/**", "/robots.txt", "/franchise.html"
+                                "/css/**", "/images/**", "/favicon.ico", "/scripts/**",
+                                "ai-assistant-chatbot/**", "/robots.txt", "/franchise.html", "/Ads.txt",
+                                "ai-plan-order.html"
                         ).permitAll()
 
                         // 3. Public API endpoints
@@ -93,6 +95,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/payment/phonePe/**").permitAll()
                         .requestMatchers("/api/chat/**").permitAll()
                         .requestMatchers("/api/ai/**").permitAll()
+                        .requestMatchers("/api/v1/ai").permitAll()
 
                         // 4. Role-protected endpoints (MOST SPECIFIC first)
                         .requestMatchers("/api/admin/**").permitAll()

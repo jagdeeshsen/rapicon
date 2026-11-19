@@ -241,3 +241,10 @@ button { font-family: inherit; cursor: pointer; }
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
 }
+
+/* Play store and app store badges */
+.rc-footer-apps { margin-top: 28px; }
+.rc-store-badges { display: flex; flex-wrap: wrap; gap: 10px; }
+.rc-store-badges a { display: inline-block; transition: transform 0.15s ease, opacity 0.15s ease; }
+.rc-store-badges a:hover { transform: translateY(-2px); opacity: 0.9; }
+.rc-store-badges img { height: 44px; width: auto; display: block; border-radius: 8px;}

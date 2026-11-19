@@ -85,7 +85,7 @@ let selectedPaymentMethod = '';
         const result = await response.json();
 
         if (response.ok) {
-          showNotification('✅ Order created successfully! Our team will contact you within 24 hours.', 'success');
+          showNotification('Order created successfully! Our team will contact you within 24 hours.', 'success');
 
           // Clear session storage
           sessionStorage.removeItem('purchaseDesign');

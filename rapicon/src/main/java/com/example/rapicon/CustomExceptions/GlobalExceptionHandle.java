@@ -62,22 +62,24 @@ public class GlobalExceptionHandle {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message","Resource not found."));
     }
 
-    @ExceptionHandler(PromoInvalidException.class)
-    public ResponseEntity<?> handleInvalidPromo(PromoInvalidException e){
+    @ExceptionHandler(AIPlanAlreadyExistsException.class)
+    public ResponseEntity<?> handleExistsAIArchitectPlan(AIPlanAlreadyExistsException e){
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", e.getMessage()));
+    }
+
+
+    //============================== Promo Code Exception ===================================================
+    @ExceptionHandler({PromoInvalidException.class, PromoExpiredException.class})
+    public ResponseEntity<?> handleInvalidAndExpiredPromo(PromoInvalidException e){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message",e.getMessage()));
     }
 
-    @ExceptionHandler(PromoExpiredException.class)
-    public ResponseEntity<?> handleExpiredPromo(PromoExpiredException e){
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+    @ExceptionHandler({PromoAlreadyUsedException.class, PromoExistsException.class})
+    public ResponseEntity<?> handleUsedAndExistsPromo(PromoAlreadyUsedException e){
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", e.getMessage()));
     }
 
-    @ExceptionHandler(PromoAlreadyUsedException.class)
-    public ResponseEntity<?> handleUsedPromo(PromoAlreadyUsedException e){
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
-    }
-
-
+    //============================== Generic Exception ==========================================================
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGeneric(Exception e) {
         log.error("Unhandled exception", e);

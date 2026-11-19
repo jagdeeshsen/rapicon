@@ -13,11 +13,17 @@
     const SESSION_STORAGE_KEY = "rapicon_ai_session_id";
     const PENDING_DOWNLOAD_KEY = "rapicon_pending_download";
     const PENDING_UPLOAD_KEY = "rapicon_pending_upload";
+    const PENDING_MESSAGE_KEY = "rapicon_pending_message";
 
     // Auth + upload endpoints
     const TOKEN_KEY = "user_token";
     const LOGIN_URL = "/otp-login.html";
     const UPLOAD_URL = "/api/ai/design";
+
+    // Purchase page that Download / Preview lead to. Only the sessionId
+    // is sent (?sessionId=...); the server already holds the generated
+    // files for that session (uploaded via UPLOAD_URL).
+    const ORDER_URL = "/ai-plan-order.html";
 
     let sessionId = null;
     let currentImageBlob = null;
@@ -28,6 +34,10 @@
     let isRestoring = false;
     const imagePreviewUrls = new Set();
     const pdfPreviewUrls = new Set();
+
+    // Uploads currently in flight, so we never navigate away mid-upload.
+    const pendingUploads = new Set();
+    let isRedirectingToOrder = false;
 
     // Project workflow state (from the project-form flow)
     let projectGenerationActive = false;
@@ -661,7 +671,7 @@
 
             <div class="architect-header-left">
                 <div class="architect-title">
-                    AI Architect
+                    Architect ChatBoat
                 </div>
             </div>
 
@@ -1007,6 +1017,34 @@
         }
     }
 
+    // Remembers what the user was about to send, so after logging in
+    // their request is back in the input box and they only press send.
+    // (An attached file cannot be kept across the redirect.)
+    function savePendingMessage(text) {
+        try {
+            sessionStorage.setItem(
+                PENDING_MESSAGE_KEY,
+                JSON.stringify({
+                    message: text || "",
+                    projectGeneration: projectGenerationActive,
+                    outputType: pendingOutputType
+                })
+            );
+        } catch (error) {
+            console.warn("RAPICON: Could not save pending message.", error);
+        }
+    }
+
+    function takePendingMessage() {
+        try {
+            const raw = sessionStorage.getItem(PENDING_MESSAGE_KEY);
+            sessionStorage.removeItem(PENDING_MESSAGE_KEY);
+            return raw ? JSON.parse(raw) : null;
+        } catch (error) {
+            return null;
+        }
+    }
+
     function triggerDownload(url, filename) {
         const link = document.createElement("a");
         link.href = url;
@@ -1090,7 +1128,7 @@
     // This never redirects to login itself — that gate only applies to
     // the Download button, per requireAuth().
     function autoUploadGeneratedFile(blob, fileName, type) {
-        uploadGeneratedFile(blob, fileName)
+        const upload = uploadGeneratedFile(blob, fileName)
             .then(() => {
                 // Succeeded — nothing left to retry.
                 clearPendingUpload();
@@ -1102,7 +1140,40 @@
                 if (type) {
                     savePendingUpload(type);
                 }
+            })
+            .finally(() => {
+                pendingUploads.delete(upload);
             });
+
+        pendingUploads.add(upload);
+    }
+
+    // --------------------------------------------------
+    // GO TO PURCHASE PAGE
+    // --------------------------------------------------
+
+    // Called by every Download / Preview / View PDF button. Waits for
+    // any upload still in flight (so leaving the page can't cancel it),
+    // then redirects with only the sessionId.
+    async function goToPurchasePage() {
+
+        if (isRedirectingToOrder) {
+            return;
+        }
+
+        isRedirectingToOrder = true;
+
+        try {
+            await Promise.allSettled(Array.from(pendingUploads));
+        } catch (error) {
+            console.warn("RAPICON: Upload wait failed.", error);
+        }
+
+        const query = sessionId
+            ? `?sessionId=${encodeURIComponent(sessionId)}`
+            : "";
+
+        window.location.href = ORDER_URL + query;
     }
 
     // --------------------------------------------------
@@ -1649,6 +1720,15 @@
             return;
         }
 
+        // Any message can end in a generated file, so the user must be
+        // logged in before anything is sent. If not, remember the
+        // request and go to login; we come back with it restored.
+        if (!getToken() || !getStoredUserId()) {
+            savePendingMessage(message);
+            redirectToLogin();
+            return;
+        }
+
         addMessage(
             message || `📎 ${selectedFile.name}`,
             "user"
@@ -1695,9 +1775,20 @@
                 API_URL,
                 {
                     method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${getToken()}`
+                    },
                     body: formData
                 }
             );
+
+            // Token expired or rejected by the server: log in again.
+            if (response.status === 401) {
+                stopStatusAnimation();
+                savePendingMessage(message);
+                redirectToLogin();
+                return;
+            }
 
             if (!response.ok) {
 
@@ -2029,6 +2120,7 @@
         currentBqPdfBlob = blob;
         currentBqPdfUrl = pdfUrl;
 
+
         // Upload happens the moment the file is freshly generated, not
         // when we're just redisplaying it from a restored session.
         if (!isRestore) {
@@ -2057,7 +2149,7 @@
         viewPreview.textContent = "View PDF";
 
         viewPreview.addEventListener("click", function () {
-            openPreview("pdf", pdfUrl);
+            goToPurchasePage();
         });
 
         const download = document.createElement("button");
@@ -2066,12 +2158,7 @@
         download.textContent = "Download BOQ PDF";
 
         download.addEventListener("click", function () {
-
-            if (!requireAuth("boq")) {
-                return;
-            }
-
-            triggerDownload(pdfUrl, "rapicon-preliminary-boq.pdf");
+            goToPurchasePage();
         });
 
         actions.appendChild(viewPreview);
@@ -2161,6 +2248,7 @@
         currentImageBlob = blob;
         currentImageUrl = imageUrl;
 
+
         // Upload happens the moment the file is freshly generated, not
         // when we're just redisplaying it from a restored session.
         if (!isRestore) {
@@ -2197,7 +2285,7 @@
         viewPreview.textContent = "Preview";
 
         const openThisImagePreview = function () {
-            openPreview("image", imageUrl);
+            goToPurchasePage();
         };
 
         viewPreview.addEventListener(
@@ -2229,12 +2317,7 @@
         download.addEventListener(
             "click",
             function () {
-
-                if (!requireAuth("image")) {
-                    return;
-                }
-
-                triggerDownload(imageUrl, "ai-architecture-plan.png");
+                goToPurchasePage();
             }
         );
 
@@ -2367,6 +2450,20 @@
         const token = getToken();
         const userId = getStoredUserId();
         const isLoggedIn = Boolean(token && userId);
+
+        // Returning from login with a request that was waiting: put it
+        // back in the input and open the chat.
+        const pendingMessage = takePendingMessage();
+
+        if (pendingMessage && isLoggedIn) {
+            input.value = pendingMessage.message || "";
+            projectGenerationActive = Boolean(pendingMessage.projectGeneration);
+            pendingOutputType = pendingMessage.outputType || null;
+            setWidgetOpen(true);
+        } else if (pendingMessage) {
+            // Still not logged in: keep it for the next return.
+            savePendingMessage(pendingMessage.message);
+        }
 
         // Retry a generated file's upload if it failed earlier (most
         // likely because the user wasn't logged in at generation time).

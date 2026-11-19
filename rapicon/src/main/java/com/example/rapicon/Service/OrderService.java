@@ -29,11 +29,11 @@ public class OrderService {
 
         BigDecimal amount;
         if(requestData.getTotalInstallments()>1){
-            amount= requestData.getInstallmentAmount();
+            amount = requestData.getInstallmentAmount();
         }else {
-            amount= requestData.getTotalAmount();
+            amount = requestData.getTotalAmount();
         }
-        BigDecimal amountInPaisa= amount.multiply(new BigDecimal(100));
+        BigDecimal amountInPasse= amount.multiply(new BigDecimal(100));
 
         // 2. Build order
         User user = userRepo.findById(requestData.getUserId())
@@ -46,7 +46,7 @@ public class OrderService {
         order.setCustomerPhone(user.getPhone());
         order.setTotalAmount(requestData.getTotalAmount());
         order.setMerchantOrderId(merchantOrderId);
-        order.setOrderStatus(Order.OrderStatus.PROCESSING);
+        order.setOrderStatus(Order.OrderStatus.CREATED);
         order.setPaymentStatus(Order.PaymentStatus.PENDING);
         order.setTotalInstallments(requestData.getTotalInstallments());
         order.setInstallmentAmount(requestData.getInstallmentAmount());

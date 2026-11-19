@@ -6,7 +6,9 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @Getter
-public class PhonePeConfig {
+public class
+
+PhonePeConfig {
 
     @Value("${phonepe.client-id}")
     private String clientId;

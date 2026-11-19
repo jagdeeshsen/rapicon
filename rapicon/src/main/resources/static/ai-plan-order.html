@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Checkout · Rapicon</title>
+
+    <!-- Header, buttons and tokens come from your shared stylesheet -->
+    <link rel="stylesheet" href="css/base.css">
+
+    <style>
+        .rc-checkout{--gold-d:#A88B62;--err:#B23A3A;background:var(--bg-light);min-height:calc(100vh - 64px)}
+        .rc-checkout-wrap{max-width:600px;margin:0 auto;padding:40px 20px 64px}
+        .rc-eyebrow{display:flex;align-items:center;gap:10px;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-d);font-weight:500;margin:0 0 12px}
+        .rc-eyebrow::before{content:"";width:32px;height:1px;background:var(--gold)}
+        .rc-checkout h1{font-size:clamp(26px,5vw,34px);font-weight:800;line-height:1.15;margin:0 0 8px}
+        .rc-sub{color:var(--muted);font-size:14px;margin:0 0 32px}
+        .rc-card{background:#fff;border:1px solid var(--border);padding:24px;margin-bottom:16px}
+
+        .rc-plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+        .rc-plan{position:relative;text-align:left;color:var(--ink);background:#fff;border:1px solid var(--border);padding:18px;transition:border-color .15s,background .15s,color .15s}
+        .rc-plan:hover{border-color:var(--gold)}
+        .rc-plan[aria-checked="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+        .rc-plan .n{font-weight:700;font-size:14px}
+        .rc-plan .p{font-size:26px;font-weight:800;margin:2px 0}
+        .rc-plan .d{font-size:12px;opacity:.7}
+        .rc-tag{position:absolute;top:-1px;right:-1px;background:var(--gold);color:var(--ink);font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;padding:3px 8px}
+        .rc-loading{grid-column:1/-1;color:var(--muted);font-size:14px;margin:0}
+        .rc-plans-err{grid-column:1/-1;display:flex;align-items:center;gap:12px;flex-wrap:wrap;color:var(--err);font-size:14px}
+
+        .rc-toggle{display:flex;align-items:center;gap:6px;margin-top:16px;background:none;border:0;font-size:13px;font-weight:600;color:var(--ink);padding:0}
+        .rc-toggle svg{transition:transform .15s;color:var(--gold-d)}
+        .rc-toggle[aria-expanded="true"] svg{transform:rotate(180deg)}
+        .rc-inc{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:14px}
+        .rc-inc[hidden]{display:none}
+        .rc-inc-col{border:1px solid var(--border);padding:14px}
+        .rc-inc-col.on{border-color:var(--gold)}
+        .rc-inc-col h3{font-size:13px;font-weight:700;margin:0 0 10px}
+        .rc-inc-col ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+        .rc-inc-col li{display:flex;gap:8px;font-size:13px;color:var(--muted)}
+        .rc-inc-col li svg{flex:none;color:var(--gold-d);margin-top:3px}
+
+        .rc-promo{display:flex;gap:10px}
+        .rc-promo input{flex:1;min-width:0;font:inherit;font-size:14px;color:var(--ink);background:var(--bg-light);border:1px solid var(--border);padding:13px 14px;text-transform:uppercase;letter-spacing:.06em}
+        .rc-promo input:focus{outline:none;border-color:var(--gold)}
+        .rc-promo button:disabled{opacity:.5;cursor:default}
+        .rc-msg{min-height:22px;margin:10px 0 0;font-size:13px}
+        .rc-msg.ok{color:var(--gold-d)} .rc-msg.err{color:var(--err)}
+
+        .rc-row{display:flex;justify-content:space-between;padding:6px 0;font-size:14px}
+        .rc-row.total{border-top:1px solid var(--border);margin-top:10px;padding-top:16px;font-weight:800;font-size:18px}
+        .rc-row.disc{color:var(--gold-d)}
+        .rc-pay{width:100%;font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:var(--ink);border:0;padding:18px;transition:background .15s}
+        .rc-pay:hover{background:var(--ink-hover)}
+        .rc-pay:disabled{opacity:.55;cursor:default}
+        .rc-note{text-align:center;color:var(--muted);font-size:12px;margin-top:14px}
+    </style>
+</head>
+<body>
+
+<!-- ================= Header (same markup/classes as base.css) ================= -->
+<header class="rc-header" id="hdr">
+    <div class="rc-header-inner">
+        <a class="rc-brand" href="index.html">
+            <div class="rc-brand-mark">R</div>
+            <div><div class="rc-brand-name">RAPICON</div><div class="rc-brand-sub">Architecture Plans</div></div>
+        </a>
+        <ul class="rc-nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="plans.html">Plans</a></li>
+        </ul>
+        <div class="rc-header-actions">
+            <a class="rc-icon-btn" id="accountLink" href="otp-login.html" aria-label="Account">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+            </a>
+            <button class="rc-nav-toggle" id="navToggle" type="button" aria-label="Menu" aria-expanded="false">&#9776;</button>
+        </div>
+    </div>
+</header>
+
+<!-- ================= Page ================= -->
+<main class="rc-checkout">
+    <div class="rc-checkout-wrap">
+        <p class="rc-eyebrow">Checkout</p>
+        <h1>Complete your purchase</h1>
+        <p class="rc-sub">Pick a plan, add a promo code if you have one, and pay securely.</p>
+
+        <section class="rc-card">
+            <p class="rc-eyebrow">1 · Choose a plan</p>
+            <div class="rc-plans" id="plans" role="radiogroup" aria-label="Plan">
+                <p class="rc-loading">Loading plans…</p>
+            </div>
+            <button class="rc-toggle" id="tgl" type="button" aria-expanded="false">
+                See what’s included
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="rc-inc" id="inc" hidden></div>
+        </section>
+
+        <section class="rc-card">
+            <p class="rc-eyebrow">2 · Promo code</p>
+            <div class="rc-promo">
+                <input id="code" placeholder="Enter code" autocomplete="off" aria-label="Promo code">
+                <button class="btn-outline-ink" id="apply" type="button" disabled>Apply</button>
+            </div>
+            <p class="rc-msg" id="msg" role="status"></p>
+        </section>
+
+        <section class="rc-card">
+            <p class="rc-eyebrow">3 · Summary</p>
+            <div class="rc-row"><span id="pname">—</span><span id="sub2">—</span></div>
+            <div class="rc-row disc" id="drow" hidden><span id="dname"></span><span id="damt"></span></div>
+            <div class="rc-row total"><span>Total</span><span id="total">—</span></div>
+        </section>
+
+        <button class="rc-pay" id="pay" type="button" disabled>Pay</button>
+        <p class="rc-note">Secure payment · Prices in INR</p>
+    </div>
+</main>
+
+<script src="https://mercury.phonepe.com/web/bundle/checkout.js"></script>
+<script src="scripts/common.js"></script>
+<script src="scripts/ai-plan-order.js"></script>
+</body>
+</html>
