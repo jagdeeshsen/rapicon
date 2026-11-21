@@ -115,7 +115,7 @@ public class AiPlanOrderService {
         promoRedemptionRepo.save(promoRedemption);
 
         // Send notification to user
-        transactionNotificationService.notifyOrderPlaced(order.getUserId(), String.valueOf(order.getId()));
+        //transactionNotificationService.notifyOrderPlaced(order.getUserId(), String.valueOf(order.getId()));
 
         // Sent product material to user
         sendProductMaterialToUser(order.getSessionId(), order.getUserId());
