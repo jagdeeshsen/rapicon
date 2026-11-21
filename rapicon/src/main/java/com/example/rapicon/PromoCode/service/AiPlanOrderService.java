@@ -1,17 +1,30 @@
 package com.example.rapicon.PromoCode.service;
 
 import com.example.rapicon.CustomExceptions.ResourceNotFoundException;
+import com.example.rapicon.Enum.PromoStatus;
+import com.example.rapicon.Models.AIGeneratedDesign;
 import com.example.rapicon.Models.Order;
+import com.example.rapicon.Models.User;
 import com.example.rapicon.PromoCode.dto.AiPlanOrderRequest;
 import com.example.rapicon.PromoCode.dto.AiPlanOrderResponse;
 import com.example.rapicon.PromoCode.entity.AiPlanOrder;
+import com.example.rapicon.PromoCode.entity.PromoCodeUsers;
+import com.example.rapicon.PromoCode.entity.PromoRedemption;
 import com.example.rapicon.PromoCode.repository.AiPlanOrderRepo;
+import com.example.rapicon.PromoCode.repository.PromoCodeUserRepo;
+import com.example.rapicon.PromoCode.repository.PromoRedemptionRepo;
+import com.example.rapicon.Service.AIGeneratedDesignService;
+import com.example.rapicon.Service.FileMailerService;
+import com.example.rapicon.Service.TransactionNotificationService;
+import com.example.rapicon.Service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -20,6 +33,13 @@ import java.util.Map;
 public class AiPlanOrderService {
 
     private final AiPlanOrderRepo planOrderRepo;
+    private final PromoRedemptionRepo promoRedemptionRepo;
+    private final PromoCodeUserRepo promoCodeUserRepo;
+    private final PromoCodeUserService promoCodeUserService;
+    private final TransactionNotificationService transactionNotificationService;
+    private final UserService userService;
+    private final AIGeneratedDesignService aiGeneratedDesignService;
+    private final FileMailerService fileMailerService;
 
     public AiPlanOrderResponse createOrder(AiPlanOrderRequest request){
         try{
@@ -75,10 +95,47 @@ public class AiPlanOrderService {
             order.setOrderStatus(Order.OrderStatus.COMPLETED);
             order.setUpdatedAt(Instant.now());
         }
-
         order.setPhonePeOrderId(phonePeOrderId);
+        // Update order
         planOrderRepo.saveAndFlush(order);
 
+        // Send payment notification to user
+        transactionNotificationService.notifyPaymentSuccess(order.getUserId(), phonePeOrderId,order.getTotalAmount());
+
+        // Update promo code user table
+        PromoCodeUsers promoUser = promoCodeUserService.findByPromoCodeIdAndUserId(order.getPromoId(), order.getUserId());
+        promoUser.setUpdatedAt(Instant.now());
+        promoCodeUserRepo.save(promoUser);
+
+        // Update promo redemption table
+        PromoRedemption promoRedemption = new PromoRedemption();
+
+        promoRedemption.setOrderId(order.getId());
+        promoRedemption.setPromoCodeId(order.getPromoId());
+        promoRedemption.setUserId(order.getUserId());
+        promoRedemption.setStatus(PromoStatus.REDEEMED);
+        promoRedemption.setRedeemedAt(Instant.now());
+        promoRedemptionRepo.save(promoRedemption);
+
+        // Sent product material to user
+        sendProductMaterialToUser(order.getSessionId(), order.getUserId());
+
         return order;
+    }
+
+    public void sendProductMaterialToUser(String sessionId, Long userId){
+        User user = userService.findById(userId);
+        String senderEmail = user.getEmail();
+
+        List<String> filesUrl = new ArrayList<>();
+
+        List<AIGeneratedDesign> designs = aiGeneratedDesignService.findBySessionId(sessionId);
+
+        for(AIGeneratedDesign design : designs){
+            List<String> urls = design.getFileUrls();
+            filesUrl.addAll(urls);
+        }
+
+        fileMailerService.sendFiles(senderEmail, filesUrl);
     }
 }

@@ -1,5 +1,6 @@
 package com.example.rapicon.Service;
 
+import com.example.rapicon.CustomExceptions.ResourceNotFoundException;
 import com.example.rapicon.DTO.AIGeneratedDesignRequest;
 import com.example.rapicon.Models.AIGeneratedDesign;
 import com.example.rapicon.Repository.AIGeneratedDesignRepo;
@@ -39,5 +40,14 @@ public class AIGeneratedDesignService {
         design.setCreatedAt(LocalDateTime.now());
         repo.save(design);
 
+    }
+
+    public AIGeneratedDesign findById(Long id){
+        return aiDesignRepo.findById(id).orElseThrow(() ->
+                new ResourceNotFoundException("AI Generated design not found with id: "+ id));
+    }
+
+    public List<AIGeneratedDesign> findBySessionId(String sessionId){
+        return aiDesignRepo.findBySessionId(sessionId);
     }
 }

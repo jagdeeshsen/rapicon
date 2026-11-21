@@ -40,4 +40,8 @@ public class PromoCodeUserService {
        return repository.findByUserId(userId).
                orElseThrow(() -> new ResourceNotFoundException("User Entitlement not found with user id: "+ userId));
    }
+
+   public PromoCodeUsers findByPromoCodeIdAndUserId(Long promoId, Long userId){
+       return repository.findByPromoCodeIdAndUserId(promoId, userId);
+   }
 }

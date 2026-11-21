@@ -1,6 +1,16 @@
     const sessionId = new URLSearchParams(window.location.search).get("sessionId");
     // send it with your create-order request and store it on the order
 
+    // Sample drawings: replace these dummy URLs with your real files.
+    // Images (.jpg/.png/.webp) show as thumbnails; anything else (e.g. PDF) shows as an "Open file" tile.
+    var SAMPLE_DRAWINGS = [
+      { title: "2D floor plan",       url: "https://ai-generated-plans.s3.ap-south-1.amazonaws.com/ai-generated-plans/1795254608992-ai-architecture-plan.png" },
+      { title: "3D elevation",        url: "https://ai-generated-plans.s3.ap-south-1.amazonaws.com/ai-generated-plans/1795254791091-ai-architecture-plan.png" },
+      { title: "Working drawings",  url: "https://ai-generated-plans.s3.ap-south-1.amazonaws.com/ai-generated-plans/1795255023003-ai-architecture-plan.png" },
+      { title: "BOQ sheet (PDF)",     url: "https://ai-generated-plans.s3.ap-south-1.amazonaws.com/ai-generated-plans/1795255054126-rapicon-preliminary-boq.pdf" }
+    ];
+
+
     var API = {
       plans:  '/api/v1/ai/plans',
       promo:  '/api/promo/redeem',
@@ -187,7 +197,8 @@
             metaInfo: {
               udf1: order.orderId || '',
               udf2: order.merchantId || ''
-            }
+            },
+            aiOrderPayment: true
           })
         });
         if (!payRes.ok) throw new Error('Failed to initiate payment');
@@ -278,8 +289,42 @@
       if (l) l.remove();
     }
 
+    /* ---------- Sample drawings ---------- */
+    function safeUrl(u) {
+      return /^https?:\/\//i.test(u) ? String(u).replace(/"/g, '%22') : '';
+    }
+    function isImage(u) { return /\.(png|jpe?g|webp|gif|svg|avif)(\?.*)?$/i.test(u); }
+
+    function openSamples() {
+      $("samplesTitle").textContent = "Sample drawings";
+      $("samplesGrid").innerHTML = SAMPLE_DRAWINGS.map(function (s, i) {
+        var url = safeUrl(s.url);
+        if (!url) return '';
+        var label = s.title || ('Sample ' + (i + 1));
+        return '<a class="rc-sample" href="' + url + '" target="_blank" rel="noopener">' +
+          (isImage(url)
+            ? '<img src="' + url + '" alt="' + esc(label) + '" loading="lazy">'
+            : '<div class="rc-sample-doc">Open file</div>') +
+          '<span>' + esc(label) + '</span></a>';
+      }).join('');
+      $("samplesModal").hidden = false;
+    }
+
+    function closeSamples() { $("samplesModal").hidden = true; }
+
+    $("samplesBtn").addEventListener("click", openSamples);
+    $("samplesClose").addEventListener("click", closeSamples);
+    $("samplesModal").addEventListener("click", function (e) { if (e.target === this) closeSamples(); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeSamples(); });
+
     /* ---------- Init ---------- */
     document.addEventListener('DOMContentLoaded', function () {
       $("accountLink").href = rcIsLoggedIn() ? 'profile.html' : 'otp-login.html';
+      $("samplesBtn").hidden = !SAMPLE_DRAWINGS.length;
       loadPlans();
+    });
+
+    $("promoHint").addEventListener("click", function () {
+      $("code").value = this.textContent.trim();
+      $("code").focus();
     });

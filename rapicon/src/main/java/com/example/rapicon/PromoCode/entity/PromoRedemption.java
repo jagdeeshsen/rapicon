@@ -3,6 +3,7 @@ package com.example.rapicon.PromoCode.entity;
 import com.example.rapicon.Enum.PromoStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -16,6 +17,7 @@ import java.time.Instant;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Data
 public class PromoRedemption {
 
     @Id
@@ -30,9 +32,6 @@ public class PromoRedemption {
 
     @Column(name = "order_id")
     private Long orderId;
-
-    @Column(nullable = false)
-    private double discountAmount;
 
     private PromoStatus status;
 

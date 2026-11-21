@@ -27,4 +27,5 @@ public class PaymentRequest {
     private Map<String, String> metaInfo;
 
     private Long expireAfter;
+    private boolean aiOrderPayment;
 }
