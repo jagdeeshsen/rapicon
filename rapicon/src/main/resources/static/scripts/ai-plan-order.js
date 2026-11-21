@@ -1,13 +1,16 @@
     const sessionId = new URLSearchParams(window.location.search).get("sessionId");
     // send it with your create-order request and store it on the order
 
+    var ORDER_PAGE   = '/ai-plan-order.html' + window.location.search;  // keeps ?sessionId
+    var SUCCESS_PAGE = '/ai-plan-order.html' + window.location.search;  // or '/index.html', '/profile.html'
+
     // Sample drawings: replace these dummy URLs with your real files.
     // Images (.jpg/.png/.webp) show as thumbnails; anything else (e.g. PDF) shows as an "Open file" tile.
     var SAMPLE_DRAWINGS = [
-      { title: "2D floor plan",       url: "https://ai-generated-plans.s3.ap-south-1.amazonaws.com/ai-generated-plans/1795254608992-ai-architecture-plan.png" },
-      { title: "3D elevation",        url: "https://ai-generated-plans.s3.ap-south-1.amazonaws.com/ai-generated-plans/1795254791091-ai-architecture-plan.png" },
-      { title: "Working drawings",  url: "https://ai-generated-plans.s3.ap-south-1.amazonaws.com/ai-generated-plans/1795255023003-ai-architecture-plan.png" },
-      { title: "BOQ sheet (PDF)",     url: "https://ai-generated-plans.s3.ap-south-1.amazonaws.com/ai-generated-plans/1795255054126-rapicon-preliminary-boq.pdf" }
+      { title: "2D floor plan",       url: "https://rapicon-vendor-designs.s3.ap-south-1.amazonaws.com/designs/plans/1794994858906-drwaing.png" },
+      { title: "3D elevation",        url: "https://rapicon-vendor-designs.s3.ap-south-1.amazonaws.com/designs/elevations/1794994857432-38x29%20elevation.png" },
+      { title: "Working drawings",  url: "https://rapicon-vendor-designs.s3.ap-south-1.amazonaws.com/designs/plans/1794901453250-17nov%20str.png" },
+      { title: "BOQ sheet (PDF)",     url: "https://ai-generated-plans.s3.ap-south-1.amazonaws.com/ai-generated-plans/1790764374115-rapicon-preliminary-boq.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIA2NPM3GXLU6ZOKWGD%2F20261121%2Fap-south-1%2Fs3%2Faws4_request&X-Amz-Date=20261121T113654Z&X-Amz-Expires=300&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEHwaCmFwLXNvdXRoLTEiSDBGAiEAm%2Bkyg%2BISm363Kk9UzcLO7zJuaita1qtUmm87MERQQDECIQDJSKGKbYiApfJoP4u5sCY1TkL1jEb%2Fxqxib%2FrJukgw%2FSrpAwhFEAAaDDcxNjE0NTYzNjgyMyIMj7hY%2B9S%2B2Hxcq0j3KsYDF3iWArYBXzj6xL5AvAtBvRTF6eyxndcBMSzP4q1bjvy56X97ONC48YpUW6W8jIXNIFmVcsZ%2FjMsM%2FQxibu6oF6UZ3ZUO8NEb4fzIDHDWop19RbnwMAfoO7d8IempRrDcYTT%2BlTmxpqyalDp8RgTESfHyHLEJ3RKciBacNerxzsvjtZ4WRRZxf4sNwxqyYmLh0bm3s6rFnIbURe77orkv0QQErjO7llSC39OO9t57fw6OzBO3itnXyciFao8%2Fg%2FJEZZUXM6Rh%2FTvUdpz%2BZOK0AIKUUBmr%2B7OTTQDoXABQeJecozy3dQzRyScQJVJxinAk6sM1LRSrEsfDXSRjZryB6bwm8VEBB89xTLcmLT%2BcPKpKC%2BMi6N%2BAX1ub7j4ZQ3pBXLc6wp3SWEUduCK7vRoCKWkSSyLGQAXfnEuMgnx1hqo8IZxFk7N%2FfPh%2BcxiU6cF7HT6R80vVzlTht5IuE5fEswzPpQH9C5VBxiP3yyx8iLaO0m6dNoTZjIHMi9hmOLQfS8RPIDIo%2FArNohwaua3YaQbvrzKLwFkioI3qT2W5aOoN7UHhryof19vnbw2ojDqXKhcN8p3h1au0bYk0m0qG4ECH%2F9EZ%2BTCqg4bYBjq5AonVLj%2Fk%2FFSvSszyhTH3OHduyxx8uRnNGrJaQ2VBa9oxq4lzeefYD250hJKTtaGYmbE5Yly48jZFIT%2BRvzlY2Did4z1SkBFlTJgDEUdYNyyLEcd2EefFEwnYJaNrUch5fFbjmioAc7RQejSbBksR3ODy2cav%2Ffo7lx5UY0BK%2BSGLBzwrLN0zGGtpZpSyEE0tOiJdqbZ8iKIRWVRXa6zCRgmjaTZ9ET8Ag040jsY5qmhLBYAq%2FunLh7SJuAwPx%2FgWs%2FpkhYZmZ1HD%2F7sjkVe8ILs1cBH7ko7Bky0Af48sZMznHNj%2FcgEGBGd8lWZ7n3TUGSqH%2F6%2BmYvNw58IaoM8wlT5VrfiAoJn%2F0VeYsGGAWIkHiJoL730hzu4L%2FHWtDXKg1NFJAnBD5WoxpAbVy1h%2BHcTyTww7yOA%2Bt%2FI%3D&X-Amz-Signature=024cad9881ed666e159b90a381af59749302c8a4ccfa6dbbbf142e933d5eb1d4&X-Amz-SignedHeaders=host&response-content-disposition=inline" }
     ];
 
 
@@ -215,32 +218,41 @@
       }
     });
 
+    function closePhonePe() {
+      try { window.PhonePeCheckout.closePage(); } catch (e) {}
+    }
+
     function callback(response) {
+      closePhonePe();                                   // close the iframe first
       if (response === 'USER_CANCEL') {
         showMessage.error("Payment is cancelled by user");
-        setTimeout(function () { window.location.href = '/ai-plan-order.html'; }, 2000);
+        setTimeout(function () { window.location.href = ORDER_PAGE; }, 2000);
       } else if (response === 'CONCLUDED') {
-        showMessage.success("Payment successfully!");
-        checkOrderStatus();
+        checkOrderStatus(0);
       }
     }
 
-    async function checkOrderStatus() {
-      await new Promise(function (r) { setTimeout(r, 2000); }); // let PhonePe process
+    async function checkOrderStatus(attempt) {
+      await new Promise(function (r) { setTimeout(r, 2000); });
       try {
         var res = await fetch(API.status + merchantOrderId, { method: 'GET', headers: authHeaders() });
-        if (!res.ok) { showMessage.error('Failed to verify payment status'); return; }
+        if (!res.ok) throw new Error('status failed');
         var status = await res.json();
 
         if (status.state === 'COMPLETED') {
           await verifyAndCompleteOrder(orderId, merchantOrderId, status);
-        } else if (status.state === 'FAILED') {
-          showMessage.error('Payment failed. Please try again.');
+        } else if (status.state === 'PENDING' && attempt < 5) {
+          return checkOrderStatus(attempt + 1);          // poll up to ~5 more times
         } else if (status.state === 'PENDING') {
           await showMessage.alert('Payment is being processed. We will notify you once completed.');
+          window.location.href = ORDER_PAGE;
+        } else {
+          showMessage.error('Payment failed. Please try again.');
+          setTimeout(function () { window.location.href = ORDER_PAGE; }, 2000);
         }
       } catch (e) {
         await showMessage.alert('Failed to verify payment.');
+        window.location.href = ORDER_PAGE;
       }
     }
 
@@ -266,7 +278,7 @@
           orderId: orderId, merchantOrderId: merchantOrderId,
           amount: paymentStatus.amount, timestamp: new Date().toISOString()
         }));
-        window.location.href = '/index.html';
+        window.location.href = SUCCESS_PAGE;
       } catch (e) {
         await showMessage.alert('Payment completed but verification failed. Please contact support.');
       }
