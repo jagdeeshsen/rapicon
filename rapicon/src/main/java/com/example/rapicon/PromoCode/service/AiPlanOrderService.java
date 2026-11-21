@@ -99,9 +99,6 @@ public class AiPlanOrderService {
         // Update order
         planOrderRepo.saveAndFlush(order);
 
-        // Send payment notification to user
-        transactionNotificationService.notifyPaymentSuccess(order.getUserId(), phonePeOrderId,order.getTotalAmount());
-
         // Update promo code user table
         PromoCodeUsers promoUser = promoCodeUserService.findByPromoCodeIdAndUserId(order.getPromoId(), order.getUserId());
         promoUser.setUpdatedAt(Instant.now());
@@ -116,6 +113,9 @@ public class AiPlanOrderService {
         promoRedemption.setStatus(PromoStatus.REDEEMED);
         promoRedemption.setRedeemedAt(Instant.now());
         promoRedemptionRepo.save(promoRedemption);
+
+        // Send notification to user
+        transactionNotificationService.notifyOrderPlaced(order.getUserId(), String.valueOf(order.getId()));
 
         // Sent product material to user
         sendProductMaterialToUser(order.getSessionId(), order.getUserId());
