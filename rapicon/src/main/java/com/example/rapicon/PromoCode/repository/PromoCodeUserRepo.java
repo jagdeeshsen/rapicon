@@ -15,4 +15,5 @@ public interface PromoCodeUserRepo extends JpaRepository<PromoCodeUsers, Long> {
     Optional<PromoCodeUsers> findByUserId(Long userId);
     boolean existsByUserId(Long userid);
     boolean existsByPromoCodeIdAndUserId(Long promoCodeId, Long userId);
+    PromoCodeUsers findByPromoCodeIdAndUserId(Long promoCodeId, Long userId);
 }

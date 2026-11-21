@@ -35,6 +35,9 @@ PhonePeConfig {
     @Value("${phonepe.redirect.url}")
     private String redirectUrl;
 
+    @Value("${phonepe.redirect.ai-chatbot-url}")
+    private String redirectUrlChatbot;
+
     @Value("${phonepe.salt.key}")
     private String saltKey;
 

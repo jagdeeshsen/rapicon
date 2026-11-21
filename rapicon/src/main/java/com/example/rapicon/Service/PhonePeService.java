@@ -45,7 +45,11 @@ public class PhonePeService {
             paymentFlow.put("type", "PG_CHECKOUT");
 
             Map<String, Object> merchantUrls = new HashMap<>();
-            merchantUrls.put("redirectUrl", config.getRedirectUrl());
+            if(request.isAiOrderPayment()){
+                merchantUrls.put("redirectUrl", config.getRedirectUrlChatbot());
+            }else{
+                merchantUrls.put("redirectUrl", config.getRedirectUrl());
+            }
 
             paymentFlow.put("merchantUrls", merchantUrls);
             payload.put("paymentFlow", paymentFlow);
