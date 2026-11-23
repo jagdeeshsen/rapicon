@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
-import java.util.InvalidPropertiesFormatException;
 import java.util.Locale;
 
 @Service
@@ -62,12 +61,6 @@ public class PromoService {
         promoRepo.saveAndFlush(promo);
         return "Promo code created successfully";
     }
-
-    /*@Transactional(readOnly = true)
-    public List<PromoCodeResponse> list() {
-        return promoRepo.findAll(Sort.by(Sort.Direction.DESC, "id"))
-                .stream().map(PromoCodeResponse::from).toList();
-    }*/
 
     /**
      * Everything below runs in ONE transaction: if any step throws (including the

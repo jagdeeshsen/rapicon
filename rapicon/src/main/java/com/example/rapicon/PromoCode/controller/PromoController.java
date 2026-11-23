@@ -32,11 +32,6 @@ public class PromoController {
         return ResponseEntity.ok(promoService.create(request));
     }
 
-    /*@GetMapping
-    public List<PromoCodeResponse> list() {
-        return promoService.list();
-    }*/
-
 
     @PostMapping("/redeem")
     public PromoCodeResponse redeem(@RequestHeader("Authorization") String tokenHeader, @Valid @RequestBody RedeemRequest request) {
