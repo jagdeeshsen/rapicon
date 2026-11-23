@@ -19,13 +19,11 @@ public class AiPlanOrder {
     @Column(nullable = false)
     private Long userId;
 
-    @Column(nullable = false)
     private Long promoId;
 
     @Column(nullable = false)
     private BigDecimal subtotal;
 
-    @Column(nullable = false)
     private BigDecimal discountAmount;
 
     @Column(nullable = false)

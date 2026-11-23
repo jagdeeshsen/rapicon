@@ -99,23 +99,22 @@ public class AiPlanOrderService {
         // Update order
         planOrderRepo.saveAndFlush(order);
 
-        // Update promo code user table
-        PromoCodeUsers promoUser = promoCodeUserService.findByPromoCodeIdAndUserId(order.getPromoId(), order.getUserId());
-        promoUser.setUpdatedAt(Instant.now());
-        promoCodeUserRepo.save(promoUser);
+        // Update promo code user table if user use promo code
+        if(order.getPromoId()!=null && order.getPromoId() != 0L ){
+            PromoCodeUsers promoUser = promoCodeUserService.findByPromoCodeIdAndUserId(order.getPromoId(), order.getUserId());
+            promoUser.setUpdatedAt(Instant.now());
+            promoCodeUserRepo.save(promoUser);
 
-        // Update promo redemption table
-        PromoRedemption promoRedemption = new PromoRedemption();
+            // Update promo redemption table
+            PromoRedemption promoRedemption = new PromoRedemption();
 
-        promoRedemption.setOrderId(order.getId());
-        promoRedemption.setPromoCodeId(order.getPromoId());
-        promoRedemption.setUserId(order.getUserId());
-        promoRedemption.setStatus(PromoStatus.REDEEMED);
-        promoRedemption.setRedeemedAt(Instant.now());
-        promoRedemptionRepo.save(promoRedemption);
-
-        // Send notification to user
-        //transactionNotificationService.notifyOrderPlaced(order.getUserId(), String.valueOf(order.getId()));
+            promoRedemption.setOrderId(order.getId());
+            promoRedemption.setPromoCodeId(order.getPromoId());
+            promoRedemption.setUserId(order.getUserId());
+            promoRedemption.setStatus(PromoStatus.REDEEMED);
+            promoRedemption.setRedeemedAt(Instant.now());
+            promoRedemptionRepo.save(promoRedemption);
+        }
 
         // Sent product material to user
         sendProductMaterialToUser(order.getSessionId(), order.getUserId());

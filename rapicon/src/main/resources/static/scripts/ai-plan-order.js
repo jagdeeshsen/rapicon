@@ -15,7 +15,7 @@
 
 
     var API = {
-      plans:  '/api/v1/ai/plans',
+      plans:  '/api/admin/ai/plans',
       promo:  '/api/promo/redeem',
       order:  '/api/ai/order',
       pay:    '/api/payment/phonePe/initiate',
@@ -60,9 +60,9 @@
       $("plans").innerHTML = '<p class="rc-loading">Loading plans…</p>';
       $("pay").disabled = true; $("apply").disabled = true;
       try {
-        var headers = {};
-        if (rcGetToken()) headers['Authorization'] = 'Bearer ' + rcGetToken();
-        var res = await fetch(API.plans, { headers: headers });
+        var res = await fetch(API.plans, {
+            method: 'GET',
+         });
         if (!res.ok) throw new Error('HTTP ' + res.status);
         var data = await res.json();
         PLANS = (Array.isArray(data) ? data : (data.plans || [])).map(normalizePlan);
@@ -176,12 +176,21 @@
       try {
         showPaymentVerificationLoader();
 
-        // Create order
+        // Create order: use promo values only if a valid promo is currently applied
+        var hasPromo = !!(applied && promoData);
+
         var orderRes = await fetch(API.order, {
           method: 'POST',
           headers: authHeaders(),
-          body: JSON.stringify({ userId: rcGetUserId(), promoId: promoData.promoId, subtotal: promoData.subtotal,
-           discountAmount: promoData.discountAmount, totalAmount: promoData.payableAmount, sessionId: sessionId, packageName : cur.name})
+          body: JSON.stringify({
+            userId: rcGetUserId(),
+            promoId: hasPromo ? promoData.promoId : 0,
+            subtotal: hasPromo ? promoData.subtotal : cur.price,
+            discountAmount: hasPromo ? promoData.discountAmount : 0.0,
+            totalAmount: hasPromo ? promoData.payableAmount : cur.price,
+            sessionId: sessionId,
+            packageName: cur.name
+          })
         });
         if (!orderRes.ok) throw new Error('Failed to create order');
         var order = await orderRes.json();

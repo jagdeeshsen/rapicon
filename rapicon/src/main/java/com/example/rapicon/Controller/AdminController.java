@@ -2,6 +2,8 @@ package com.example.rapicon.Controller;
 
 import com.example.rapicon.Enum.Status;
 import com.example.rapicon.Models.*;
+import com.example.rapicon.PromoCode.entity.AiPlans;
+import com.example.rapicon.PromoCode.service.AiPlanService;
 import com.example.rapicon.Service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +26,7 @@ import java.util.List;
 public class AdminController {
 
     private final DesignService designService;
+    private final AiPlanService aiPlanService;
 
 
 
@@ -58,6 +61,12 @@ public class AdminController {
             log.error("Failed to fetch design by id",e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
+    }
+
+    @GetMapping("/ai/plans")
+    public ResponseEntity<List<AiPlans>> getAllAIPlans(){
+        List<AiPlans> response = aiPlanService.getAllPlans();
+        return ResponseEntity.ok(response);
     }
 
 
